@@ -110,6 +110,12 @@
     <Compile Include="Presentacion\Operacion\FrmIngresoVehiculo.Designer.cs">
       <DependentUpon>FrmIngresoVehiculo.cs</DependentUpon>
     </Compile>
+    <Compile Include="Presentacion\Principal\FrmDashboard.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Presentacion\Principal\FrmDashboard.Designer.cs">
+      <DependentUpon>FrmDashboard.cs</DependentUpon>
+    </Compile>
     <Compile Include="Presentacion\Principal\FrmPrincipal.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -126,6 +132,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Presentacion\Operacion\FrmIngresoVehiculo.resx">
       <DependentUpon>FrmIngresoVehiculo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Presentacion\Principal\FrmDashboard.resx">
+      <DependentUpon>FrmDashboard.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Presentacion\Principal\FrmPrincipal.resx">
       <DependentUpon>FrmPrincipal.cs</DependentUpon>

@@ -41,14 +41,6 @@ namespace CarWash.Presentacion.Principal
         private System.Windows.Forms.Button btnServicios;
         private System.Windows.Forms.Button btnIngresoVehiculo;
         private System.Windows.Forms.Button btnReportes;
-
-        private System.Windows.Forms.Panel cardVentas;
-        private System.Windows.Forms.Panel cardServicios;
-        private System.Windows.Forms.Panel cardClientes;
-
-        private System.Windows.Forms.Label lblVentas;
-        private System.Windows.Forms.Label lblServicios;
-        private System.Windows.Forms.Label lblClientes;
         private System.Windows.Forms.Panel panelCard;
         private System.Windows.Forms.Label lblTitulo;
 
@@ -65,18 +57,8 @@ namespace CarWash.Presentacion.Principal
             this.btnReportes = new System.Windows.Forms.Button();
             this.btnIngresoVehiculo = new System.Windows.Forms.Button();
             this.panelContent = new System.Windows.Forms.Panel();
-            this.cardVentas = new System.Windows.Forms.Panel();
-            this.lblVentas = new System.Windows.Forms.Label();
-            this.cardServicios = new System.Windows.Forms.Panel();
-            this.lblServicios = new System.Windows.Forms.Label();
-            this.cardClientes = new System.Windows.Forms.Panel();
-            this.lblClientes = new System.Windows.Forms.Label();
             this.panelTop.SuspendLayout();
             this.panelMenu.SuspendLayout();
-            this.panelContent.SuspendLayout();
-            this.cardVentas.SuspendLayout();
-            this.cardServicios.SuspendLayout();
-            this.cardClientes.SuspendLayout();
             this.SuspendLayout();
             // 
             // panelTop
@@ -137,6 +119,7 @@ namespace CarWash.Presentacion.Principal
             this.btnDashboard.Size = new System.Drawing.Size(200, 45);
             this.btnDashboard.TabIndex = 0;
             this.btnDashboard.Text = "Dashboard";
+            this.btnDashboard.Click += new System.EventHandler(this.btnDashboard_Click);
             // 
             // btnClientes
             // 
@@ -186,74 +169,11 @@ namespace CarWash.Presentacion.Principal
             // panelContent
             // 
             this.panelContent.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(90)))), ((int)(((byte)(150)))));
-            this.panelContent.Controls.Add(this.cardVentas);
-            this.panelContent.Controls.Add(this.cardServicios);
-            this.panelContent.Controls.Add(this.cardClientes);
             this.panelContent.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelContent.Location = new System.Drawing.Point(220, 60);
             this.panelContent.Name = "panelContent";
             this.panelContent.Size = new System.Drawing.Size(1080, 840);
             this.panelContent.TabIndex = 0;
-            // 
-            // cardVentas
-            // 
-            this.cardVentas.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(31)))), ((int)(((byte)(111)))), ((int)(((byte)(178)))));
-            this.cardVentas.Controls.Add(this.lblVentas);
-            this.cardVentas.Location = new System.Drawing.Point(50, 80);
-            this.cardVentas.Name = "cardVentas";
-            this.cardVentas.Size = new System.Drawing.Size(300, 150);
-            this.cardVentas.TabIndex = 0;
-            // 
-            // lblVentas
-            // 
-            this.lblVentas.AutoSize = true;
-            this.lblVentas.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
-            this.lblVentas.ForeColor = System.Drawing.Color.White;
-            this.lblVentas.Location = new System.Drawing.Point(30, 60);
-            this.lblVentas.Name = "lblVentas";
-            this.lblVentas.Size = new System.Drawing.Size(122, 21);
-            this.lblVentas.TabIndex = 0;
-            this.lblVentas.Text = "Ventas Hoy: $0";
-            // 
-            // cardServicios
-            // 
-            this.cardServicios.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(140)))), ((int)(((byte)(210)))));
-            this.cardServicios.Controls.Add(this.lblServicios);
-            this.cardServicios.Location = new System.Drawing.Point(400, 80);
-            this.cardServicios.Name = "cardServicios";
-            this.cardServicios.Size = new System.Drawing.Size(300, 150);
-            this.cardServicios.TabIndex = 1;
-            // 
-            // lblServicios
-            // 
-            this.lblServicios.AutoSize = true;
-            this.lblServicios.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
-            this.lblServicios.ForeColor = System.Drawing.Color.White;
-            this.lblServicios.Location = new System.Drawing.Point(30, 60);
-            this.lblServicios.Name = "lblServicios";
-            this.lblServicios.Size = new System.Drawing.Size(156, 21);
-            this.lblServicios.TabIndex = 0;
-            this.lblServicios.Text = "Servicios Activos: 0";
-            // 
-            // cardClientes
-            // 
-            this.cardClientes.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(90)))), ((int)(((byte)(150)))));
-            this.cardClientes.Controls.Add(this.lblClientes);
-            this.cardClientes.Location = new System.Drawing.Point(750, 80);
-            this.cardClientes.Name = "cardClientes";
-            this.cardClientes.Size = new System.Drawing.Size(300, 150);
-            this.cardClientes.TabIndex = 2;
-            // 
-            // lblClientes
-            // 
-            this.lblClientes.AutoSize = true;
-            this.lblClientes.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
-            this.lblClientes.ForeColor = System.Drawing.Color.White;
-            this.lblClientes.Location = new System.Drawing.Point(30, 60);
-            this.lblClientes.Name = "lblClientes";
-            this.lblClientes.Size = new System.Drawing.Size(181, 21);
-            this.lblClientes.TabIndex = 0;
-            this.lblClientes.Text = "Clientes Registrados: 0";
             // 
             // FrmPrincipal
             // 
@@ -272,13 +192,6 @@ namespace CarWash.Presentacion.Principal
             this.panelTop.ResumeLayout(false);
             this.panelTop.PerformLayout();
             this.panelMenu.ResumeLayout(false);
-            this.panelContent.ResumeLayout(false);
-            this.cardVentas.ResumeLayout(false);
-            this.cardVentas.PerformLayout();
-            this.cardServicios.ResumeLayout(false);
-            this.cardServicios.PerformLayout();
-            this.cardClientes.ResumeLayout(false);
-            this.cardClientes.PerformLayout();
             this.ResumeLayout(false);
 
         }

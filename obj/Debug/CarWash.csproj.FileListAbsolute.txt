@@ -30,3 +30,4 @@ D:\WorkGitHub\CarWash\obj\Debug\CarWash.exe
 D:\WorkGitHub\CarWash\obj\Debug\CarWash.pdb
 D:\WorkGitHub\CarWash\obj\Debug\CarWash.Presentacion.Principal.FrmPrincipal.resources
 D:\WorkGitHub\CarWash\obj\Debug\CarWash.Presentacion.Operacion.FrmIngresoVehiculo.resources
+D:\WorkGitHub\CarWash\obj\Debug\CarWash.Presentacion.Principal.FrmDashboard.resources

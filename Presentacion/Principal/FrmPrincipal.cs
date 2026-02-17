@@ -14,6 +14,7 @@ namespace CarWash.Presentacion.Principal
 {
     public partial class FrmPrincipal : Form
     {
+
         public FrmPrincipal()
         {
             InitializeComponent();
@@ -21,7 +22,7 @@ namespace CarWash.Presentacion.Principal
 
         private void FrmPrincipal_Load(object sender, EventArgs e)
         {
-            CargarEstadisticas();
+            cargaDashBoard();
         }
 
         private void btnCerrar_Click(object sender, EventArgs e)
@@ -30,33 +31,7 @@ namespace CarWash.Presentacion.Principal
         }
 
 
-        private void CargarEstadisticas()
-        {
-            try
-            {
-                // Clientes
-                //int totalClientes = DatabaseQueryLDB.ExecuteScalar<int>(
-                //    "SELECT COUNT(*) FROM Cliente");
-                int totalClientes = 0;
-                lblClientes.Text = "Clientes Registrados: " + totalClientes;
 
-                // Servicios activos (ejemplo campo Estado = 1)
-                int serviciosActivos = DatabaseQueryLDB.ExecuteScalar<int>(
-                    "SELECT COUNT(*) FROM Servicios WHERE IsDelete = 0");
-
-                lblServicios.Text = "Servicios Activos: " + serviciosActivos;
-
-                // Ventas del día (ejemplo con fecha actual)
-                decimal ventasHoy = DatabaseQueryLDB.ExecuteScalar<decimal>(
-                    "SELECT IFNULL(SUM(Valor),0) FROM Turnos WHERE DATE(FechaHoraIngreso) = DATE('now')");
-
-                lblVentas.Text = "Ventas Hoy: $" + ventasHoy.ToString("N0");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error cargando estadísticas: " + ex.Message);
-            }
-        }
 
         private void AbrirFormulario(Form formulario)
         {
@@ -89,6 +64,17 @@ namespace CarWash.Presentacion.Principal
             }
 
             btn.BackColor = Color.FromArgb(15, 76, 129);
+        }
+
+
+        private void btnDashboard_Click(object sender, EventArgs e)
+        {
+            cargaDashBoard();
+        }
+
+        private void cargaDashBoard()
+        {
+            AbrirFormulario(new FrmDashboard());
         }
     }
 }
