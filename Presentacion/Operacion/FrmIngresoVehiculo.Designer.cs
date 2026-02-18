@@ -31,7 +31,7 @@ namespace CarWash.Presentacion.Operacion
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.dgvHistorico = new System.Windows.Forms.DataGridView();
             this.lblHistorico = new System.Windows.Forms.Label();
             this.btnCancelar = new System.Windows.Forms.Button();
@@ -52,6 +52,7 @@ namespace CarWash.Presentacion.Operacion
             this.txtCelular = new System.Windows.Forms.TextBox();
             this.lblCelular = new System.Windows.Forms.Label();
             this.panelCard = new System.Windows.Forms.Panel();
+            this.btnCerrar = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvHistorico)).BeginInit();
             this.panelCard.SuspendLayout();
             this.SuspendLayout();
@@ -62,19 +63,19 @@ namespace CarWash.Presentacion.Operacion
             this.dgvHistorico.AllowUserToDeleteRows = false;
             this.dgvHistorico.AllowUserToResizeColumns = false;
             this.dgvHistorico.AllowUserToResizeRows = false;
-            this.dgvHistorico.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.dgvHistorico.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvHistorico.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
             this.dgvHistorico.BackgroundColor = System.Drawing.Color.White;
             this.dgvHistorico.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(76)))), ((int)(((byte)(129)))));
-            dataGridViewCellStyle5.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            dataGridViewCellStyle5.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgvHistorico.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(76)))), ((int)(((byte)(129)))));
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            dataGridViewCellStyle1.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgvHistorico.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.dgvHistorico.EnableHeadersVisualStyles = false;
             this.dgvHistorico.Location = new System.Drawing.Point(24, 509);
             this.dgvHistorico.Name = "dgvHistorico";
@@ -103,7 +104,7 @@ namespace CarWash.Presentacion.Operacion
             this.btnCancelar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCancelar.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnCancelar.ForeColor = System.Drawing.Color.White;
-            this.btnCancelar.Location = new System.Drawing.Point(511, 446);
+            this.btnCancelar.Location = new System.Drawing.Point(468, 445);
             this.btnCancelar.Name = "btnCancelar";
             this.btnCancelar.Size = new System.Drawing.Size(100, 35);
             this.btnCancelar.TabIndex = 16;
@@ -119,7 +120,7 @@ namespace CarWash.Presentacion.Operacion
             this.btnGuardar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnGuardar.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnGuardar.ForeColor = System.Drawing.Color.White;
-            this.btnGuardar.Location = new System.Drawing.Point(381, 446);
+            this.btnGuardar.Location = new System.Drawing.Point(338, 445);
             this.btnGuardar.Name = "btnGuardar";
             this.btnGuardar.Size = new System.Drawing.Size(100, 35);
             this.btnGuardar.TabIndex = 15;
@@ -172,14 +173,11 @@ namespace CarWash.Presentacion.Operacion
             // 
             // cmbServicio
             // 
+            this.cmbServicio.BackColor = System.Drawing.Color.White;
             this.cmbServicio.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbServicio.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.cmbServicio.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.cmbServicio.Items.AddRange(new object[] {
-            "Lavado Básico",
-            "Lavado Premium",
-            "Polichado"});
             this.cmbServicio.Location = new System.Drawing.Point(411, 225);
+            this.cmbServicio.MaxDropDownItems = 10;
             this.cmbServicio.Name = "cmbServicio";
             this.cmbServicio.Size = new System.Drawing.Size(318, 25);
             this.cmbServicio.TabIndex = 10;
@@ -198,15 +196,11 @@ namespace CarWash.Presentacion.Operacion
             // 
             // cmbTipoVehiculo
             // 
+            this.cmbTipoVehiculo.BackColor = System.Drawing.Color.White;
             this.cmbTipoVehiculo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbTipoVehiculo.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.cmbTipoVehiculo.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.cmbTipoVehiculo.Items.AddRange(new object[] {
-            "Automóvil",
-            "Moto",
-            "Camioneta",
-            "Bus"});
             this.cmbTipoVehiculo.Location = new System.Drawing.Point(411, 180);
+            this.cmbTipoVehiculo.MaxDropDownItems = 10;
             this.cmbTipoVehiculo.Name = "cmbTipoVehiculo";
             this.cmbTipoVehiculo.Size = new System.Drawing.Size(318, 25);
             this.cmbTipoVehiculo.TabIndex = 8;
@@ -304,6 +298,7 @@ namespace CarWash.Presentacion.Operacion
             // 
             this.panelCard.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.panelCard.BackColor = System.Drawing.Color.White;
+            this.panelCard.Controls.Add(this.btnCerrar);
             this.panelCard.Controls.Add(this.lblCelular);
             this.panelCard.Controls.Add(this.txtCelular);
             this.panelCard.Controls.Add(this.lblTitulo);
@@ -328,12 +323,30 @@ namespace CarWash.Presentacion.Operacion
             this.panelCard.Size = new System.Drawing.Size(1006, 730);
             this.panelCard.TabIndex = 0;
             // 
+            // btnCerrar
+            // 
+            this.btnCerrar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(90)))), ((int)(((byte)(150)))));
+            this.btnCerrar.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnCerrar.FlatAppearance.BorderSize = 0;
+            this.btnCerrar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnCerrar.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.btnCerrar.ForeColor = System.Drawing.Color.White;
+            this.btnCerrar.Location = new System.Drawing.Point(586, 445);
+            this.btnCerrar.Name = "btnCerrar";
+            this.btnCerrar.Size = new System.Drawing.Size(100, 35);
+            this.btnCerrar.TabIndex = 20;
+            this.btnCerrar.Text = "Cerrar";
+            this.btnCerrar.UseVisualStyleBackColor = false;
+            this.btnCerrar.Click += new System.EventHandler(this.btnCerrar_Click);
+            // 
             // FrmIngresoVehiculo
             // 
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(90)))), ((int)(((byte)(150)))));
             this.ClientSize = new System.Drawing.Size(1030, 750);
             this.Controls.Add(this.panelCard);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "FrmIngresoVehiculo";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Registrar Ingreso de Vehículo";
@@ -344,9 +357,6 @@ namespace CarWash.Presentacion.Operacion
             this.ResumeLayout(false);
 
         }
-
-
-        #endregion
 
         private DataGridView dgvHistorico;
         private Label lblHistorico;
@@ -368,5 +378,7 @@ namespace CarWash.Presentacion.Operacion
         private TextBox txtCelular;
         private Label lblCelular;
         private Panel panelCard;
+        private Button btnCerrar;
+        #endregion
     }
 }

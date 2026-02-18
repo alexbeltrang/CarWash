@@ -35,15 +35,18 @@ namespace CarWash.Presentacion.Principal
 
         private void InitializeComponent()
         {
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.cardVentas = new System.Windows.Forms.Panel();
             this.lblVentas = new System.Windows.Forms.Label();
             this.cardServicios = new System.Windows.Forms.Panel();
             this.lblServicios = new System.Windows.Forms.Label();
             this.cardClientes = new System.Windows.Forms.Panel();
             this.lblClientes = new System.Windows.Forms.Label();
+            this.dvVehiculosProceso = new System.Windows.Forms.DataGridView();
             this.cardVentas.SuspendLayout();
             this.cardServicios.SuspendLayout();
             this.cardClientes.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dvVehiculosProceso)).BeginInit();
             this.SuspendLayout();
             // 
             // cardVentas
@@ -106,12 +109,43 @@ namespace CarWash.Presentacion.Principal
             this.lblClientes.TabIndex = 0;
             this.lblClientes.Text = "Clientes Registrados: 0";
             // 
+            // dvVehiculosProceso
+            // 
+            this.dvVehiculosProceso.AllowUserToAddRows = false;
+            this.dvVehiculosProceso.AllowUserToDeleteRows = false;
+            this.dvVehiculosProceso.AllowUserToResizeColumns = false;
+            this.dvVehiculosProceso.AllowUserToResizeRows = false;
+            this.dvVehiculosProceso.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dvVehiculosProceso.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
+            this.dvVehiculosProceso.BackgroundColor = System.Drawing.Color.White;
+            this.dvVehiculosProceso.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(76)))), ((int)(((byte)(129)))));
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            dataGridViewCellStyle1.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dvVehiculosProceso.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            this.dvVehiculosProceso.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dvVehiculosProceso.EnableHeadersVisualStyles = false;
+            this.dvVehiculosProceso.Location = new System.Drawing.Point(12, 233);
+            this.dvVehiculosProceso.Name = "dvVehiculosProceso";
+            this.dvVehiculosProceso.ReadOnly = true;
+            this.dvVehiculosProceso.RowHeadersVisible = false;
+            this.dvVehiculosProceso.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dvVehiculosProceso.Size = new System.Drawing.Size(1137, 444);
+            this.dvVehiculosProceso.TabIndex = 3;
+            this.dvVehiculosProceso.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dvVehiculosProceso_CellDoubleClick);
+            // 
             // FrmDashboard
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(12)))), ((int)(((byte)(52)))), ((int)(((byte)(85)))));
-            this.ClientSize = new System.Drawing.Size(1100, 400);
+            this.ClientSize = new System.Drawing.Size(1161, 689);
+            this.Controls.Add(this.dvVehiculosProceso);
             this.Controls.Add(this.cardVentas);
             this.Controls.Add(this.cardServicios);
             this.Controls.Add(this.cardClientes);
@@ -126,10 +160,13 @@ namespace CarWash.Presentacion.Principal
             this.cardServicios.PerformLayout();
             this.cardClientes.ResumeLayout(false);
             this.cardClientes.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dvVehiculosProceso)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
+
+        private DataGridView dvVehiculosProceso;
     }
 }

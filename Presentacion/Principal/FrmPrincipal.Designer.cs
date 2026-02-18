@@ -69,7 +69,7 @@ namespace CarWash.Presentacion.Principal
             this.panelTop.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelTop.Location = new System.Drawing.Point(0, 0);
             this.panelTop.Name = "panelTop";
-            this.panelTop.Size = new System.Drawing.Size(1300, 60);
+            this.panelTop.Size = new System.Drawing.Size(1350, 60);
             this.panelTop.TabIndex = 2;
             // 
             // lblBienvenido
@@ -88,7 +88,7 @@ namespace CarWash.Presentacion.Principal
             this.btnCerrar.FlatAppearance.BorderSize = 0;
             this.btnCerrar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCerrar.ForeColor = System.Drawing.Color.White;
-            this.btnCerrar.Location = new System.Drawing.Point(1271, -2);
+            this.btnCerrar.Location = new System.Drawing.Point(1320, 0);
             this.btnCerrar.Name = "btnCerrar";
             this.btnCerrar.Size = new System.Drawing.Size(30, 30);
             this.btnCerrar.TabIndex = 1;
@@ -172,7 +172,7 @@ namespace CarWash.Presentacion.Principal
             this.panelContent.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelContent.Location = new System.Drawing.Point(220, 60);
             this.panelContent.Name = "panelContent";
-            this.panelContent.Size = new System.Drawing.Size(1080, 840);
+            this.panelContent.Size = new System.Drawing.Size(1130, 840);
             this.panelContent.TabIndex = 0;
             // 
             // FrmPrincipal
@@ -180,7 +180,7 @@ namespace CarWash.Presentacion.Principal
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(12)))), ((int)(((byte)(52)))), ((int)(((byte)(85)))));
-            this.ClientSize = new System.Drawing.Size(1300, 900);
+            this.ClientSize = new System.Drawing.Size(1350, 900);
             this.Controls.Add(this.panelContent);
             this.Controls.Add(this.panelMenu);
             this.Controls.Add(this.panelTop);

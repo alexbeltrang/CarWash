@@ -21,5 +21,7 @@ namespace CarWash.Entidades
         [MaxLength(20)]
         public string Celular { get; set; }
         public bool isDelete { get; set; } = false;
+        public DateTime UltimaAsignacion { get; set; }
+        public int CargaTrabajo { get; set; }
     }
 }

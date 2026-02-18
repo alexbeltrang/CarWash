@@ -23,6 +23,7 @@ namespace CarWash.Presentacion.Principal
         private void FrmPrincipal_Load(object sender, EventArgs e)
         {
             cargaDashBoard();
+            
         }
 
         private void btnCerrar_Click(object sender, EventArgs e)
@@ -50,7 +51,9 @@ namespace CarWash.Presentacion.Principal
         private void btnIngresoVehiculo_Click(object sender, EventArgs e)
         {
             ActivarBoton(btnIngresoVehiculo);
-            AbrirFormulario(new FrmIngresoVehiculo());
+            //AbrirFormulario(new FrmIngresoVehiculo());
+            FrmIngresoVehiculo frmIngreso = new FrmIngresoVehiculo();
+            frmIngreso.Show();
         }
 
         private void ActivarBoton(Button btn)
@@ -76,5 +79,7 @@ namespace CarWash.Presentacion.Principal
         {
             AbrirFormulario(new FrmDashboard());
         }
+
+        
     }
 }

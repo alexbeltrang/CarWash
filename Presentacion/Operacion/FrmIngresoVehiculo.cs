@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -18,7 +17,6 @@ namespace CarWash.Presentacion.Operacion
     public partial class FrmIngresoVehiculo : Form
     {
         ServicioComboDTO servicioSeleccionado = new ServicioComboDTO();
-
         public FrmIngresoVehiculo()
         {
             InitializeComponent();
@@ -54,7 +52,6 @@ namespace CarWash.Presentacion.Operacion
                     fade.Stop();
             };
             fade.Start();
-
         }
 
         private void FrmIngresoVehiculo_Load(object sender, EventArgs e)
@@ -63,10 +60,10 @@ namespace CarWash.Presentacion.Operacion
             txtCliente.CharacterCasing = CharacterCasing.Upper;
             txtObservaciones.CharacterCasing = CharacterCasing.Upper;
 
-            panelCard.Left = (this.ClientSize.Width - panelCard.Width) / 2;
-            panelCard.Top = (this.ClientSize.Height - panelCard.Height) / 2;
+            //panelCard.Left = (this.ClientSize.Width - panelCard.Width) / 2;
+            //panelCard.Top = (this.ClientSize.Height - panelCard.Height) / 2;
 
-            panelCard.Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, panelCard.Width, panelCard.Height, 20, 20));
+            //panelCard.Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, panelCard.Width, panelCard.Height, 20, 20));
             EstilizarTextBox(txtPlaca);
             EstilizarTextBox(txtCliente);
             EstilizarTextBox(txtValor);
@@ -88,7 +85,6 @@ namespace CarWash.Presentacion.Operacion
             cmbTipoVehiculo.DataSource = servicios;
             cmbTipoVehiculo.DisplayMember = "Nombre";
             cmbTipoVehiculo.ValueMember = "idTipoVehiculo";
-            cmbTipoVehiculo.SelectedIndex = 0;
         }
 
 
@@ -213,17 +209,6 @@ namespace CarWash.Presentacion.Operacion
                 MostrarToast("Complete todos los campos obligatorios", Color.FromArgb(220, 53, 69));
                 return;
             }
-            //Turnos turnos = new Turnos();
-            //turnos.NumeroTurno = GenerarTurno();
-            //turnos.NombreCliente = txtCliente.Text.Trim();
-            //turnos.NumeroCelular = txtCelular.Text.Trim();
-            //turnos.Placa = txtPlaca.Text.Trim();
-            //turnos.FechaHoraIngreso = DateTime.Now;
-            //turnos.Valor = servicioSeleccionado.precio;
-            //turnos.Pagado = false;
-            //turnos.Observaciones = txtObservaciones.Text.Trim();
-            //turnos.IdTipoVehiculo = Convert.ToInt32(cmbTipoVehiculo.SelectedValue);
-            //turnos.idServicio = servicioSeleccionado.idServicio;
 
             var precion = servicioSeleccionado.precio;
 
@@ -239,7 +224,7 @@ namespace CarWash.Presentacion.Operacion
                     txtObservaciones.Text.Trim(),
                     Convert.ToInt32(cmbTipoVehiculo.SelectedValue),
                     servicioSeleccionado.idServicio,
-                    true
+                    false
                 );
 
             MostrarToast("Ingreso registrado correctamente", Color.FromArgb(40, 167, 69));
@@ -448,6 +433,11 @@ namespace CarWash.Presentacion.Operacion
         private void txtPlaca_Enter(object sender, EventArgs e)
         {
             CLEAR();
+        }
+
+        private void btnCerrar_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }

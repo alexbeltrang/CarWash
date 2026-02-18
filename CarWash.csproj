@@ -35,8 +35,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>packages\Newtonsoft.Json.13.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="SQLite-net, Version=1.9.172.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\sqlite-net-pcl.1.9.172\lib\netstandard2.0\SQLite-net.dll</HintPath>
@@ -85,7 +85,9 @@
   <ItemGroup>
     <Compile Include="Database\DatabaseHelper.cs" />
     <Compile Include="Database\DatabaseQueryLDB.cs" />
+    <Compile Include="DTOs\GestionVehiculosDTO.cs" />
     <Compile Include="DTOs\IngresoVehiculoDTO.cs" />
+    <Compile Include="DTOs\OperariosDTO.cs" />
     <Compile Include="Entidades\Modulo.cs" />
     <Compile Include="Entidades\Operarios.cs" />
     <Compile Include="Entidades\Perfil.cs" />
@@ -103,6 +105,18 @@
     </Compile>
     <Compile Include="Presentacion\Login\FrmLogin.Designer.cs">
       <DependentUpon>FrmLogin.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Presentacion\Operacion\FrmAsignarOperador.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Presentacion\Operacion\FrmAsignarOperador.Designer.cs">
+      <DependentUpon>FrmAsignarOperador.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Presentacion\Operacion\FrmGestionDetalleVehiculo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Presentacion\Operacion\FrmGestionDetalleVehiculo.Designer.cs">
+      <DependentUpon>FrmGestionDetalleVehiculo.cs</DependentUpon>
     </Compile>
     <Compile Include="Presentacion\Operacion\FrmIngresoVehiculo.cs">
       <SubType>Form</SubType>
@@ -129,6 +143,12 @@
     <Compile Include="Utilidades\UIHelper.cs" />
     <EmbeddedResource Include="Presentacion\Login\FrmLogin.resx">
       <DependentUpon>FrmLogin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Presentacion\Operacion\FrmAsignarOperador.resx">
+      <DependentUpon>FrmAsignarOperador.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Presentacion\Operacion\FrmGestionDetalleVehiculo.resx">
+      <DependentUpon>FrmGestionDetalleVehiculo.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Presentacion\Operacion\FrmIngresoVehiculo.resx">
       <DependentUpon>FrmIngresoVehiculo.cs</DependentUpon>

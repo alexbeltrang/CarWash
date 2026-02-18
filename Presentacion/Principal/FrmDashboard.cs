@@ -1,4 +1,8 @@
 ﻿using CarWash.Database;
+using CarWash.DTOs;
+using CarWash.Entidades;
+using CarWash.Presentacion.Operacion;
+using SQLite;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -14,6 +18,8 @@ namespace CarWash.Presentacion.Principal
     public partial class FrmDashboard : Form
     {
         private Timer timerMinuto;
+        private bool _formDetalleAbierto = false;
+
         public FrmDashboard()
         {
             InitializeComponent();
@@ -27,6 +33,7 @@ namespace CarWash.Presentacion.Principal
             timerMinuto.Start(); // Inicia el Timer
 
             CargarEstadisticas();
+            cargarVehiculosEnProceso();
         }
 
 
@@ -61,6 +68,71 @@ namespace CarWash.Presentacion.Principal
         private void TimerMinuto_Tick(object sender, EventArgs e)
         {
             CargarEstadisticas();
+            cargarVehiculosEnProceso();
+        }
+
+
+        private void cargarVehiculosEnProceso()
+        {
+            try
+            {
+                var vehiculosProceso = DatabaseQueryLDB.ExecuteList<GestionVehiculosDTO>(
+                @"SELECT TUR.IdTurno,TUR.Placa,TUR.NombreCliente,TUR.NumeroCelular, TUR.NumeroTurno, strftime('%Y-%m-%d %H:%M',TUR.FechaHoraIngreso / 10000000 - 62135596800,'unixepoch') AS FechaHoraIngreso, TVH.Nombre TipoVehiculo, SER.Nombre Servicio, COALESCE(OPE.Nombres, '') || ' ' || COALESCE(OPE.Apellidos, '') AS OperadorAsignado 
+                  FROM Turnos TUR INNER JOIN TipoVehiculo TVH ON TUR.IdTipoVehiculo = TVH.idTipoVehiculo 
+                  INNER JOIN Servicios SER ON SER.idServicio = TUR.idServicio 
+                  LEFT OUTER JOIN Operarios OPE ON TUR.idOperario = OPE.idOperario 
+                  WHERE TUR.Estado = 0 
+                  ORDER BY TUR.FechaHoraIngreso ASC");
+
+                dvVehiculosProceso.DataSource = vehiculosProceso;
+
+                dvVehiculosProceso.Columns["IdTurno"].Visible = false;
+                dvVehiculosProceso.Columns["Placa"].HeaderText = "Placa";
+                dvVehiculosProceso.Columns["NombreCliente"].HeaderText = "Nombre Cliente";
+                dvVehiculosProceso.Columns["NumeroCelular"].HeaderText = "Celular";
+                dvVehiculosProceso.Columns["NumeroTurno"].HeaderText = "N° Turno";
+                dvVehiculosProceso.Columns["FechaHoraIngreso"].HeaderText = "Fecha Ingreso";
+                dvVehiculosProceso.Columns["TipoVehiculo"].HeaderText = "Tipo Vehiculo";
+                dvVehiculosProceso.Columns["Servicio"].HeaderText = "Servicio";
+                dvVehiculosProceso.Columns["OperadorAsignado"].HeaderText = "Operador Asignado";
+                dvVehiculosProceso.Columns["Estado"].Visible = false;
+                dvVehiculosProceso.Columns["idOperario"].Visible = false;
+                dvVehiculosProceso.Columns["Observaciones"].Visible = false;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error cargando vehículos en proceso: " + ex.Message);
+            }
+        }
+
+        private void dvVehiculosProceso_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0)
+                return;
+
+            // Si ya está abierto, no permitir otro
+            if (_formDetalleAbierto)
+                return;
+
+            try
+            {
+                _formDetalleAbierto = true;
+
+                DataGridViewRow fila = dvVehiculosProceso.Rows[e.RowIndex];
+                int idTurno = Convert.ToInt32(fila.Cells["IdTurno"].Value);
+
+                using (FrmGestionDetalleVehiculo frm = new FrmGestionDetalleVehiculo(idTurno))
+                {
+                    if (frm.ShowDialog() == DialogResult.OK)
+                    {
+                        cargarVehiculosEnProceso();
+                    }
+                }
+            }
+            finally
+            {
+                _formDetalleAbierto = false;
+            }
         }
 
     }
