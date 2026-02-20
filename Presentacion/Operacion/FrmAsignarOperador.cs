@@ -40,7 +40,7 @@ namespace CarWash.Presentacion.Operacion
         {
             if (dvOperadoresDisponibles.CurrentRow == null)
             {
-                MessageBox.Show("Debe seleccionar un operador.");
+                MessageBox.Show("Debe seleccionar un operador.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -48,7 +48,7 @@ namespace CarWash.Presentacion.Operacion
 
             if (operadorSeleccionado == null)
             {
-                MessageBox.Show("No se pudo obtener el operador seleccionado.");
+                MessageBox.Show("No se pudo obtener el operador seleccionado.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -84,7 +84,7 @@ namespace CarWash.Presentacion.Operacion
                 var operadoresDisponibles = DatabaseQueryLDB.ExecuteList<OperariosDTO>(
                 @"SELECT idOperario,Nombres,Apellidos  
                   FROM Operarios 
-                  WHERE idOperario NOT IN (SELECT idOperario FROM Turnos WHERE Estado = 0 AND idOperario IS NOT NULL) ");
+                  WHERE idOperario NOT IN (SELECT idOperario FROM Turnos WHERE Estado = 0 AND idOperario IS NOT NULL and OperadorOcupado = 0) ");
 
                 dvOperadoresDisponibles.DataSource = operadoresDisponibles;
 
@@ -95,7 +95,7 @@ namespace CarWash.Presentacion.Operacion
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error cargando operadores: " + ex.Message);
+                MessageBox.Show("Error cargando operadores: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

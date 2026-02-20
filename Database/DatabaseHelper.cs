@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static SQLite.SQLiteConnection;
 
 namespace CarWash.Database
 {
@@ -65,6 +66,51 @@ namespace CarWash.Database
                 }
             }
             return result;
+        }
+
+
+        public static bool CreateOrUpdateTable<T>()
+        {
+            using (SQLiteConnection conn = new SQLiteConnection(dbFile))
+            {
+                try
+                {
+                    var mapping = conn.GetMapping<T>();
+                    string tableName = mapping.TableName;
+
+                    // 1️⃣ Crear tabla si no existe
+                    conn.CreateTable<T>();
+
+                    // 2️⃣ Obtener columnas existentes
+                    var existingColumns = conn.Query<ColumnInfo>(
+                        $"PRAGMA table_info({tableName});");
+
+                    var existingColumnNames = existingColumns
+                        .Select(c => c.name)
+                        .ToList();
+
+                    // 3️⃣ Comparar con propiedades del modelo
+                    foreach (var column in mapping.Columns)
+                    {
+                        if (!existingColumnNames.Contains(column.Name))
+                        {
+                            string sqlType = GetSQLiteType(column.ColumnType);
+
+                            string alterQuery =
+                                $"ALTER TABLE {tableName} ADD COLUMN {column.Name} {sqlType};";
+
+                            conn.Execute(alterQuery);
+                        }
+                    }
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    string error = ex.Message;
+                    return false;
+                }
+            }
         }
 
 
@@ -169,5 +215,23 @@ namespace CarWash.Database
             }
             return items;
         }
+
+
+
+        private static string GetSQLiteType(Type type)
+        {
+            type = Nullable.GetUnderlyingType(type) ?? type;
+
+            if (type == typeof(int)) return "INTEGER";
+            if (type == typeof(long)) return "INTEGER";
+            if (type == typeof(bool)) return "INTEGER";
+            if (type == typeof(string)) return "TEXT";
+            if (type == typeof(double)) return "REAL";
+            if (type == typeof(float)) return "REAL";
+            if (type == typeof(DateTime)) return "TEXT";
+
+            return "TEXT";
+        }
+
     }
 }

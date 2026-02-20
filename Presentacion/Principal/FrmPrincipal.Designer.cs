@@ -25,178 +25,177 @@ namespace CarWash.Presentacion.Principal
 
         #region Windows Form Designer generated code
 
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
-        /// 
-        private System.Windows.Forms.Panel panelTop;
-        private System.Windows.Forms.Panel panelMenu;
-        private System.Windows.Forms.Panel panelContent;
-        private System.Windows.Forms.Label lblBienvenido;
-        private System.Windows.Forms.Button btnCerrar;
-
-        private System.Windows.Forms.Button btnDashboard;
-        private System.Windows.Forms.Button btnClientes;
-        private System.Windows.Forms.Button btnServicios;
-        private System.Windows.Forms.Button btnIngresoVehiculo;
-        private System.Windows.Forms.Button btnReportes;
-        private System.Windows.Forms.Panel panelCard;
-        private System.Windows.Forms.Label lblTitulo;
-
 
         private void InitializeComponent()
         {
-            this.panelTop = new System.Windows.Forms.Panel();
-            this.lblBienvenido = new System.Windows.Forms.Label();
-            this.btnCerrar = new System.Windows.Forms.Button();
-            this.panelMenu = new System.Windows.Forms.Panel();
-            this.btnDashboard = new System.Windows.Forms.Button();
-            this.btnClientes = new System.Windows.Forms.Button();
-            this.btnServicios = new System.Windows.Forms.Button();
-            this.btnReportes = new System.Windows.Forms.Button();
-            this.btnIngresoVehiculo = new System.Windows.Forms.Button();
             this.panelContent = new System.Windows.Forms.Panel();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.lblBienvenido = new System.Windows.Forms.Label();
+            this.panelTop = new System.Windows.Forms.Panel();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.sistemaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.abrirCajaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.cerrarCajaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.jornadaOperariosToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.reporteDiarioToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.operaciónToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ingresoVehículoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.panelContent.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+            this.splitContainer1.SuspendLayout();
             this.panelTop.SuspendLayout();
-            this.panelMenu.SuspendLayout();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // panelTop
+            // panelContent
             // 
-            this.panelTop.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(76)))), ((int)(((byte)(129)))));
-            this.panelTop.Controls.Add(this.lblBienvenido);
-            this.panelTop.Controls.Add(this.btnCerrar);
-            this.panelTop.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelTop.Location = new System.Drawing.Point(0, 0);
-            this.panelTop.Name = "panelTop";
-            this.panelTop.Size = new System.Drawing.Size(1350, 60);
-            this.panelTop.TabIndex = 2;
+            this.panelContent.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(90)))), ((int)(((byte)(150)))));
+            this.panelContent.Controls.Add(this.splitContainer1);
+            this.panelContent.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelContent.Location = new System.Drawing.Point(0, 229);
+            this.panelContent.Margin = new System.Windows.Forms.Padding(4);
+            this.panelContent.Name = "panelContent";
+            this.panelContent.Size = new System.Drawing.Size(2819, 1428);
+            this.panelContent.TabIndex = 0;
+            // 
+            // splitContainer1
+            // 
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer1.Name = "splitContainer1";
+            this.splitContainer1.Size = new System.Drawing.Size(2819, 1428);
+            this.splitContainer1.SplitterDistance = 875;
+            this.splitContainer1.TabIndex = 0;
             // 
             // lblBienvenido
             // 
             this.lblBienvenido.AutoSize = true;
             this.lblBienvenido.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
             this.lblBienvenido.ForeColor = System.Drawing.Color.White;
-            this.lblBienvenido.Location = new System.Drawing.Point(20, 15);
+            this.lblBienvenido.Location = new System.Drawing.Point(27, 18);
+            this.lblBienvenido.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblBienvenido.Name = "lblBienvenido";
-            this.lblBienvenido.Size = new System.Drawing.Size(241, 25);
+            this.lblBienvenido.Size = new System.Drawing.Size(308, 32);
             this.lblBienvenido.TabIndex = 0;
             this.lblBienvenido.Text = "Dashboard - CarWash Pro";
             // 
-            // btnCerrar
+            // panelTop
             // 
-            this.btnCerrar.FlatAppearance.BorderSize = 0;
-            this.btnCerrar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCerrar.ForeColor = System.Drawing.Color.White;
-            this.btnCerrar.Location = new System.Drawing.Point(1320, 0);
-            this.btnCerrar.Name = "btnCerrar";
-            this.btnCerrar.Size = new System.Drawing.Size(30, 30);
-            this.btnCerrar.TabIndex = 1;
-            this.btnCerrar.Text = "X";
-            this.btnCerrar.Click += new System.EventHandler(this.btnCerrar_Click);
+            this.panelTop.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(76)))), ((int)(((byte)(129)))));
+            this.panelTop.Controls.Add(this.lblBienvenido);
+            this.panelTop.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panelTop.Location = new System.Drawing.Point(0, 0);
+            this.panelTop.Margin = new System.Windows.Forms.Padding(4);
+            this.panelTop.Name = "panelTop";
+            this.panelTop.Size = new System.Drawing.Size(2255, 145);
+            this.panelTop.TabIndex = 2;
             // 
-            // panelMenu
+            // menuStrip1
             // 
-            this.panelMenu.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(8)))), ((int)(((byte)(35)))), ((int)(((byte)(64)))));
-            this.panelMenu.Controls.Add(this.btnDashboard);
-            this.panelMenu.Controls.Add(this.btnClientes);
-            this.panelMenu.Controls.Add(this.btnServicios);
-            this.panelMenu.Controls.Add(this.btnReportes);
-            this.panelMenu.Controls.Add(this.btnIngresoVehiculo);
-            this.panelMenu.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panelMenu.Location = new System.Drawing.Point(0, 60);
-            this.panelMenu.Name = "panelMenu";
-            this.panelMenu.Size = new System.Drawing.Size(220, 840);
-            this.panelMenu.TabIndex = 1;
+            this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.sistemaToolStripMenuItem,
+            this.operaciónToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 145);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(2819, 38);
+            this.menuStrip1.TabIndex = 3;
+            this.menuStrip1.Text = "menuStrip1";
             // 
-            // btnDashboard
+            // sistemaToolStripMenuItem
             // 
-            this.btnDashboard.FlatAppearance.BorderSize = 0;
-            this.btnDashboard.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnDashboard.ForeColor = System.Drawing.Color.White;
-            this.btnDashboard.Location = new System.Drawing.Point(10, 100);
-            this.btnDashboard.Name = "btnDashboard";
-            this.btnDashboard.Size = new System.Drawing.Size(200, 45);
-            this.btnDashboard.TabIndex = 0;
-            this.btnDashboard.Text = "Dashboard";
-            this.btnDashboard.Click += new System.EventHandler(this.btnDashboard_Click);
+            this.sistemaToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.abrirCajaToolStripMenuItem,
+            this.cerrarCajaToolStripMenuItem,
+            this.jornadaOperariosToolStripMenuItem,
+            this.reporteDiarioToolStripMenuItem});
+            this.sistemaToolStripMenuItem.Name = "sistemaToolStripMenuItem";
+            this.sistemaToolStripMenuItem.Size = new System.Drawing.Size(75, 34);
+            this.sistemaToolStripMenuItem.Text = "&Sistema";
             // 
-            // btnClientes
+            // abrirCajaToolStripMenuItem
             // 
-            this.btnClientes.FlatAppearance.BorderSize = 0;
-            this.btnClientes.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnClientes.ForeColor = System.Drawing.Color.White;
-            this.btnClientes.Location = new System.Drawing.Point(10, 160);
-            this.btnClientes.Name = "btnClientes";
-            this.btnClientes.Size = new System.Drawing.Size(200, 45);
-            this.btnClientes.TabIndex = 1;
-            this.btnClientes.Text = "Clientes";
+            this.abrirCajaToolStripMenuItem.Name = "abrirCajaToolStripMenuItem";
+            this.abrirCajaToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.abrirCajaToolStripMenuItem.Text = "&Abrir Caja";
+            this.abrirCajaToolStripMenuItem.Click += new System.EventHandler(this.abrirCajaToolStripMenuItem_Click);
             // 
-            // btnServicios
+            // cerrarCajaToolStripMenuItem
             // 
-            this.btnServicios.FlatAppearance.BorderSize = 0;
-            this.btnServicios.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnServicios.ForeColor = System.Drawing.Color.White;
-            this.btnServicios.Location = new System.Drawing.Point(10, 220);
-            this.btnServicios.Name = "btnServicios";
-            this.btnServicios.Size = new System.Drawing.Size(200, 45);
-            this.btnServicios.TabIndex = 2;
-            this.btnServicios.Text = "Servicios";
+            this.cerrarCajaToolStripMenuItem.Name = "cerrarCajaToolStripMenuItem";
+            this.cerrarCajaToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.cerrarCajaToolStripMenuItem.Text = "&Cerrar Caja";
+            this.cerrarCajaToolStripMenuItem.Click += new System.EventHandler(this.cerrarCajaToolStripMenuItem_Click);
             // 
-            // btnReportes
+            // jornadaOperariosToolStripMenuItem
             // 
-            this.btnReportes.FlatAppearance.BorderSize = 0;
-            this.btnReportes.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnReportes.ForeColor = System.Drawing.Color.White;
-            this.btnReportes.Location = new System.Drawing.Point(10, 331);
-            this.btnReportes.Name = "btnReportes";
-            this.btnReportes.Size = new System.Drawing.Size(200, 45);
-            this.btnReportes.TabIndex = 3;
-            this.btnReportes.Text = "Reportes";
+            this.jornadaOperariosToolStripMenuItem.Name = "jornadaOperariosToolStripMenuItem";
+            this.jornadaOperariosToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.jornadaOperariosToolStripMenuItem.Text = "&Jornada Operarios";
             // 
-            // btnIngresoVehiculo
+            // reporteDiarioToolStripMenuItem
             // 
-            this.btnIngresoVehiculo.FlatAppearance.BorderSize = 0;
-            this.btnIngresoVehiculo.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnIngresoVehiculo.ForeColor = System.Drawing.Color.White;
-            this.btnIngresoVehiculo.Location = new System.Drawing.Point(10, 280);
-            this.btnIngresoVehiculo.Name = "btnIngresoVehiculo";
-            this.btnIngresoVehiculo.Size = new System.Drawing.Size(200, 45);
-            this.btnIngresoVehiculo.TabIndex = 4;
-            this.btnIngresoVehiculo.Text = "Ingreso Vehículo";
-            this.btnIngresoVehiculo.Click += new System.EventHandler(this.btnIngresoVehiculo_Click);
+            this.reporteDiarioToolStripMenuItem.Name = "reporteDiarioToolStripMenuItem";
+            this.reporteDiarioToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.reporteDiarioToolStripMenuItem.Text = "&Reporte Diario";
             // 
-            // panelContent
+            // operaciónToolStripMenuItem
             // 
-            this.panelContent.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(90)))), ((int)(((byte)(150)))));
-            this.panelContent.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelContent.Location = new System.Drawing.Point(220, 60);
-            this.panelContent.Name = "panelContent";
-            this.panelContent.Size = new System.Drawing.Size(1130, 840);
-            this.panelContent.TabIndex = 0;
+            this.operaciónToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ingresoVehículoToolStripMenuItem});
+            this.operaciónToolStripMenuItem.Name = "operaciónToolStripMenuItem";
+            this.operaciónToolStripMenuItem.Size = new System.Drawing.Size(92, 24);
+            this.operaciónToolStripMenuItem.Text = "&Operación";
+            // 
+            // ingresoVehículoToolStripMenuItem
+            // 
+            this.ingresoVehículoToolStripMenuItem.Name = "ingresoVehículoToolStripMenuItem";
+            this.ingresoVehículoToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.ingresoVehículoToolStripMenuItem.Text = "&Ingreso Vehículo";
             // 
             // FrmPrincipal
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(12)))), ((int)(((byte)(52)))), ((int)(((byte)(85)))));
-            this.ClientSize = new System.Drawing.Size(1350, 900);
+            this.ClientSize = new System.Drawing.Size(2255, 1325);
             this.Controls.Add(this.panelContent);
-            this.Controls.Add(this.panelMenu);
+            this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.panelTop);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "FrmPrincipal";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "CarWash Pro";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FrmPrincipal_FormClosed);
             this.Load += new System.EventHandler(this.FrmPrincipal_Load);
+            this.panelContent.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
+            this.splitContainer1.ResumeLayout(false);
             this.panelTop.ResumeLayout(false);
             this.panelTop.PerformLayout();
-            this.panelMenu.ResumeLayout(false);
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
 
         #endregion
+
+        private Panel panelContent;
+        private Label lblBienvenido;
+        private Panel panelTop;
+        private MenuStrip menuStrip1;
+        private ToolStripMenuItem sistemaToolStripMenuItem;
+        private ToolStripMenuItem abrirCajaToolStripMenuItem;
+        private ToolStripMenuItem cerrarCajaToolStripMenuItem;
+        private ToolStripMenuItem jornadaOperariosToolStripMenuItem;
+        private ToolStripMenuItem reporteDiarioToolStripMenuItem;
+        private ToolStripMenuItem operaciónToolStripMenuItem;
+        private ToolStripMenuItem ingresoVehículoToolStripMenuItem;
+        private SplitContainer splitContainer1;
     }
 }

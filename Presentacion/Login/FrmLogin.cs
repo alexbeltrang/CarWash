@@ -127,16 +127,18 @@ namespace CarWash.Presentacion.Login
 
         private void creaBaseLocal()
         {
-            DatabaseHelper.Create<Modulo>();
-            DatabaseHelper.Create<TurnosDiarios>();
-            DatabaseHelper.Create<Usuario>();
-            DatabaseHelper.Create<Operarios>();
-            DatabaseHelper.Create<Perfil>();
-            DatabaseHelper.Create<PerfilModulo>();
-            DatabaseHelper.Create<Servicios>();
-            DatabaseHelper.Create<TipoVehiculo>();
-            DatabaseHelper.Create<Turnos>();
-            DatabaseHelper.Create<PrecioServicioVehiculo>();
+            DatabaseHelper.CreateOrUpdateTable<Modulo>();
+            DatabaseHelper.CreateOrUpdateTable<TurnosDiarios>();
+            DatabaseHelper.CreateOrUpdateTable<Usuario>();
+            DatabaseHelper.CreateOrUpdateTable<CajaDiaria>();
+            DatabaseHelper.CreateOrUpdateTable<Operarios>();
+            DatabaseHelper.CreateOrUpdateTable<Perfil>();
+            DatabaseHelper.CreateOrUpdateTable<PerfilModulo>();
+            DatabaseHelper.CreateOrUpdateTable<Servicios>();
+            DatabaseHelper.CreateOrUpdateTable<TipoVehiculo>();
+            DatabaseHelper.CreateOrUpdateTable<Turnos>();
+            DatabaseHelper.CreateOrUpdateTable<PrecioServicioVehiculo>();
+            DatabaseHelper.CreateOrUpdateTable<JornadaOperario>();
 
             //creacion del indice para las tablas 
 

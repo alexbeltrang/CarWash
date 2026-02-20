@@ -33,3 +33,5 @@ D:\WorkGitHub\CarWash\obj\Debug\CarWash.Presentacion.Operacion.FrmIngresoVehicul
 D:\WorkGitHub\CarWash\obj\Debug\CarWash.Presentacion.Principal.FrmDashboard.resources
 D:\WorkGitHub\CarWash\obj\Debug\CarWash.Presentacion.Operacion.FrmGestionDetalleVehiculo.resources
 D:\WorkGitHub\CarWash\obj\Debug\CarWash.Presentacion.Operacion.FrmAsignarOperador.resources
+D:\WorkGitHub\CarWash\obj\Debug\CarWash.Presentacion.Administracion.FrmAperturaCaja.resources
+D:\WorkGitHub\CarWash\obj\Debug\CarWash.Presentacion.Administracion.FrmCierreCaja.resources

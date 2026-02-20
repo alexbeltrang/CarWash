@@ -373,7 +373,7 @@ namespace CarWash.Presentacion.Operacion
 
             if (vehiculo != null)
             {
-                if (!vehiculo.Estado)
+                if (vehiculo.Estado)
                 {
                     // Cargar datos en los controles
                     cmbTipoVehiculo.SelectedValue = vehiculo.IdTipoVehiculo;

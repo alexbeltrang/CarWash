@@ -63,7 +63,7 @@ namespace CarWash.Presentacion.Operacion
             this.dgvHistorico.AllowUserToDeleteRows = false;
             this.dgvHistorico.AllowUserToResizeColumns = false;
             this.dgvHistorico.AllowUserToResizeRows = false;
-            this.dgvHistorico.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.dgvHistorico.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvHistorico.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
             this.dgvHistorico.BackgroundColor = System.Drawing.Color.White;
@@ -76,13 +76,15 @@ namespace CarWash.Presentacion.Operacion
             dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.dgvHistorico.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            this.dgvHistorico.ColumnHeadersHeight = 29;
             this.dgvHistorico.EnableHeadersVisualStyles = false;
-            this.dgvHistorico.Location = new System.Drawing.Point(24, 509);
+            this.dgvHistorico.Location = new System.Drawing.Point(75, 509);
             this.dgvHistorico.Name = "dgvHistorico";
             this.dgvHistorico.ReadOnly = true;
             this.dgvHistorico.RowHeadersVisible = false;
+            this.dgvHistorico.RowHeadersWidth = 51;
             this.dgvHistorico.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvHistorico.Size = new System.Drawing.Size(961, 197);
+            this.dgvHistorico.Size = new System.Drawing.Size(851, 197);
             this.dgvHistorico.TabIndex = 19;
             // 
             // lblHistorico
@@ -92,7 +94,7 @@ namespace CarWash.Presentacion.Operacion
             this.lblHistorico.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(60)))));
             this.lblHistorico.Location = new System.Drawing.Point(261, 392);
             this.lblHistorico.Name = "lblHistorico";
-            this.lblHistorico.Size = new System.Drawing.Size(159, 19);
+            this.lblHistorico.Size = new System.Drawing.Size(189, 23);
             this.lblHistorico.TabIndex = 18;
             this.lblHistorico.Text = "Histórico del Vehículo:";
             // 
@@ -146,7 +148,7 @@ namespace CarWash.Presentacion.Operacion
             this.lblObservaciones.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(60)))));
             this.lblObservaciones.Location = new System.Drawing.Point(261, 301);
             this.lblObservaciones.Name = "lblObservaciones";
-            this.lblObservaciones.Size = new System.Drawing.Size(91, 15);
+            this.lblObservaciones.Size = new System.Drawing.Size(115, 20);
             this.lblObservaciones.TabIndex = 13;
             this.lblObservaciones.Text = "Observaciones:";
             // 
@@ -157,7 +159,7 @@ namespace CarWash.Presentacion.Operacion
             this.txtValor.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.txtValor.Location = new System.Drawing.Point(411, 270);
             this.txtValor.Name = "txtValor";
-            this.txtValor.Size = new System.Drawing.Size(318, 25);
+            this.txtValor.Size = new System.Drawing.Size(318, 30);
             this.txtValor.TabIndex = 12;
             // 
             // lblValor
@@ -167,7 +169,7 @@ namespace CarWash.Presentacion.Operacion
             this.lblValor.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(60)))));
             this.lblValor.Location = new System.Drawing.Point(261, 270);
             this.lblValor.Name = "lblValor";
-            this.lblValor.Size = new System.Drawing.Size(38, 15);
+            this.lblValor.Size = new System.Drawing.Size(50, 20);
             this.lblValor.TabIndex = 9;
             this.lblValor.Text = "Valor:";
             // 
@@ -179,7 +181,7 @@ namespace CarWash.Presentacion.Operacion
             this.cmbServicio.Location = new System.Drawing.Point(411, 225);
             this.cmbServicio.MaxDropDownItems = 10;
             this.cmbServicio.Name = "cmbServicio";
-            this.cmbServicio.Size = new System.Drawing.Size(318, 25);
+            this.cmbServicio.Size = new System.Drawing.Size(318, 31);
             this.cmbServicio.TabIndex = 10;
             this.cmbServicio.SelectedIndexChanged += new System.EventHandler(this.cmbServicio_SelectedIndexChanged);
             // 
@@ -190,7 +192,7 @@ namespace CarWash.Presentacion.Operacion
             this.lblServicio.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(60)))));
             this.lblServicio.Location = new System.Drawing.Point(261, 225);
             this.lblServicio.Name = "lblServicio";
-            this.lblServicio.Size = new System.Drawing.Size(55, 15);
+            this.lblServicio.Size = new System.Drawing.Size(68, 20);
             this.lblServicio.TabIndex = 7;
             this.lblServicio.Text = "Servicio:";
             // 
@@ -202,7 +204,7 @@ namespace CarWash.Presentacion.Operacion
             this.cmbTipoVehiculo.Location = new System.Drawing.Point(411, 180);
             this.cmbTipoVehiculo.MaxDropDownItems = 10;
             this.cmbTipoVehiculo.Name = "cmbTipoVehiculo";
-            this.cmbTipoVehiculo.Size = new System.Drawing.Size(318, 25);
+            this.cmbTipoVehiculo.Size = new System.Drawing.Size(318, 31);
             this.cmbTipoVehiculo.TabIndex = 8;
             this.cmbTipoVehiculo.SelectionChangeCommitted += new System.EventHandler(this.cmbTipoVehiculo_SelectionChangeCommitted);
             // 
@@ -213,7 +215,7 @@ namespace CarWash.Presentacion.Operacion
             this.lblTipoVehiculo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(60)))));
             this.lblTipoVehiculo.Location = new System.Drawing.Point(261, 180);
             this.lblTipoVehiculo.Name = "lblTipoVehiculo";
-            this.lblTipoVehiculo.Size = new System.Drawing.Size(84, 15);
+            this.lblTipoVehiculo.Size = new System.Drawing.Size(107, 20);
             this.lblTipoVehiculo.TabIndex = 5;
             this.lblTipoVehiculo.Text = "Tipo Vehículo:";
             // 
@@ -224,7 +226,7 @@ namespace CarWash.Presentacion.Operacion
             this.txtCliente.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.txtCliente.Location = new System.Drawing.Point(411, 111);
             this.txtCliente.Name = "txtCliente";
-            this.txtCliente.Size = new System.Drawing.Size(318, 25);
+            this.txtCliente.Size = new System.Drawing.Size(318, 30);
             this.txtCliente.TabIndex = 4;
             // 
             // lblCliente
@@ -234,7 +236,7 @@ namespace CarWash.Presentacion.Operacion
             this.lblCliente.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(60)))));
             this.lblCliente.Location = new System.Drawing.Point(261, 111);
             this.lblCliente.Name = "lblCliente";
-            this.lblCliente.Size = new System.Drawing.Size(98, 15);
+            this.lblCliente.Size = new System.Drawing.Size(123, 20);
             this.lblCliente.TabIndex = 3;
             this.lblCliente.Text = "Nombre Cliente:";
             // 
@@ -245,7 +247,7 @@ namespace CarWash.Presentacion.Operacion
             this.txtPlaca.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.txtPlaca.Location = new System.Drawing.Point(411, 80);
             this.txtPlaca.Name = "txtPlaca";
-            this.txtPlaca.Size = new System.Drawing.Size(318, 25);
+            this.txtPlaca.Size = new System.Drawing.Size(318, 30);
             this.txtPlaca.TabIndex = 2;
             this.txtPlaca.Enter += new System.EventHandler(this.txtPlaca_Enter);
             this.txtPlaca.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtPlaca_KeyDown);
@@ -258,7 +260,7 @@ namespace CarWash.Presentacion.Operacion
             this.lblPlaca.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(60)))));
             this.lblPlaca.Location = new System.Drawing.Point(261, 80);
             this.lblPlaca.Name = "lblPlaca";
-            this.lblPlaca.Size = new System.Drawing.Size(38, 15);
+            this.lblPlaca.Size = new System.Drawing.Size(49, 20);
             this.lblPlaca.TabIndex = 1;
             this.lblPlaca.Text = "Placa:";
             // 
@@ -269,7 +271,7 @@ namespace CarWash.Presentacion.Operacion
             this.lblTitulo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(76)))), ((int)(((byte)(129)))));
             this.lblTitulo.Location = new System.Drawing.Point(358, 26);
             this.lblTitulo.Name = "lblTitulo";
-            this.lblTitulo.Size = new System.Drawing.Size(253, 30);
+            this.lblTitulo.Size = new System.Drawing.Size(310, 37);
             this.lblTitulo.TabIndex = 0;
             this.lblTitulo.Text = "REGISTRO DE INGRESO";
             // 
@@ -280,7 +282,7 @@ namespace CarWash.Presentacion.Operacion
             this.txtCelular.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.txtCelular.Location = new System.Drawing.Point(411, 142);
             this.txtCelular.Name = "txtCelular";
-            this.txtCelular.Size = new System.Drawing.Size(318, 25);
+            this.txtCelular.Size = new System.Drawing.Size(318, 30);
             this.txtCelular.TabIndex = 6;
             // 
             // lblCelular
@@ -290,7 +292,7 @@ namespace CarWash.Presentacion.Operacion
             this.lblCelular.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(60)))));
             this.lblCelular.Location = new System.Drawing.Point(261, 142);
             this.lblCelular.Name = "lblCelular";
-            this.lblCelular.Size = new System.Drawing.Size(48, 15);
+            this.lblCelular.Size = new System.Drawing.Size(62, 20);
             this.lblCelular.TabIndex = 17;
             this.lblCelular.Text = "Celular:";
             // 
@@ -318,7 +320,7 @@ namespace CarWash.Presentacion.Operacion
             this.panelCard.Controls.Add(this.btnCancelar);
             this.panelCard.Controls.Add(this.lblHistorico);
             this.panelCard.Controls.Add(this.dgvHistorico);
-            this.panelCard.Location = new System.Drawing.Point(12, 9);
+            this.panelCard.Location = new System.Drawing.Point(-59, 9);
             this.panelCard.Name = "panelCard";
             this.panelCard.Size = new System.Drawing.Size(1006, 730);
             this.panelCard.TabIndex = 0;
@@ -342,7 +344,7 @@ namespace CarWash.Presentacion.Operacion
             // FrmIngresoVehiculo
             // 
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(90)))), ((int)(((byte)(150)))));
-            this.ClientSize = new System.Drawing.Size(1030, 750);
+            this.ClientSize = new System.Drawing.Size(888, 750);
             this.Controls.Add(this.panelCard);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.MaximizeBox = false;

@@ -1,4 +1,5 @@
 ﻿using CarWash.Database;
+using CarWash.Presentacion.Administracion;
 using CarWash.Presentacion.Operacion;
 using System;
 using System.Collections.Generic;
@@ -22,16 +23,11 @@ namespace CarWash.Presentacion.Principal
 
         private void FrmPrincipal_Load(object sender, EventArgs e)
         {
+            this.WindowState = FormWindowState.Maximized;
+            this.Bounds = Screen.PrimaryScreen.Bounds;
             cargaDashBoard();
-            
+
         }
-
-        private void btnCerrar_Click(object sender, EventArgs e)
-        {
-            Application.Exit();
-        }
-
-
 
 
         private void AbrirFormulario(Form formulario)
@@ -48,27 +44,6 @@ namespace CarWash.Presentacion.Principal
             formulario.Show();
         }
 
-        private void btnIngresoVehiculo_Click(object sender, EventArgs e)
-        {
-            ActivarBoton(btnIngresoVehiculo);
-            //AbrirFormulario(new FrmIngresoVehiculo());
-            FrmIngresoVehiculo frmIngreso = new FrmIngresoVehiculo();
-            frmIngreso.Show();
-        }
-
-        private void ActivarBoton(Button btn)
-        {
-            foreach (Control c in panelMenu.Controls)
-            {
-                if (c is Button)
-                {
-                    c.BackColor = Color.FromArgb(8, 35, 64);
-                }
-            }
-
-            btn.BackColor = Color.FromArgb(15, 76, 129);
-        }
-
 
         private void btnDashboard_Click(object sender, EventArgs e)
         {
@@ -77,9 +52,65 @@ namespace CarWash.Presentacion.Principal
 
         private void cargaDashBoard()
         {
-            AbrirFormulario(new FrmDashboard());
+            AbrirFormularioEnPanel(new FrmDashboard(), splitContainer1.Panel2);
+            AbrirFormularioEnPanel(new FrmIngresoVehiculo(), splitContainer1.Panel1);
         }
 
-        
+        private void FrmPrincipal_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void tlsIngresoVehiculo_Click(object sender, EventArgs e)
+        {
+            Form formularioAbierto = Application.OpenForms["FrmIngresoVehiculo"];
+
+            if (formularioAbierto == null)
+            {
+                FrmIngresoVehiculo frmIngreso = new FrmIngresoVehiculo();
+                frmIngreso.Show();
+            }
+            else
+            {
+                formularioAbierto.BringToFront();
+            }
+        }
+
+
+        private void AbrirFormularioEnPanel(Form formulario, Control contenedor)
+        {
+            formulario.TopLevel = false;
+            formulario.FormBorderStyle = FormBorderStyle.None;
+            formulario.Dock = DockStyle.Fill;
+
+            contenedor.Controls.Clear();
+            contenedor.Controls.Add(formulario);
+
+            formulario.Show();
+        }
+
+        private void abrirCajaToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form formularioAbierto = Application.OpenForms["FrmAperturaCaja"];
+
+            if (formularioAbierto == null)
+            {
+                using (FrmAperturaCaja frmApertura = new FrmAperturaCaja())
+                {
+                    frmApertura.ShowDialog(this);
+                }
+            }
+            else
+            {
+                formularioAbierto.BringToFront();
+            }
+
+            
+        }
+
+        private void cerrarCajaToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

@@ -23,5 +23,6 @@ namespace CarWash.Entidades
         public bool isDelete { get; set; } = false;
         public DateTime UltimaAsignacion { get; set; }
         public int CargaTrabajo { get; set; }
+
     }
 }

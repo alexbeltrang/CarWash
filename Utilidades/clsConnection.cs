@@ -17,17 +17,11 @@ namespace CarWash.Utilidades
 
         public static int idUser;
         public static int intCodigoPerfil;
-        public static int intCodigoProducto;
 
 
-        public static decimal decFactorConversion;
 
         public static string strNombreUsuario;
         public static string strEmailUsuario;
-        public static string strNombreProducto;
-        public static string strCodigoVentaProducto;
-        public static string strReferenciaProducto;
-        public static string strNombreProdBuscar;
 
         String mstrConnectionString;  /* '= System.Configuration.ConfigurationSettings.AppSettings("db")*/
         String mstrNameProcedure;
@@ -70,59 +64,7 @@ namespace CarWash.Utilidades
             }
         }
 
-        public int Query(string strSQL)
-        {
-            SqlConnection cnConexion = new SqlConnection(mstrConnectionString);
-            SqlCommand cmComando = new SqlCommand(strSQL, cnConexion);
-            cnConexion.Open();
-            return cmComando.ExecuteNonQuery();
-            cnConexion.Close();
-            cnConexion.Dispose();
-            cmComando.Dispose();
-            GC.Collect();
-        }
 
-        public object Query(string strSQL, TipoDato eTipoDato)
-        {
-            SqlConnection cnConexion = new SqlConnection(mstrConnectionString);
-            SqlCommand cmComando = new SqlCommand(strSQL, cnConexion);
-            SqlDataAdapter dtaAdaptador = new SqlDataAdapter();
-            DataSet dtsTemp = new DataSet();
-            DataTable dttTemp = new DataTable();
-            DataView dtvTemp = new DataView();
-            SqlDataReader dtrTemp;
-            cnConexion.Open();
-            try
-            {
-                cmComando.CommandType = CommandType.Text;
-                dtaAdaptador.SelectCommand = cmComando;
-                switch (eTipoDato)
-                {
-                    case TipoDato.DataSet:
-                        dtaAdaptador.Fill(dtsTemp, "Temp");
-                        return (dtsTemp);
-                    case TipoDato.Table:
-                        dtaAdaptador.Fill(dttTemp);
-                        return dttTemp;
-
-                    case TipoDato.View:
-                        dtaAdaptador.Fill(dttTemp);
-                        dttTemp.TableName = "Temp";
-                        dtvTemp.Table = dttTemp;
-                        return dtvTemp;
-
-                    case TipoDato.DataReader:
-                        dtrTemp = cmComando.ExecuteReader();
-                        return dtrTemp;
-
-                }
-            }
-            catch (Exception e)
-            {
-                return e;
-            }
-            return dttTemp;
-        }
 
         public void ExecuteProc()
         {
