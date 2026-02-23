@@ -17,5 +17,6 @@ namespace CarWash.DTOs
         public String TipoVehiculo { get; set; }
         public String Servicio { get; set; }
         public decimal Valor { get; set; }
+        public String ValorPagado { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using CarWash.Database;
 using CarWash.DTOs;
 using CarWash.Entidades;
+using CarWash.Enum;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -11,6 +12,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using FormaPago = CarWash.Enum.FormaPago;
 
 
 namespace CarWash.Presentacion.Operacion
@@ -29,11 +31,12 @@ namespace CarWash.Presentacion.Operacion
 
         private void FrmGestionDetalleVehiculo_Load(object sender, EventArgs e)
         {
-
+            cmbClienteCredito.Visible = false;
             this.Region = System.Drawing.Region.FromHrgn(
             CreateRoundRectRgn(0, 0, Width, Height, 20, 20));
             cargarDetalleTurnoVehiculo(_idTurno);
             cargaCajaDiaria();
+            cargaClienteCredito();
         }
 
         [DllImport("Gdi32.dll", EntryPoint = "CreateRoundRectRgn")]
@@ -52,6 +55,30 @@ namespace CarWash.Presentacion.Operacion
             cerrarForm();
         }
 
+        private void cargaClienteCredito()
+        {
+            try
+            {
+                List<ClienteCreditoDTO> clienteCredito = DatabaseQueryLDB.ExecuteList<ClienteCreditoDTO>(
+               @"SELECT idClienteCredito, Nombre   
+                  FROM ClienteCredito
+                  WHERE Estado=1");
+
+                clienteCredito.Insert(0, new ClienteCreditoDTO
+                {
+                    idClienteCredito = 0,
+                    Nombre = "-- Seleccione --"
+                });
+                cmbClienteCredito.DataSource = clienteCredito;
+                cmbClienteCredito.DisplayMember = "Nombre";
+                cmbClienteCredito.ValueMember = "idClienteCredito";
+                cmbClienteCredito.SelectedIndex = 0;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error cargando cliente crédito: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
         private void cargaCajaDiaria()
         {
             try
@@ -89,7 +116,8 @@ namespace CarWash.Presentacion.Operacion
             try
             {
                 vehiculosProceso = DatabaseQueryLDB.ExecuteList<GestionVehiculosDTO>(
-               @"SELECT TUR.IdTurno,TUR.Placa,TUR.NombreCliente,TUR.NumeroCelular, TUR.NumeroTurno, strftime('%Y-%m-%d %H:%M',TUR.FechaHoraIngreso / 10000000 - 62135596800,'unixepoch') AS FechaHoraIngreso, TVH.Nombre TipoVehiculo, SER.Nombre Servicio,  COALESCE(OPE.Nombres, '') || ' ' || COALESCE(OPE.Apellidos, '') AS OperadorAsignado, TUR.Valor, TUR.idOperario, TUR.Observaciones   
+               @"SELECT TUR.IdTurno,TUR.Placa,TUR.NombreCliente,TUR.NumeroCelular, TUR.NumeroTurno, strftime('%Y-%m-%d %H:%M',TUR.FechaHoraIngreso / 10000000 - 62135596800,'unixepoch') AS FechaHoraIngreso, TVH.Nombre TipoVehiculo, SER.Nombre Servicio,  COALESCE(OPE.Nombres, '') || ' ' || COALESCE(OPE.Apellidos, '') AS OperadorAsignado, TUR.Valor, TUR.idOperario, TUR.Observaciones,   
+                  TUR.ValorBaseComision, TUR.ValorComision 
                   FROM Turnos TUR INNER JOIN TipoVehiculo TVH ON TUR.IdTipoVehiculo = TVH.idTipoVehiculo 
                   INNER JOIN Servicios SER ON SER.idServicio = TUR.idServicio 
                   LEFT OUTER JOIN Operarios OPE ON TUR.idOperario = OPE.idOperario 
@@ -155,15 +183,38 @@ namespace CarWash.Presentacion.Operacion
                 {
                     int idOperador = frm.OperadorSeleccionadoId.Value;
 
-                    DatabaseQueryLDB.ExecuteNonQuery(
-                       "UPDATE Turnos SET idOperario = ?, OperadorOcupado =  1 WHERE IdTurno = ?",
-                       idOperador, vehiculosProceso[0].IdTurno
-                       );
+                    var comisionOperador = consultaPorcentajeOperador(idOperador);
 
-                    cargarDetalleTurnoVehiculo(vehiculosProceso[0].IdTurno);
+                    if (comisionOperador.Count > 0)
+                    {
+                        DatabaseQueryLDB.ExecuteNonQuery(
+                           "UPDATE Turnos SET idOperario = ?, PorcentajeComision = ?,  OperadorOcupado =  1 WHERE IdTurno = ?",
+                           idOperador, comisionOperador[0].Porcentaje, vehiculosProceso[0].IdTurno
+                           );
+
+                        cargarDetalleTurnoVehiculo(vehiculosProceso[0].IdTurno);
+                    }
+                    else
+                    {
+                        MessageBox.Show("El operador no tiene comision asignada.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
         }
+
+        private List<PorcentajeOperadorDTO> consultaPorcentajeOperador(int idOperario)
+        {
+            List<PorcentajeOperadorDTO> porcentajeOperador = DatabaseQueryLDB.ExecuteList<PorcentajeOperadorDTO>(
+                 @" SELECT Porcentaje 
+                    FROM OperarioComisiones 
+                    WHERE idOperario = ?
+                    AND DiaSemana = strftime('%w','now') +1
+                    LIMIT 1", idOperario);
+            return porcentajeOperador;
+        }
+
+
+
 
         private bool validarAsignacionOperador()
         {
@@ -186,34 +237,47 @@ namespace CarWash.Presentacion.Operacion
                     decimal valorEfectivo = cajaDiaria[0].TotalIngresosEfectivo;
                     decimal valorTransferencias = cajaDiaria[0].TotalIngresosTransferencias;
                     decimal valorDatafono = cajaDiaria[0].TotalIngresosDatafono;
+                    decimal valorCredito = cajaDiaria[0].TotalIngresosCredito;
                     decimal valorFinal = 0;
-
-                    string formaPago = string.Empty;
+                    int formaPago = 0;
                     if (rbEfectivo.Checked)
                     {
-                        formaPago = "EFECTIVO";
+                        formaPago = (int)FormaPago.Efectivo;
                         valorEfectivo = valorEfectivo + valorPagar;
                     }
                     else if (rbTransferencia.Checked)
                     {
-                        formaPago = "TRANSFERENCIA";
+                        formaPago = (int)FormaPago.Transferencia;
                         valorTransferencias = valorTransferencias + valorPagar;
                     }
                     else if (rbDatafono.Checked)
                     {
-                        formaPago = "DATAFONO";
+                        formaPago = (int)FormaPago.Datafono;
                         valorDatafono = valorDatafono + valorPagar;
                     }
+                    else if (rbCredito.Checked)
+                    {
+                        formaPago = (int)FormaPago.Credito;
+                        valorCredito = valorCredito + valorPagar;
+                    }
+
+                    object clienteCredito = (cmbClienteCredito.SelectedIndex <= 0 || cmbClienteCredito.SelectedValue == null)
+                        ? null
+                        : cmbClienteCredito.SelectedValue;
+
                     valorFinal = cajaDiaria[0].TotalFinal + valorPagar;
 
+                    decimal valorComision = (vehiculosProceso[0].ValorBaseComision * vehiculosProceso[0].PorcentajeComision) / 100;
+
+
                     DatabaseQueryLDB.ExecuteNonQuery(
-                        "UPDATE Turnos SET Valor = ?, Observaciones = ?, FormaPago = ?, Estado = 1, Pagado = 1, OperadorOcupado = 0 WHERE IdTurno = ?",
-                        valorPagar, txtObservaciones.Text.Trim(), formaPago, vehiculosProceso[0].IdTurno
+                        "UPDATE Turnos SET Valor = ?, Observaciones = ?, IdFormaPago = ?, idClienteCredito = ?, ValorComision = ?, Estado = 1, Pagado = 1, OperadorOcupado = 0 WHERE IdTurno = ?",
+                        valorPagar, txtObservaciones.Text.Trim(), formaPago, clienteCredito, valorComision, vehiculosProceso[0].IdTurno
                         );
 
                     DatabaseQueryLDB.ExecuteNonQuery(
-                        "UPDATE CajaDiaria SET TotalIngresosEfectivo = ?, TotalIngresosTransferencias = ?, TotalIngresosDatafono = ?, TotalFinal = ? WHERE idCaja = ?",
-                        valorEfectivo, valorTransferencias, valorDatafono, valorFinal, cajaDiaria[0].idCaja
+                        "UPDATE CajaDiaria SET TotalIngresosEfectivo = ?, TotalIngresosTransferencias = ?, TotalIngresosDatafono = ?, TotalFinal = ?, TotalIngresosCredito= ? WHERE idCaja = ?",
+                        valorEfectivo, valorTransferencias, valorDatafono, valorFinal, valorCredito, cajaDiaria[0].idCaja
                         );
 
                     MessageBox.Show("Turno finalizado exitosamente.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -246,7 +310,16 @@ namespace CarWash.Presentacion.Operacion
                 MessageBox.Show("Las observaciones son obligatorias.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 esValido = false;
             }
-
+            if (cajaDiaria == null || cajaDiaria.Count == 0)
+            {
+                MessageBox.Show("No hay apertura de caja para el día de hoy.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                esValido = false;
+            }
+            if (rbCredito.Checked && (cmbClienteCredito.SelectedIndex == 0 || cmbClienteCredito.SelectedValue == null))
+            {
+                MessageBox.Show("Debe seleccionar un cliente para crédito.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                esValido = false;
+            }
             return esValido;
         }
 
@@ -276,28 +349,49 @@ namespace CarWash.Presentacion.Operacion
             {
                 rb.BackColor = Color.FromArgb(40, 167, 69);
                 rb.ForeColor = Color.White;
+                activaClienteCredito(false);
+
             }
             else if (rb == rbTransferencia)
             {
                 rb.BackColor = Color.FromArgb(0, 123, 255);
                 rb.ForeColor = Color.White;
+                activaClienteCredito(false);
+
             }
             else if (rb == rbDatafono)
             {
                 rb.BackColor = Color.FromArgb(255, 140, 0);
                 rb.ForeColor = Color.White;
+                activaClienteCredito(false);
+
+            }
+            else if (rb == rbCredito)
+            {
+                rb.BackColor = Color.FromArgb(255, 140, 0);
+                rb.ForeColor = Color.White;
+                activaClienteCredito(true);
+                cmbClienteCredito.SelectedIndex = 0;
             }
         }
 
+
+        private void activaClienteCredito(bool estado)
+        {
+            cmbClienteCredito.Visible = estado;
+            lblClienteCredito.Visible = estado;
+        }
         private void ResetRadioButtons()
         {
             rbEfectivo.BackColor = Color.WhiteSmoke;
             rbTransferencia.BackColor = Color.WhiteSmoke;
             rbDatafono.BackColor = Color.WhiteSmoke;
+            rbCredito.BackColor = Color.WhiteSmoke;
 
             rbEfectivo.ForeColor = Color.Black;
             rbTransferencia.ForeColor = Color.Black;
             rbDatafono.ForeColor = Color.Black;
+            rbCredito.ForeColor = Color.Black;
         }
 
         private void txtValorPagar_Leave(object sender, EventArgs e)

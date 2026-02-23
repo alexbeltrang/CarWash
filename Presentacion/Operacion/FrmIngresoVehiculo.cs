@@ -17,6 +17,7 @@ namespace CarWash.Presentacion.Operacion
     public partial class FrmIngresoVehiculo : Form
     {
         ServicioComboDTO servicioSeleccionado = new ServicioComboDTO();
+        CajaDiaria cajaDiaria = new CajaDiaria();
         public FrmIngresoVehiculo()
         {
             InitializeComponent();
@@ -68,8 +69,10 @@ namespace CarWash.Presentacion.Operacion
             EstilizarTextBox(txtCliente);
             EstilizarTextBox(txtValor);
             EstilizarTextBox(txtCelular);
+            EstilizarTextBox(txtValorBase);
             EstilizarTextBox(txtObservaciones);
             cargarTipoVehiculo();
+            cargaCajaDiaria();
             txtPlaca.Focus();
         }
 
@@ -87,15 +90,23 @@ namespace CarWash.Presentacion.Operacion
             cmbTipoVehiculo.ValueMember = "idTipoVehiculo";
         }
 
+        private void cargaCajaDiaria()
+        {
+            cajaDiaria = DatabaseQueryLDB.ExecuteList<CajaDiaria>(
+                @"SELECT idCaja,FechaApertura,FechaCierre,MontoInicial,TotalIngresosEfectivo,TotalIngresosTransferencias,TotalIngresosDatafono,TotalEgresos,TotalFinal,Estado
+                  FROM CajaDiaria
+                  WHERE strftime('%Y-%m-%d',FechaApertura / 10000000 - 62135596800,'unixepoch') = date('now')  and Estado = 1;").FirstOrDefault();
+
+        }
 
         private void cargarComboServicio(int TipoVehiculo)
         {
             // Aquí puedes cargar los combos con datos de la base de datos
             var servicios = DatabaseQueryLDB.ExecuteList<ServicioComboDTO>(
-                @"SELECT ser.idServicio, ser.Nombre, psr.precio 
+                @"SELECT ser.idServicio, ser.Nombre, psr.precio, psr.PrecioBaseComision
                   FROM PrecioServicioVehiculo psr 
                   INNER JOIN TipoVehiculo tpv ON psr.IdTipoVehiculo = tpv.idTipoVehiculo 
-                  INNER JOIN Servicios ser ON ser.idServicio = psr.idServicio 
+                  INNER JOIN Servicios ser ON ser.idServicio = psr.idServicio  
                   WHERE ser.IsDelete = ? and psr.idTipoVehiculo = ?",
                 0, TipoVehiculo);
 
@@ -103,7 +114,8 @@ namespace CarWash.Presentacion.Operacion
             {
                 idServicio = 0,
                 Nombre = "-- Seleccione --",
-                precio = 0
+                precio = 0,
+                precioBaseComision = 0
             });
             cmbServicio.DataSource = servicios;
             cmbServicio.DisplayMember = "Nombre";
@@ -115,8 +127,9 @@ namespace CarWash.Presentacion.Operacion
         private bool ValidarCampos()
         {
             bool valido = true;
+            cargaCajaDiaria();
 
-            foreach (Control c in panelCard.Controls)
+            foreach (Control c in this.Controls)
             {
                 if (c is TextBox txt && !txt.ReadOnly)
                 {
@@ -156,6 +169,19 @@ namespace CarWash.Presentacion.Operacion
         }
 
 
+        private bool validaCajadiaria()
+        {
+
+            bool retrono = true;
+            cargaCajaDiaria();
+            if (cajaDiaria == null)
+            {
+                MostrarToast("No existe caja abierta para el día de hoy.", Color.FromArgb(220, 53, 69));
+                retrono = false;
+            }
+            return retrono;
+        }
+
         [DllImport("Gdi32.dll", EntryPoint = "CreateRoundRectRgn")]
         private static extern IntPtr CreateRoundRectRgn(
             int nLeftRect,
@@ -189,7 +215,7 @@ namespace CarWash.Presentacion.Operacion
             linea.Left = txt.Left;
             linea.Top = txt.Bottom + 1;
 
-            panelCard.Controls.Add(linea);
+            this.Controls.Add(linea);
 
             txt.GotFocus += (s, e) =>
             {
@@ -209,11 +235,15 @@ namespace CarWash.Presentacion.Operacion
                 MostrarToast("Complete todos los campos obligatorios", Color.FromArgb(220, 53, 69));
                 return;
             }
+            else if (!validaCajadiaria())
+            {
+                return;
+            }
 
             var precion = servicioSeleccionado.precio;
 
             DatabaseQueryLDB.ExecuteNonQuery(
-                    "INSERT INTO Turnos (NumeroTurno,NombreCliente,NumeroCelular,Placa,FechaHoraIngreso,Valor,Pagado,Observaciones,IdTipoVehiculo,idServicio,Estado) values (?,?,?,?,?,?,?,?,?,?,?)",
+                    "INSERT INTO Turnos (NumeroTurno,NombreCliente,NumeroCelular,Placa,FechaHoraIngreso,Valor,Pagado,Observaciones,IdTipoVehiculo,idServicio,Estado,ValorBaseComision,idCajaDiaria) values (?,?,?,?,?,?,?,?,?,?,?,?,?)",
                     GenerarTurno(),
                     txtCliente.Text.Trim(),
                     txtCelular.Text.Trim(),
@@ -224,7 +254,9 @@ namespace CarWash.Presentacion.Operacion
                     txtObservaciones.Text.Trim(),
                     Convert.ToInt32(cmbTipoVehiculo.SelectedValue),
                     servicioSeleccionado.idServicio,
-                    false
+                    false,
+                    servicioSeleccionado.precioBaseComision,
+                    cajaDiaria.idCaja
                 );
 
             MostrarToast("Ingreso registrado correctamente", Color.FromArgb(40, 167, 69));
@@ -271,7 +303,7 @@ namespace CarWash.Presentacion.Operacion
             cmbTipoVehiculo.SelectedValue = 0;
             cmbServicio.SelectedValue = 0;
 
-            foreach (Control c in panelCard.Controls)
+            foreach (Control c in this.Controls)
             {
                 if (c is TextBox txt && !txt.ReadOnly)
                 {
@@ -283,6 +315,7 @@ namespace CarWash.Presentacion.Operacion
             cmbServicio.SelectedIndex = -1;
             servicioSeleccionado = null;
             dgvHistorico.DataSource = null;
+            txtPlaca.Clear();
             txtPlaca.Focus();
         }
 
@@ -300,10 +333,13 @@ namespace CarWash.Presentacion.Operacion
                 servicioSeleccionado = (ServicioComboDTO)cmbServicio.SelectedItem;
                 if (cmbServicio.SelectedItem is ServicioComboDTO servicio)
                 {
-                    txtValor.Text = servicio.precio.ToString("N2");
+                    txtValor.Text = string.IsNullOrEmpty(servicio.precio?.ToString()) ? "0.00"
+                        : Convert.ToDecimal(servicio.precio).ToString("N2");
+
+                    txtValorBase.Text = string.IsNullOrEmpty(servicio.precioBaseComision?.ToString()) ? "0.00"
+                        : Convert.ToDecimal(servicio.precioBaseComision).ToString("N2");
                 }
             }
-
         }
 
 
@@ -381,11 +417,11 @@ namespace CarWash.Presentacion.Operacion
                     txtCliente.Text = vehiculo.NombreCliente;
                     txtCelular.Text = vehiculo.NumeroCelular;
                 }
-                //else
-                //{
-                //    MessageBox.Show("Vehículo ya tiene un ingreso activo.");
-                //    CLEAR();
-                //}
+                else
+                {
+                    MessageBox.Show("Vehículo ya tiene un ingreso activo.");
+                    CLEAR();
+                }
             }
             else
             {
@@ -399,7 +435,7 @@ namespace CarWash.Presentacion.Operacion
         private void CargarHistorico(string placa)
         {
             var historial = DatabaseQueryLDB.ExecuteList<IngresoVehiculoDTO>(
-                @"SELECT TUR.IdTurno,TUR.NumeroTurno, strftime('%Y-%m-%d %H:%M',TUR.FechaHoraIngreso / 10000000 - 62135596800,'unixepoch') AS FechaHoraIngreso, TUR.NombreCliente,TUR.Placa,TVH.Nombre TipoVehiculo, SER.Nombre Servicio, printf('$ %.2f', TUR.Valor) Valor
+                @"SELECT TUR.IdTurno,TUR.NumeroTurno, strftime('%Y-%m-%d %H:%M',TUR.FechaHoraIngreso / 10000000 - 62135596800,'unixepoch') AS FechaHoraIngreso, TUR.NombreCliente,TUR.Placa,TVH.Nombre TipoVehiculo, SER.Nombre Servicio, printf('$ %.2f', TUR.Valor) ValorPagado
                   FROM Turnos TUR INNER JOIN TipoVehiculo TVH ON TUR.IdTipoVehiculo = TVH.idTipoVehiculo
                   INNER JOIN Servicios SER ON SER.idServicio = TUR.idServicio
                   WHERE TUR.Placa = ?
@@ -409,6 +445,8 @@ namespace CarWash.Presentacion.Operacion
             dgvHistorico.DataSource = historial;
             dgvHistorico.Columns["Valor"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
             dgvHistorico.Columns["IdTurno"].Visible = false;
+            dgvHistorico.Columns["NumeroCelular"].Visible = false;
+            dgvHistorico.Columns["Valor"].Visible = false;
 
             dgvHistorico.Columns["NumeroTurno"].HeaderText = "N° Turno";
             dgvHistorico.Columns["FechaHoraIngreso"].HeaderText = "Fecha Servicio";
@@ -416,7 +454,7 @@ namespace CarWash.Presentacion.Operacion
             dgvHistorico.Columns["Placa"].HeaderText = "Placa";
             dgvHistorico.Columns["TipoVehiculo"].HeaderText = "Tipo Vehiculo";
             dgvHistorico.Columns["Servicio"].HeaderText = "Servicio";
-            dgvHistorico.Columns["Valor"].HeaderText = "Valor ($)";
+            dgvHistorico.Columns["ValorPagado"].HeaderText = "Valor ($)";
 
         }
 
@@ -437,7 +475,7 @@ namespace CarWash.Presentacion.Operacion
 
         private void btnCerrar_Click(object sender, EventArgs e)
         {
-            this.Close();
+
         }
     }
 }

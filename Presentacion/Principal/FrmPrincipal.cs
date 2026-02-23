@@ -105,12 +105,24 @@ namespace CarWash.Presentacion.Principal
                 formularioAbierto.BringToFront();
             }
 
-            
+
         }
 
         private void cerrarCajaToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            Form formularioAbierto = Application.OpenForms["FrmCierreCaja"];
 
+            if (formularioAbierto == null)
+            {
+                using (FrmCierreCaja frmApertura = new FrmCierreCaja())
+                {
+                    frmApertura.ShowDialog(this);
+                }
+            }
+            else
+            {
+                formularioAbierto.BringToFront();
+            }
         }
     }
 }

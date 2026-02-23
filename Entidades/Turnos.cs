@@ -24,9 +24,13 @@ namespace CarWash.Entidades
         public DateTime FechaHoraIngreso { get; set; }
         public DateTime FechaHoraFin { get; set; }
         public decimal Valor { get; set; }
+        public decimal ValorBaseComision { get; set; }
+        public decimal PorcentajeComision { get; set; }
+        public decimal ValorComision { get; set; }
         public bool Pagado { get; set; }
         public string Observaciones { get; set; }
-        public string FormaPago { get; set; }
+        [ForeignKey(typeof(FormaPago))]
+        public int IdFormaPago { get; set; }
         public bool Estado { get; set; }
         [ForeignKey(typeof(TipoVehiculo))]
         public int IdTipoVehiculo { get; set; }
@@ -37,5 +41,7 @@ namespace CarWash.Entidades
         public bool OperadorOcupado { get; set; }
         [ForeignKey(typeof(CajaDiaria))]
         public int idCajaDiaria { get; set; }
+        [ForeignKey(typeof(ClienteCredito))]
+        public int idClienteCredito { get; set; }
     }
 }

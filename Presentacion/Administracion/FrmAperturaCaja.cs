@@ -48,6 +48,7 @@ namespace CarWash.Presentacion.Administracion
                     );
 
                 MostrarToast("Ingreso registrado correctamente", Color.FromArgb(40, 167, 69));
+                this.Close();
             }
         }
 
@@ -68,7 +69,7 @@ namespace CarWash.Presentacion.Administracion
 
         private bool validaProcesoGrabar()
         {
-            if (cajaDiaria != null)
+            if (cajaDiaria != null && cajaDiaria.Count > 0)
             {
                 MostrarToast("Ya existe una caja abierta.", Color.FromArgb(40, 167, 69));
                 return false;

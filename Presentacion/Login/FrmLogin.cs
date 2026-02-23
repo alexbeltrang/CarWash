@@ -130,7 +130,9 @@ namespace CarWash.Presentacion.Login
             DatabaseHelper.CreateOrUpdateTable<Modulo>();
             DatabaseHelper.CreateOrUpdateTable<TurnosDiarios>();
             DatabaseHelper.CreateOrUpdateTable<Usuario>();
+            DatabaseHelper.CreateOrUpdateTable<OperarioComisiones>();
             DatabaseHelper.CreateOrUpdateTable<CajaDiaria>();
+            DatabaseHelper.CreateOrUpdateTable<FormaPago>();
             DatabaseHelper.CreateOrUpdateTable<Operarios>();
             DatabaseHelper.CreateOrUpdateTable<Perfil>();
             DatabaseHelper.CreateOrUpdateTable<PerfilModulo>();
@@ -139,7 +141,7 @@ namespace CarWash.Presentacion.Login
             DatabaseHelper.CreateOrUpdateTable<Turnos>();
             DatabaseHelper.CreateOrUpdateTable<PrecioServicioVehiculo>();
             DatabaseHelper.CreateOrUpdateTable<JornadaOperario>();
-
+            DatabaseHelper.CreateOrUpdateTable<ClienteCredito>();
             //creacion del indice para las tablas 
 
             //using (var conn = new SQLite.SQLiteConnection(dbFile))

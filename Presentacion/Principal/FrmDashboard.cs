@@ -37,14 +37,14 @@ namespace CarWash.Presentacion.Principal
 
         private void FrmDashboard_Load(object sender, EventArgs e)
         {
+
+
             timerMinuto = new Timer();
             timerMinuto.Interval = 10000; // 60000 ms = 1 minuto
             timerMinuto.Tick += TimerMinuto_Tick; // Evento que se ejecuta cada intervalo
             timerMinuto.Start(); // Inicia el Timer
             this.BackColor = Color.FromArgb(18, 18, 18);
             flpOperadores.BackColor = Color.FromArgb(28, 28, 28);
-
-
             CargarEstadisticas();
             cargarVehiculosEnProceso();
             CargarDashboardOperadores();
@@ -67,6 +67,8 @@ namespace CarWash.Presentacion.Principal
             }
         }
 
+
+        
         private void TimerMinuto_Tick(object sender, EventArgs e)
         {
             timerMinuto.Stop();

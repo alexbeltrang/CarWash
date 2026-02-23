@@ -18,5 +18,6 @@ namespace CarWash.Entidades
         [ForeignKey(typeof(TipoVehiculo))]
         public int IdTipoVehiculo { get; set; }
         public decimal Precio { get; set; }
+        public decimal PrecioBaseComision { get; set; }
     }
 }

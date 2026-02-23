@@ -124,7 +124,7 @@ namespace CarWash.Presentacion.Principal
             // 
             this.cardMasLento.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(76)))), ((int)(((byte)(60)))));
             this.cardMasLento.Controls.Add(this.lblMasLento);
-            this.cardMasLento.Location = new System.Drawing.Point(383, 432);
+            this.cardMasLento.Location = new System.Drawing.Point(383, 380);
             this.cardMasLento.Name = "cardMasLento";
             this.cardMasLento.Size = new System.Drawing.Size(300, 63);
             this.cardMasLento.TabIndex = 3;
@@ -150,7 +150,7 @@ namespace CarWash.Presentacion.Principal
             this.flpOperadores.Location = new System.Drawing.Point(20, 90);
             this.flpOperadores.Name = "flpOperadores";
             this.flpOperadores.Padding = new System.Windows.Forms.Padding(15);
-            this.flpOperadores.Size = new System.Drawing.Size(947, 336);
+            this.flpOperadores.Size = new System.Drawing.Size(947, 286);
             this.flpOperadores.TabIndex = 4;
             this.flpOperadores.WrapContents = false;
             // 
@@ -171,19 +171,19 @@ namespace CarWash.Presentacion.Principal
             this.dvVehiculosProceso.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.dvVehiculosProceso.ColumnHeadersHeight = 29;
             this.dvVehiculosProceso.EnableHeadersVisualStyles = false;
-            this.dvVehiculosProceso.Location = new System.Drawing.Point(20, 459);
+            this.dvVehiculosProceso.Location = new System.Drawing.Point(20, 407);
             this.dvVehiculosProceso.Name = "dvVehiculosProceso";
             this.dvVehiculosProceso.ReadOnly = true;
             this.dvVehiculosProceso.RowHeadersVisible = false;
             this.dvVehiculosProceso.RowHeadersWidth = 51;
             this.dvVehiculosProceso.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dvVehiculosProceso.Size = new System.Drawing.Size(947, 452);
+            this.dvVehiculosProceso.Size = new System.Drawing.Size(947, 400);
             this.dvVehiculosProceso.TabIndex = 5;
             this.dvVehiculosProceso.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dvVehiculosProceso_CellDoubleClick);
             // 
             // txtBuscar
             // 
-            this.txtBuscar.Location = new System.Drawing.Point(133, 433);
+            this.txtBuscar.Location = new System.Drawing.Point(133, 381);
             this.txtBuscar.MaxLength = 7;
             this.txtBuscar.Name = "txtBuscar";
             this.txtBuscar.Size = new System.Drawing.Size(100, 22);
@@ -194,7 +194,7 @@ namespace CarWash.Presentacion.Principal
             // 
             this.lblBuscaPlaca.AutoSize = true;
             this.lblBuscaPlaca.BackColor = System.Drawing.Color.White;
-            this.lblBuscaPlaca.Location = new System.Drawing.Point(20, 435);
+            this.lblBuscaPlaca.Location = new System.Drawing.Point(20, 383);
             this.lblBuscaPlaca.Name = "lblBuscaPlaca";
             this.lblBuscaPlaca.Size = new System.Drawing.Size(99, 16);
             this.lblBuscaPlaca.TabIndex = 7;
@@ -203,7 +203,7 @@ namespace CarWash.Presentacion.Principal
             // FrmDashboard
             // 
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(18)))), ((int)(((byte)(18)))), ((int)(((byte)(18)))));
-            this.ClientSize = new System.Drawing.Size(979, 920);
+            this.ClientSize = new System.Drawing.Size(979, 826);
             this.Controls.Add(this.lblBuscaPlaca);
             this.Controls.Add(this.txtBuscar);
             this.Controls.Add(this.cardServicios);

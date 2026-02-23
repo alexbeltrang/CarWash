@@ -86,13 +86,18 @@
     <Compile Include="Database\ColumnInfo.cs" />
     <Compile Include="Database\DatabaseHelper.cs" />
     <Compile Include="Database\DatabaseQueryLDB.cs" />
+    <Compile Include="DTOs\ClienteCreditoDTO.cs" />
     <Compile Include="DTOs\DashboardOperadoresDTO.cs" />
     <Compile Include="DTOs\GestionVehiculosDTO.cs" />
     <Compile Include="DTOs\IngresoVehiculoDTO.cs" />
     <Compile Include="DTOs\OperariosDTO.cs" />
+    <Compile Include="DTOs\PorcentajeOperadorDTO.cs" />
     <Compile Include="Entidades\CajaDiaria.cs" />
+    <Compile Include="Entidades\ClienteCredito.cs" />
+    <Compile Include="Entidades\FormaPago.cs" />
     <Compile Include="Entidades\JornadaOperario.cs" />
     <Compile Include="Entidades\Modulo.cs" />
+    <Compile Include="Entidades\OperarioComisiones.cs" />
     <Compile Include="Entidades\Operarios.cs" />
     <Compile Include="Entidades\Perfil.cs" />
     <Compile Include="Entidades\PerfilModulo.cs" />
@@ -103,6 +108,7 @@
     <Compile Include="Entidades\Turnos.cs" />
     <Compile Include="Entidades\TurnosDiarios.cs" />
     <Compile Include="Entidades\Usuario.cs" />
+    <Compile Include="Enum\FormaPago.cs" />
     <Compile Include="ModelosRespuestas\RespuestaUsuarioLogin.cs" />
     <Compile Include="Presentacion\Administracion\FrmAperturaCaja.cs">
       <SubType>Form</SubType>

@@ -97,6 +97,7 @@ namespace CarWash.Presentacion.Administracion
             // 
             this.txtMontoInicial.Font = new System.Drawing.Font("Segoe UI", 12F);
             this.txtMontoInicial.Location = new System.Drawing.Point(20, 55);
+            this.txtMontoInicial.MaxLength = 20;
             this.txtMontoInicial.Name = "txtMontoInicial";
             this.txtMontoInicial.Size = new System.Drawing.Size(360, 34);
             this.txtMontoInicial.TabIndex = 1;

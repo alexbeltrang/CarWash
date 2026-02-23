@@ -19,6 +19,8 @@ namespace CarWash.DTOs
         public String OperadorAsignado { get; set; }
         public bool Estado { get; set; }
         public decimal Valor { get; set; }
+        public decimal ValorBaseComision { get; set; }
+        public decimal PorcentajeComision { get; set; }
         public String ValorCliente { get; set; }
         public int? idOperario { get; set; }
         public String Observaciones { get; set; }

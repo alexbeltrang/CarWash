@@ -10,6 +10,7 @@ namespace CarWash.Entidades
     {
         public int idServicio { get; set; }
         public string Nombre { get; set; } = string.Empty;
-        public decimal precio { get; set; }
+        public decimal? precio { get; set; }
+        public decimal? precioBaseComision { get; set; }
     }
 }
