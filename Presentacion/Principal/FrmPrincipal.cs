@@ -81,7 +81,7 @@ namespace CarWash.Presentacion.Principal
         {
             formulario.TopLevel = false;
             formulario.FormBorderStyle = FormBorderStyle.None;
-            formulario.Dock = DockStyle.Fill;
+            formulario.Dock = DockStyle.Left;
 
             contenedor.Controls.Clear();
             contenedor.Controls.Add(formulario);
@@ -115,6 +115,40 @@ namespace CarWash.Presentacion.Principal
             if (formularioAbierto == null)
             {
                 using (FrmCierreCaja frmApertura = new FrmCierreCaja())
+                {
+                    frmApertura.ShowDialog(this);
+                }
+            }
+            else
+            {
+                formularioAbierto.BringToFront();
+            }
+        }
+
+        private void regsitrarValesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form formularioAbierto = Application.OpenForms["FrmValeOperario"];
+
+            if (formularioAbierto == null)
+            {
+                using (FrmValeOperario frmApertura = new FrmValeOperario())
+                {
+                    frmApertura.ShowDialog(this);
+                }
+            }
+            else
+            {
+                formularioAbierto.BringToFront();
+            }
+        }
+
+        private void registrarGastoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form formularioAbierto = Application.OpenForms["FrmGastoCaja"];
+
+            if (formularioAbierto == null)
+            {
+                using (FrmGastoCaja frmApertura = new FrmGastoCaja())
                 {
                     frmApertura.ShowDialog(this);
                 }

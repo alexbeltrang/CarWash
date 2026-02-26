@@ -41,6 +41,7 @@ namespace CarWash.Presentacion.Principal
         private void InitializeComponent()
         {
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmDashboard));
             this.cardServicios = new System.Windows.Forms.Panel();
             this.lblServicios = new System.Windows.Forms.Label();
             this.cardProceso = new System.Windows.Forms.Panel();
@@ -62,7 +63,7 @@ namespace CarWash.Presentacion.Principal
             // 
             // cardServicios
             // 
-            this.cardServicios.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(140)))), ((int)(((byte)(210)))));
+            this.cardServicios.BackColor = Color.White;
             this.cardServicios.Controls.Add(this.lblServicios);
             this.cardServicios.Location = new System.Drawing.Point(20, 20);
             this.cardServicios.Name = "cardServicios";
@@ -73,7 +74,7 @@ namespace CarWash.Presentacion.Principal
             // 
             this.lblServicios.AutoSize = true;
             this.lblServicios.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
-            this.lblServicios.ForeColor = System.Drawing.Color.White;
+            this.lblServicios.ForeColor = Color.FromArgb(40, 40, 40);
             this.lblServicios.Location = new System.Drawing.Point(20, 14);
             this.lblServicios.Name = "lblServicios";
             this.lblServicios.Size = new System.Drawing.Size(196, 28);
@@ -82,7 +83,7 @@ namespace CarWash.Presentacion.Principal
             // 
             // cardProceso
             // 
-            this.cardProceso.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(39)))), ((int)(((byte)(174)))), ((int)(((byte)(96)))));
+            this.cardProceso.BackColor = Color.White;
             this.cardProceso.Controls.Add(this.lblTotalProceso);
             this.cardProceso.Location = new System.Drawing.Point(340, 20);
             this.cardProceso.Name = "cardProceso";
@@ -93,7 +94,7 @@ namespace CarWash.Presentacion.Principal
             // 
             this.lblTotalProceso.AutoSize = true;
             this.lblTotalProceso.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
-            this.lblTotalProceso.ForeColor = System.Drawing.Color.White;
+            this.lblTotalProceso.ForeColor = Color.FromArgb(40, 40, 40);
             this.lblTotalProceso.Location = new System.Drawing.Point(20, 14);
             this.lblTotalProceso.Name = "lblTotalProceso";
             this.lblTotalProceso.Size = new System.Drawing.Size(138, 28);
@@ -102,7 +103,7 @@ namespace CarWash.Presentacion.Principal
             // 
             // cardPromedio
             // 
-            this.cardPromedio.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(155)))), ((int)(((byte)(89)))), ((int)(((byte)(182)))));
+            this.cardPromedio.BackColor = Color.White;
             this.cardPromedio.Controls.Add(this.lblPromedioTiempo);
             this.cardPromedio.Location = new System.Drawing.Point(660, 20);
             this.cardPromedio.Name = "cardPromedio";
@@ -113,7 +114,7 @@ namespace CarWash.Presentacion.Principal
             // 
             this.lblPromedioTiempo.AutoSize = true;
             this.lblPromedioTiempo.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
-            this.lblPromedioTiempo.ForeColor = System.Drawing.Color.White;
+            this.lblPromedioTiempo.ForeColor = Color.FromArgb(40, 40, 40);
             this.lblPromedioTiempo.Location = new System.Drawing.Point(20, 14);
             this.lblPromedioTiempo.Name = "lblPromedioTiempo";
             this.lblPromedioTiempo.Size = new System.Drawing.Size(168, 28);
@@ -122,7 +123,7 @@ namespace CarWash.Presentacion.Principal
             // 
             // cardMasLento
             // 
-            this.cardMasLento.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(76)))), ((int)(((byte)(60)))));
+            this.cardMasLento.BackColor = Color.White;
             this.cardMasLento.Controls.Add(this.lblMasLento);
             this.cardMasLento.Location = new System.Drawing.Point(383, 380);
             this.cardMasLento.Name = "cardMasLento";
@@ -134,7 +135,7 @@ namespace CarWash.Presentacion.Principal
             // 
             this.lblMasLento.AutoSize = true;
             this.lblMasLento.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
-            this.lblMasLento.ForeColor = System.Drawing.Color.White;
+            this.lblMasLento.ForeColor = Color.FromArgb(40, 40, 40);
             this.lblMasLento.Location = new System.Drawing.Point(20, 14);
             this.lblMasLento.Name = "lblMasLento";
             this.lblMasLento.Size = new System.Drawing.Size(125, 28);
@@ -143,10 +144,10 @@ namespace CarWash.Presentacion.Principal
             // 
             // flpOperadores
             // 
-            this.flpOperadores.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.flpOperadores.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.flpOperadores.AutoScroll = true;
-            this.flpOperadores.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
+            this.flpOperadores.BackColor = Color.Transparent;
             this.flpOperadores.Location = new System.Drawing.Point(20, 90);
             this.flpOperadores.Name = "flpOperadores";
             this.flpOperadores.Padding = new System.Windows.Forms.Padding(15);
@@ -158,13 +159,19 @@ namespace CarWash.Presentacion.Principal
             // 
             this.dvVehiculosProceso.AllowUserToAddRows = false;
             this.dvVehiculosProceso.AllowUserToDeleteRows = false;
-            this.dvVehiculosProceso.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.dvVehiculosProceso.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dvVehiculosProceso.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
             this.dvVehiculosProceso.BackgroundColor = System.Drawing.Color.White;
             this.dvVehiculosProceso.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.dvVehiculosProceso.GridColor = Color.FromArgb(230, 230, 230);
+            this.dvVehiculosProceso.DefaultCellStyle.BackColor = Color.White;
+            this.dvVehiculosProceso.DefaultCellStyle.ForeColor = Color.Black;
+            this.dvVehiculosProceso.DefaultCellStyle.SelectionBackColor = Color.FromArgb(52, 152, 219);
+            this.dvVehiculosProceso.DefaultCellStyle.SelectionForeColor = Color.White;
+
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(76)))), ((int)(((byte)(129)))));
+            dataGridViewCellStyle1.BackColor = dataGridViewCellStyle1.BackColor;
             dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             dataGridViewCellStyle1.ForeColor = System.Drawing.Color.White;
             dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
@@ -177,7 +184,7 @@ namespace CarWash.Presentacion.Principal
             this.dvVehiculosProceso.RowHeadersVisible = false;
             this.dvVehiculosProceso.RowHeadersWidth = 51;
             this.dvVehiculosProceso.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dvVehiculosProceso.Size = new System.Drawing.Size(947, 400);
+            this.dvVehiculosProceso.Size = new System.Drawing.Size(793, 400);
             this.dvVehiculosProceso.TabIndex = 5;
             this.dvVehiculosProceso.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dvVehiculosProceso_CellDoubleClick);
             // 
@@ -188,6 +195,10 @@ namespace CarWash.Presentacion.Principal
             this.txtBuscar.Name = "txtBuscar";
             this.txtBuscar.Size = new System.Drawing.Size(100, 22);
             this.txtBuscar.TabIndex = 6;
+            this.txtBuscar.BorderStyle = BorderStyle.None;
+            this.txtBuscar.Font = new Font("Segoe UI", 11);
+            this.txtBuscar.BackColor = Color.White;
+            this.txtBuscar.Width = 150;
             this.txtBuscar.TextChanged += new System.EventHandler(this.txtBuscar_TextChanged);
             // 
             // lblBuscaPlaca
@@ -202,7 +213,7 @@ namespace CarWash.Presentacion.Principal
             // 
             // FrmDashboard
             // 
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(18)))), ((int)(((byte)(18)))), ((int)(((byte)(18)))));
+            this.BackColor = Color.FromArgb(245, 247, 250);
             this.ClientSize = new System.Drawing.Size(979, 826);
             this.Controls.Add(this.lblBuscaPlaca);
             this.Controls.Add(this.txtBuscar);
@@ -213,6 +224,7 @@ namespace CarWash.Presentacion.Principal
             this.Controls.Add(this.dvVehiculosProceso);
             this.Controls.Add(this.cardMasLento);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FrmDashboard";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Dashboard";

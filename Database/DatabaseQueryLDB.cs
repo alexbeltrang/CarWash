@@ -147,5 +147,13 @@ namespace CarWash.Database
             }
         }
 
+        public static long ExecuteInsert(string queryStr, params object[] args)
+        {
+            using (var conn = new SQLiteConnection(dbFile))
+            {
+                conn.Execute(queryStr, args);
+                return conn.ExecuteScalar<long>("SELECT last_insert_rowid()");
+            }
+        }
     }
 }

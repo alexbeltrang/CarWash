@@ -84,7 +84,7 @@ namespace CarWash.Presentacion.Operacion
             try
             {
                 cajaDiaria = DatabaseQueryLDB.ExecuteList<CajaDiaria>(
-                @"SELECT idCaja,FechaApertura,FechaCierre,MontoInicial,TotalIngresosEfectivo,TotalIngresosTransferencias,TotalIngresosDatafono,TotalEgresos,TotalFinal,Estado
+                @"SELECT idCaja,FechaApertura,FechaCierre,MontoInicial,TotalIngresosEfectivo,TotalIngresosTransferencias,TotalIngresosDatafono,TotalIngresosCredito, TotalEgresos,TotalFinal,Estado
                   FROM CajaDiaria
                   WHERE  strftime('%Y-%m-%d',FechaApertura / 10000000 - 62135596800,'unixepoch') = date('now');");
                 if (cajaDiaria == null)
@@ -116,10 +116,10 @@ namespace CarWash.Presentacion.Operacion
             try
             {
                 vehiculosProceso = DatabaseQueryLDB.ExecuteList<GestionVehiculosDTO>(
-               @"SELECT TUR.IdTurno,TUR.Placa,TUR.NombreCliente,TUR.NumeroCelular, TUR.NumeroTurno, strftime('%Y-%m-%d %H:%M',TUR.FechaHoraIngreso / 10000000 - 62135596800,'unixepoch') AS FechaHoraIngreso, TVH.Nombre TipoVehiculo, SER.Nombre Servicio,  COALESCE(OPE.Nombres, '') || ' ' || COALESCE(OPE.Apellidos, '') AS OperadorAsignado, TUR.Valor, TUR.idOperario, TUR.Observaciones,   
+               @"SELECT TUR.IdTurno,TUR.Placa,TUR.NombreCliente,TUR.NumeroCelular, TUR.NumeroTurno, strftime('%Y-%m-%d %H:%M',TUR.FechaHoraIngreso / 10000000 - 62135596800,'unixepoch') AS FechaHoraIngreso, TVH.Nombre TipoVehiculo, 
+                  COALESCE(OPE.Nombres, '') || ' ' || COALESCE(OPE.Apellidos, '') AS OperadorAsignado, TUR.Valor, TUR.idOperario, TUR.Observaciones,   
                   TUR.ValorBaseComision, TUR.ValorComision 
                   FROM Turnos TUR INNER JOIN TipoVehiculo TVH ON TUR.IdTipoVehiculo = TVH.idTipoVehiculo 
-                  INNER JOIN Servicios SER ON SER.idServicio = TUR.idServicio 
                   LEFT OUTER JOIN Operarios OPE ON TUR.idOperario = OPE.idOperario 
                   WHERE TUR.IdTurno = ? ", idTurno);
 
@@ -131,7 +131,6 @@ namespace CarWash.Presentacion.Operacion
                     lblCelular.Text = "Número Celular: " + vehiculosProceso[0].NumeroCelular;
                     lblFechaIngreso.Text = "Fecha Hora Ingreso: " + vehiculosProceso[0].FechaHoraIngreso;
                     lblTipoVehiculo.Text = "Tipo Vehículo: " + vehiculosProceso[0].TipoVehiculo;
-                    lblServicio.Text = "Servicio Atendido: " + vehiculosProceso[0].Servicio;
                     txtValorPagar.Text = vehiculosProceso[0].Valor.ToString("N2");
                     valorPagar = vehiculosProceso[0].Valor;
                     txtObservaciones.Text = vehiculosProceso[0].Observaciones;
@@ -159,6 +158,7 @@ namespace CarWash.Presentacion.Operacion
                         lblEstado.ForeColor = Color.Green;
                         lblEstado.Location = new Point(627, 20);
                     }
+                    cargaServiciosContratados(idTurno);
                 }
             }
             catch (Exception ex)
@@ -167,6 +167,19 @@ namespace CarWash.Presentacion.Operacion
             }
         }
 
+
+        private void cargaServiciosContratados(int idTurno)
+        {
+            var serviciosAdquiridos = DatabaseQueryLDB.ExecuteList<ServicioListaDTO>(
+              @"SELECT SER.idServicio, SER.Nombre
+                FROM Servicios SER INNER JOIN TurnoServicios TUS ON SER.idServicio = TUS.idServicios
+                WHERE TUS.IsDeleted = 0 AND TUS.IdTurno = ? ", idTurno);
+
+            lstServiciosAdquiridos.DataSource = serviciosAdquiridos;
+            lstServiciosAdquiridos.DisplayMember = "Nombre";
+            lstServiciosAdquiridos.ValueMember = "IdServicio";
+            lstServiciosAdquiridos.ClearSelected();
+        }
 
         private void btnCancelar_Click(object sender, EventArgs e)
         {
@@ -188,8 +201,8 @@ namespace CarWash.Presentacion.Operacion
                     if (comisionOperador.Count > 0)
                     {
                         DatabaseQueryLDB.ExecuteNonQuery(
-                           "UPDATE Turnos SET idOperario = ?, PorcentajeComision = ?,  OperadorOcupado =  1 WHERE IdTurno = ?",
-                           idOperador, comisionOperador[0].Porcentaje, vehiculosProceso[0].IdTurno
+                           "UPDATE Turnos SET idOperario = ?, PorcentajeComision = ?, FechaHoraAsignacionOperario = ?, OperadorOcupado =  1 WHERE IdTurno = ?",
+                           idOperador, comisionOperador[0].Porcentaje, DateTime.Now, vehiculosProceso[0].IdTurno
                            );
 
                         cargarDetalleTurnoVehiculo(vehiculosProceso[0].IdTurno);
@@ -218,13 +231,18 @@ namespace CarWash.Presentacion.Operacion
 
         private bool validarAsignacionOperador()
         {
-            bool esValido = true;
-            if (vehiculosProceso[0].idOperario.HasValue)
+            if (vehiculosProceso[0].idOperario.HasValue && vehiculosProceso[0].idOperario > 0)
             {
-                MessageBox.Show("El turno ya tiene un operador asignado.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                esValido = false;
+                return MessageBox.Show(
+                    "El turno ya tiene un operador asignado. ¿Desea cambiarlo?",
+                    "Confirmación",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question,
+                    MessageBoxDefaultButton.Button2
+                ) == DialogResult.Yes;
             }
-            return esValido;
+
+            return true;
 
         }
 
@@ -305,7 +323,7 @@ namespace CarWash.Presentacion.Operacion
                 esValido = false;
             }
 
-            if (string.IsNullOrWhiteSpace(txtObservaciones.Text))
+            if (string.IsNullOrWhiteSpace(txtObservaciones.Text) && txtObservaciones.Tag?.ToString() != "opcional")
             {
                 MessageBox.Show("Las observaciones son obligatorias.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 esValido = false;

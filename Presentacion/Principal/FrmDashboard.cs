@@ -37,14 +37,25 @@ namespace CarWash.Presentacion.Principal
 
         private void FrmDashboard_Load(object sender, EventArgs e)
         {
+            AplicarSombra(cardServicios);
+            AplicarSombra(cardProceso);
+            AplicarSombra(cardPromedio);
+            AplicarSombra(cardMasLento);
 
+            UIHelper.RedondearPanel(cardServicios, 20);
+            UIHelper.RedondearPanel(cardProceso, 20);
+            UIHelper.RedondearPanel(cardPromedio, 20);
+            UIHelper.RedondearPanel(cardMasLento, 20);
 
             timerMinuto = new Timer();
-            timerMinuto.Interval = 10000; // 60000 ms = 1 minuto
-            timerMinuto.Tick += TimerMinuto_Tick; // Evento que se ejecuta cada intervalo
-            timerMinuto.Start(); // Inicia el Timer
-            this.BackColor = Color.FromArgb(18, 18, 18);
-            flpOperadores.BackColor = Color.FromArgb(28, 28, 28);
+            timerMinuto.Interval = 10000;
+            timerMinuto.Tick += TimerMinuto_Tick;
+            timerMinuto.Start();
+
+            // Fondo moderno claro
+            this.BackColor = Color.FromArgb(245, 247, 250);
+            flpOperadores.BackColor = Color.Transparent;
+
             CargarEstadisticas();
             cargarVehiculosEnProceso();
             CargarDashboardOperadores();
@@ -68,7 +79,7 @@ namespace CarWash.Presentacion.Principal
         }
 
 
-        
+
         private void TimerMinuto_Tick(object sender, EventArgs e)
         {
             timerMinuto.Stop();
@@ -86,9 +97,8 @@ namespace CarWash.Presentacion.Principal
             {
                 vehiculosProceso = DatabaseQueryLDB.ExecuteList<GestionVehiculosDTO>(
                @"SELECT TUR.IdTurno,TUR.Placa,TUR.NombreCliente,TUR.NumeroCelular, TUR.NumeroTurno, strftime('%Y-%m-%d %H:%M',TUR.FechaHoraIngreso / 10000000 - 62135596800,'unixepoch') AS FechaHoraIngreso, 
-                        TVH.Nombre TipoVehiculo, SER.Nombre Servicio, COALESCE(OPE.Nombres, '') || ' ' || COALESCE(OPE.Apellidos, '') AS OperadorAsignado, '$ ' || printf('%.2f', Valor) AS ValorCliente, TUR.OperadorOcupado
+                        TVH.Nombre TipoVehiculo,  COALESCE(OPE.Nombres, '') || ' ' || COALESCE(OPE.Apellidos, '') AS OperadorAsignado, '$ ' || printf('%.2f', Valor) AS ValorCliente, TUR.OperadorOcupado
                         FROM Turnos TUR INNER JOIN TipoVehiculo TVH ON TUR.IdTipoVehiculo = TVH.idTipoVehiculo 
-                        INNER JOIN Servicios SER ON SER.idServicio = TUR.idServicio 
                         LEFT OUTER JOIN Operarios OPE ON TUR.idOperario = OPE.idOperario 
                         WHERE TUR.Estado = 0 
                         ORDER BY TUR.FechaHoraIngreso ASC");
@@ -109,15 +119,20 @@ namespace CarWash.Presentacion.Principal
             dvVehiculosProceso.DataSource = null;
             dvVehiculosProceso.DataSource = vehiculos;
 
+            dvVehiculosProceso.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(248, 249, 250);
+            dvVehiculosProceso.DefaultCellStyle.Font = new Font("Segoe UI", 9);
+            dvVehiculosProceso.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(52, 152, 219);
+            dvVehiculosProceso.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            dvVehiculosProceso.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9, FontStyle.Bold);
 
             dvVehiculosProceso.Columns["IdTurno"].Visible = false;
             dvVehiculosProceso.Columns["Placa"].HeaderText = "Placa";
             dvVehiculosProceso.Columns["NombreCliente"].HeaderText = "Nombre Cliente";
             dvVehiculosProceso.Columns["NumeroCelular"].HeaderText = "Celular";
             dvVehiculosProceso.Columns["NumeroTurno"].HeaderText = "N° Turno";
+            dvVehiculosProceso.Columns["NumeroTurno"].Visible = false;
             dvVehiculosProceso.Columns["FechaHoraIngreso"].HeaderText = "Fecha Ingreso";
             dvVehiculosProceso.Columns["TipoVehiculo"].HeaderText = "Tipo Vehiculo";
-            dvVehiculosProceso.Columns["Servicio"].HeaderText = "Servicio";
             dvVehiculosProceso.Columns["OperadorAsignado"].HeaderText = "Operador Asignado";
             dvVehiculosProceso.Columns["ValorCliente"].HeaderText = "Valor";
             dvVehiculosProceso.Columns["OperadorOcupado"].HeaderText = "En servicio";
@@ -125,6 +140,8 @@ namespace CarWash.Presentacion.Principal
             dvVehiculosProceso.Columns["idOperario"].Visible = false;
             dvVehiculosProceso.Columns["Observaciones"].Visible = false;
             dvVehiculosProceso.Columns["Valor"].Visible = false;
+            dvVehiculosProceso.Columns["ValorBaseComision"].Visible = false;
+            dvVehiculosProceso.Columns["PorcentajeComision"].Visible = false;
             dvVehiculosProceso.ResumeLayout();
         }
 
@@ -140,7 +157,7 @@ namespace CarWash.Presentacion.Principal
                         o.Nombres || ' ' || o.Apellidos AS NombreOperador,
                         t.Placa,
                         (strftime('%s','now','localtime') - 
-                        (t.FechaHoraIngreso / 10000000 - 62135596800)
+                        (t.FechaHoraAsignacionOperario / 10000000 - 62135596800)
                         ) AS Segundos
                     FROM Turnos t
                     INNER JOIN Operarios o ON o.idOperario = t.idOperario
@@ -187,51 +204,45 @@ namespace CarWash.Presentacion.Principal
         private Panel CrearTarjeta(DashboardOperadoresDTO item, int ranking)
         {
             Panel panel = new Panel();
-            panel.Width = 140;
-            panel.Height = 115; // 👈 MÁS ALTA
-            panel.Margin = new Padding(8);
+            panel.Width = 150;
+            panel.Height = 120;
+            panel.Margin = new Padding(10);
             panel.BackColor = ObtenerColorTiempo(item.MinutosTranscurridos);
 
-            // ===== RANKING =====
+            UIHelper.RedondearPanel(panel, 15);
+
             Label lblRanking = new Label();
             lblRanking.Text = "#" + ranking;
             lblRanking.Font = new Font("Segoe UI", 8, FontStyle.Bold);
             lblRanking.ForeColor = Color.White;
+            lblRanking.Location = new Point(8, 5);
             lblRanking.AutoSize = true;
-            lblRanking.Location = new Point(5, 5);
-            panel.Controls.Add(lblRanking);
 
-            // ===== NOMBRE =====
             Label lblNombre = new Label();
             lblNombre.Text = item.NombreOperador;
-            lblNombre.Font = new Font("Segoe UI", 8, FontStyle.Bold);
+            lblNombre.Font = new Font("Segoe UI", 9, FontStyle.Bold);
             lblNombre.ForeColor = Color.White;
-            lblNombre.AutoSize = false;
             lblNombre.Size = new Size(130, 20);
-            lblNombre.Location = new Point(5, 22);
-            lblNombre.TextAlign = ContentAlignment.MiddleLeft;
-            panel.Controls.Add(lblNombre);
+            lblNombre.Location = new Point(8, 25);
 
-            // ===== PLACA =====
             Label lblPlaca = new Label();
             lblPlaca.Text = "🚗 " + item.Placa;
-            lblPlaca.Font = new Font("Segoe UI", 8);
+            lblPlaca.Font = new Font("Segoe UI", 9);
             lblPlaca.ForeColor = Color.WhiteSmoke;
-            lblPlaca.AutoSize = false;
             lblPlaca.Size = new Size(130, 20);
-            lblPlaca.Location = new Point(5, 45);
-            lblPlaca.TextAlign = ContentAlignment.MiddleLeft;
-            panel.Controls.Add(lblPlaca);
+            lblPlaca.Location = new Point(8, 50);
 
-            // ===== TIEMPO =====
             Label lblTiempo = new Label();
             lblTiempo.Text = item.MinutosTranscurridos + " min";
-            lblTiempo.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+            lblTiempo.Font = new Font("Segoe UI", 11, FontStyle.Bold);
             lblTiempo.ForeColor = Color.White;
-            lblTiempo.AutoSize = false;
-            lblTiempo.Size = new Size(130, 25);
-            lblTiempo.Location = new Point(5, 75);
+            lblTiempo.Size = new Size(130, 30);
+            lblTiempo.Location = new Point(8, 80);
             lblTiempo.TextAlign = ContentAlignment.MiddleCenter;
+
+            panel.Controls.Add(lblRanking);
+            panel.Controls.Add(lblNombre);
+            panel.Controls.Add(lblPlaca);
             panel.Controls.Add(lblTiempo);
 
             return panel;
@@ -304,5 +315,12 @@ namespace CarWash.Presentacion.Principal
 
             llenarDataGrid(filtrados);
         }
+
+        private void AplicarSombra(Panel panel)
+        {
+            panel.BorderStyle = BorderStyle.None;
+            panel.Padding = new Padding(5);
+        }
+
     }
 }

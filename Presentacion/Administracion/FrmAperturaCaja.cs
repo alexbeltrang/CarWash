@@ -26,6 +26,10 @@ namespace CarWash.Presentacion.Administracion
 
         private void FrmAperturaCaja_Load(object sender, EventArgs e)
         {
+            using (var ms = new System.IO.MemoryStream(Properties.Resources.splash_car_icon))
+            {
+                this.Icon = new Icon(ms);
+            }
             txtMontoInicial.Text = "0";
             cargaCajaDiaria();
 

@@ -16,8 +16,12 @@ namespace CarWash.Presentacion.Operacion
 {
     public partial class FrmIngresoVehiculo : Form
     {
-        ServicioComboDTO servicioSeleccionado = new ServicioComboDTO();
+        decimal precioTotalServicio = 0;
+        decimal precioBaseTotalServicio = 0;
+
         CajaDiaria cajaDiaria = new CajaDiaria();
+        List<ServicioListaDTO> servicioCombos = new List<ServicioListaDTO>();
+        List<ServicioComboDTO> servicios = new List<ServicioComboDTO>();
         public FrmIngresoVehiculo()
         {
             InitializeComponent();
@@ -73,6 +77,7 @@ namespace CarWash.Presentacion.Operacion
             EstilizarTextBox(txtObservaciones);
             cargarTipoVehiculo();
             cargaCajaDiaria();
+            CargarListaCompletaServicios();
             txtPlaca.Focus();
         }
 
@@ -99,29 +104,40 @@ namespace CarWash.Presentacion.Operacion
 
         }
 
-        private void cargarComboServicio(int TipoVehiculo)
+
+        private void CargarListaCompletaServicios()
         {
             // Aquí puedes cargar los combos con datos de la base de datos
-            var servicios = DatabaseQueryLDB.ExecuteList<ServicioComboDTO>(
-                @"SELECT ser.idServicio, ser.Nombre, psr.precio, psr.PrecioBaseComision
+            servicios = DatabaseQueryLDB.ExecuteList<ServicioComboDTO>(
+               @"SELECT ser.idServicio, ser.Nombre, psr.precio, psr.PrecioBaseComision, tpv.idTipoVehiculo
                   FROM PrecioServicioVehiculo psr 
                   INNER JOIN TipoVehiculo tpv ON psr.IdTipoVehiculo = tpv.idTipoVehiculo 
                   INNER JOIN Servicios ser ON ser.idServicio = psr.idServicio  
-                  WHERE ser.IsDelete = ? and psr.idTipoVehiculo = ?",
-                0, TipoVehiculo);
+                  WHERE ser.IsDelete = ?", 0);
 
-            servicios.Insert(0, new ServicioComboDTO
+        }
+
+        private void cargarListaServicio(int TipoVehiculo)
+        {
+            servicioCombos = servicios
+                .Where(s => s.idTipoVehiculo == TipoVehiculo)
+                .Select(s => new ServicioListaDTO
+                {
+                    idServicio = s.idServicio,
+                    Nombre = s.Nombre
+                }).ToList();
+
+            if (servicios == null)
             {
-                idServicio = 0,
-                Nombre = "-- Seleccione --",
-                precio = 0,
-                precioBaseComision = 0
-            });
-            cmbServicio.DataSource = servicios;
-            cmbServicio.DisplayMember = "Nombre";
-            cmbServicio.ValueMember = "idServicio";
-            cmbServicio.SelectedValue = 0;
+                MessageBox.Show("Servicios es NULL");
+                return;
+            }
+            lstServiciosVehiculo.Items.Clear();
 
+            foreach (var s in servicioCombos)
+            {
+                lstServiciosVehiculo.Items.Add(s);
+            }
         }
 
         private bool ValidarCampos()
@@ -133,6 +149,8 @@ namespace CarWash.Presentacion.Operacion
             {
                 if (c is TextBox txt && !txt.ReadOnly)
                 {
+                    if (txt.Tag?.ToString() == "opcional")
+                        continue;
                     if (string.IsNullOrWhiteSpace(txt.Text))
                     {
                         txt.BackColor = Color.FromArgb(255, 230, 230);
@@ -155,14 +173,10 @@ namespace CarWash.Presentacion.Operacion
                 cmbTipoVehiculo.BackColor = Color.White;
             }
 
-            if (cmbServicio.SelectedIndex == -1)
+            if (lstServiciosVehiculo.CheckedItems.Count == 0)
             {
-                cmbServicio.BackColor = Color.FromArgb(255, 230, 230);
+                MessageBox.Show("Debe seleccionar al menos un servicio.");
                 valido = false;
-            }
-            else
-            {
-                cmbServicio.BackColor = Color.White;
             }
 
             return valido;
@@ -240,25 +254,39 @@ namespace CarWash.Presentacion.Operacion
                 return;
             }
 
-            var precion = servicioSeleccionado.precio;
 
-            DatabaseQueryLDB.ExecuteNonQuery(
-                    "INSERT INTO Turnos (NumeroTurno,NombreCliente,NumeroCelular,Placa,FechaHoraIngreso,Valor,Pagado,Observaciones,IdTipoVehiculo,idServicio,Estado,ValorBaseComision,idCajaDiaria) values (?,?,?,?,?,?,?,?,?,?,?,?,?)",
+
+            long idTurno = DatabaseQueryLDB.ExecuteInsert(
+                    "INSERT INTO Turnos (NumeroTurno,NombreCliente,NumeroCelular,Placa," +
+                    " FechaHoraIngreso,Valor,Pagado,Observaciones,IdTipoVehiculo," +
+                    " Estado,ValorBaseComision,idCajaDiaria) values (?,?,?,?,?,?,?,?,?,?,?,?)",
                     GenerarTurno(),
                     txtCliente.Text.Trim(),
                     txtCelular.Text.Trim(),
                     txtPlaca.Text.Trim(),
                     DateTime.Now,
-                    servicioSeleccionado.precio,
+                    precioTotalServicio,
                     false,
                     txtObservaciones.Text.Trim(),
                     Convert.ToInt32(cmbTipoVehiculo.SelectedValue),
-                    servicioSeleccionado.idServicio,
                     false,
-                    servicioSeleccionado.precioBaseComision,
+                    precioBaseTotalServicio,
                     cajaDiaria.idCaja
                 );
 
+
+            List<int> serviciosSeleccionados = new List<int>();
+
+            foreach (var item in lstServiciosVehiculo.CheckedItems)
+            {
+                var servicio = (ServicioListaDTO)item;
+
+                DatabaseQueryLDB.ExecuteInsert(
+                     "INSERT INTO TurnoServicios (idServicios,IdTurno,IsDeleted) values (?,?,?)",
+                     servicio.idServicio,
+                     idTurno,
+                     0);
+            }
             MostrarToast("Ingreso registrado correctamente", Color.FromArgb(40, 167, 69));
             CLEAR();
         }
@@ -301,7 +329,7 @@ namespace CarWash.Presentacion.Operacion
         private void CLEAR()
         {
             cmbTipoVehiculo.SelectedValue = 0;
-            cmbServicio.SelectedValue = 0;
+            lstServiciosVehiculo.ClearSelected();
 
             foreach (Control c in this.Controls)
             {
@@ -312,8 +340,9 @@ namespace CarWash.Presentacion.Operacion
             }
 
             cmbTipoVehiculo.SelectedIndex = -1;
-            cmbServicio.SelectedIndex = -1;
-            servicioSeleccionado = null;
+            lstServiciosVehiculo.ClearSelected();
+            for (int i = 0; i < lstServiciosVehiculo.Items.Count; i++)
+                lstServiciosVehiculo.SetItemChecked(i, false);
             dgvHistorico.DataSource = null;
             txtPlaca.Clear();
             txtPlaca.Focus();
@@ -322,26 +351,9 @@ namespace CarWash.Presentacion.Operacion
         private void cmbTipoVehiculo_SelectionChangeCommitted(object sender, EventArgs e)
         {
             int tipoVehiculo = Convert.ToInt32(cmbTipoVehiculo.SelectedValue);
-            cargarComboServicio(tipoVehiculo);
+            cargarListaServicio(tipoVehiculo);
 
         }
-
-        private void cmbServicio_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (cmbServicio.SelectedIndex > -1)
-            {
-                servicioSeleccionado = (ServicioComboDTO)cmbServicio.SelectedItem;
-                if (cmbServicio.SelectedItem is ServicioComboDTO servicio)
-                {
-                    txtValor.Text = string.IsNullOrEmpty(servicio.precio?.ToString()) ? "0.00"
-                        : Convert.ToDecimal(servicio.precio).ToString("N2");
-
-                    txtValorBase.Text = string.IsNullOrEmpty(servicio.precioBaseComision?.ToString()) ? "0.00"
-                        : Convert.ToDecimal(servicio.precioBaseComision).ToString("N2");
-                }
-            }
-        }
-
 
         private string GenerarTurno()
         {
@@ -409,25 +421,17 @@ namespace CarWash.Presentacion.Operacion
 
             if (vehiculo != null)
             {
-                if (vehiculo.Estado)
-                {
-                    // Cargar datos en los controles
-                    cmbTipoVehiculo.SelectedValue = vehiculo.IdTipoVehiculo;
-                    cargarComboServicio(vehiculo.IdTipoVehiculo);
-                    txtCliente.Text = vehiculo.NombreCliente;
-                    txtCelular.Text = vehiculo.NumeroCelular;
-                }
-                else
-                {
-                    MessageBox.Show("Vehículo ya tiene un ingreso activo.");
-                    CLEAR();
-                }
+                // Cargar datos en los controles
+                cmbTipoVehiculo.SelectedValue = vehiculo.IdTipoVehiculo;
+                cargarListaServicio(vehiculo.IdTipoVehiculo);
+                txtCliente.Text = vehiculo.NombreCliente;
+                txtCelular.Text = vehiculo.NumeroCelular;
             }
             else
             {
                 // Limpiar si no existe
                 cmbTipoVehiculo.SelectedIndex = -1;
-                cmbServicio.DataSource = null;
+                lstServiciosVehiculo.ClearSelected();
                 txtValor.Clear();
             }
         }
@@ -435,9 +439,8 @@ namespace CarWash.Presentacion.Operacion
         private void CargarHistorico(string placa)
         {
             var historial = DatabaseQueryLDB.ExecuteList<IngresoVehiculoDTO>(
-                @"SELECT TUR.IdTurno,TUR.NumeroTurno, strftime('%Y-%m-%d %H:%M',TUR.FechaHoraIngreso / 10000000 - 62135596800,'unixepoch') AS FechaHoraIngreso, TUR.NombreCliente,TUR.Placa,TVH.Nombre TipoVehiculo, SER.Nombre Servicio, printf('$ %.2f', TUR.Valor) ValorPagado
+                @"SELECT TUR.IdTurno,TUR.NumeroTurno, strftime('%Y-%m-%d %H:%M',TUR.FechaHoraIngreso / 10000000 - 62135596800,'unixepoch') AS FechaHoraIngreso, TUR.NombreCliente,TUR.Placa,TVH.Nombre TipoVehiculo, printf('$ %.2f', TUR.Valor) ValorPagado
                   FROM Turnos TUR INNER JOIN TipoVehiculo TVH ON TUR.IdTipoVehiculo = TVH.idTipoVehiculo
-                  INNER JOIN Servicios SER ON SER.idServicio = TUR.idServicio
                   WHERE TUR.Placa = ?
                   ORDER BY TUR.FechaHoraIngreso DESC",
                 placa
@@ -476,6 +479,80 @@ namespace CarWash.Presentacion.Operacion
         private void btnCerrar_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void lstServiciosVehiculo_ItemCheck(object sender, ItemCheckEventArgs e)
+        {
+            int tipoVehiculo = Convert.ToInt32(cmbTipoVehiculo.SelectedValue);
+
+            if (tipoVehiculo > 0)
+            {
+                var servicioSel = (ServicioListaDTO)lstServiciosVehiculo.Items[e.Index];
+
+                var servicio = servicios.FirstOrDefault(s => s.idServicio == servicioSel.idServicio && s.idTipoVehiculo == tipoVehiculo);
+
+
+                decimal precio = servicio.precio ?? 0;
+                decimal precioBaseComision = servicio.precioBaseComision ?? 0;
+
+                decimal valorActual = 0;
+                decimal valorBaseActual = 0;
+
+
+                decimal.TryParse(txtValor.Text, out valorActual);
+                decimal.TryParse(txtValorBase.Text, out valorBaseActual);
+
+
+                if (e.NewValue == CheckState.Checked)
+                {
+                    valorActual += precio;
+                    valorBaseActual += precioBaseComision;
+                }
+                else
+                {
+                    valorActual -= precio;
+                    valorBaseActual -= precioBaseComision;
+                }
+
+                txtValor.Text = valorActual.ToString("N2");
+                txtValorBase.Text = valorBaseActual.ToString("N2");
+
+                precioTotalServicio = valorActual;
+                precioBaseTotalServicio = valorBaseActual;
+            }
+        }
+
+        private void txtValor_Leave(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(txtValor.Text))
+            {
+                precioTotalServicio = Convert.ToDecimal(txtValor.Text);
+            }
+
+        }
+
+        private void txtValorBase_Leave(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(txtValor.Text))
+            {
+                precioBaseTotalServicio = Convert.ToDecimal(txtValorBase.Text);
+            }
+
+        }
+
+        private void TextBox_SelectAll(object sender, EventArgs e)
+        {
+            ((TextBox)sender).SelectAll();
+        }
+
+        private void txtValor_MouseClick(object sender, MouseEventArgs e)
+        {
+            ((TextBox)sender).SelectAll();
+        }
+
+        private void txtValorBase_MouseClick(object sender, MouseEventArgs e)
+        {
+            ((TextBox)sender).SelectAll();
         }
     }
 }

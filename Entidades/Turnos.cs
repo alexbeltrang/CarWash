@@ -29,14 +29,13 @@ namespace CarWash.Entidades
         public decimal ValorComision { get; set; }
         public bool Pagado { get; set; }
         public string Observaciones { get; set; }
+        public DateTime FechaHoraAsignacionOperario { get; set; }
         [ForeignKey(typeof(FormaPago))]
         public int IdFormaPago { get; set; }
         public bool Estado { get; set; }
         [ForeignKey(typeof(TipoVehiculo))]
         public int IdTipoVehiculo { get; set; }
         [ForeignKey(typeof(Servicios))]
-        public int idServicio { get; set; }
-        [ForeignKey(typeof(Operarios))]
         public int idOperario { get; set; }
         public bool OperadorOcupado { get; set; }
         [ForeignKey(typeof(CajaDiaria))]

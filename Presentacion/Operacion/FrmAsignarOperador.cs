@@ -38,6 +38,12 @@ namespace CarWash.Presentacion.Operacion
 
         private void btnAsignar_Click(object sender, EventArgs e)
         {
+            asignarOperario();
+        }
+
+
+        private void asignarOperario()
+        {
             if (dvOperadoresDisponibles.CurrentRow == null)
             {
                 MessageBox.Show("Debe seleccionar un operador.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -84,7 +90,8 @@ namespace CarWash.Presentacion.Operacion
                 var operadoresDisponibles = DatabaseQueryLDB.ExecuteList<OperariosDTO>(
                 @"SELECT idOperario,Nombres,Apellidos  
                   FROM Operarios 
-                  WHERE idOperario NOT IN (SELECT idOperario FROM Turnos WHERE Estado = 0 AND idOperario IS NOT NULL and OperadorOcupado = 0) ");
+                  WHERE idOperario NOT IN (SELECT idOperario FROM Turnos WHERE idOperario IS NOT NULL and OperadorOcupado = 1) 
+                  AND isDelete = 0");
 
                 dvOperadoresDisponibles.DataSource = operadoresDisponibles;
 
@@ -97,6 +104,11 @@ namespace CarWash.Presentacion.Operacion
             {
                 MessageBox.Show("Error cargando operadores: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void dvOperadoresDisponibles_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            asignarOperario();
         }
     }
 }

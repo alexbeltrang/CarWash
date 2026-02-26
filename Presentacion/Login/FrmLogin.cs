@@ -48,6 +48,10 @@ namespace CarWash.Presentacion.Login
         private void FrmLogin_Load(object sender, EventArgs e)
         {
 
+            using (var ms = new System.IO.MemoryStream(Properties.Resources.splash_car_icon))
+            {
+                this.Icon = new Icon(ms);
+            }
             //            var UserName = FunctionsEncrip.Cifrado(1, "Pipe0825*");
             this.Opacity = 0;
             Timer t = new Timer();
@@ -142,6 +146,10 @@ namespace CarWash.Presentacion.Login
             DatabaseHelper.CreateOrUpdateTable<PrecioServicioVehiculo>();
             DatabaseHelper.CreateOrUpdateTable<JornadaOperario>();
             DatabaseHelper.CreateOrUpdateTable<ClienteCredito>();
+            DatabaseHelper.CreateOrUpdateTable<TurnoServicios>();
+            DatabaseHelper.CreateOrUpdateTable<ValesOperarios>();
+            DatabaseHelper.CreateOrUpdateTable<GastosCaja>();
+
             //creacion del indice para las tablas 
 
             //using (var conn = new SQLite.SQLiteConnection(dbFile))

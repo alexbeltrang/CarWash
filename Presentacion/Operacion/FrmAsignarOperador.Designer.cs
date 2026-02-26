@@ -61,7 +61,7 @@
             this.lblTitulo.ForeColor = System.Drawing.Color.White;
             this.lblTitulo.Location = new System.Drawing.Point(20, 15);
             this.lblTitulo.Name = "lblTitulo";
-            this.lblTitulo.Size = new System.Drawing.Size(163, 25);
+            this.lblTitulo.Size = new System.Drawing.Size(198, 30);
             this.lblTitulo.TabIndex = 0;
             this.lblTitulo.Text = "Asignar Operador";
             // 
@@ -95,7 +95,7 @@
             this.lblPlaca.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.lblPlaca.Location = new System.Drawing.Point(15, 15);
             this.lblPlaca.Name = "lblPlaca";
-            this.lblPlaca.Size = new System.Drawing.Size(49, 19);
+            this.lblPlaca.Size = new System.Drawing.Size(56, 23);
             this.lblPlaca.TabIndex = 0;
             this.lblPlaca.Text = "Placa:";
             // 
@@ -105,7 +105,7 @@
             this.lblCliente.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.lblCliente.Location = new System.Drawing.Point(15, 40);
             this.lblCliente.Name = "lblCliente";
-            this.lblCliente.Size = new System.Drawing.Size(47, 15);
+            this.lblCliente.Size = new System.Drawing.Size(58, 20);
             this.lblCliente.TabIndex = 1;
             this.lblCliente.Text = "Cliente:";
             // 
@@ -115,7 +115,7 @@
             this.lblOperador.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.lblOperador.Location = new System.Drawing.Point(26, 180);
             this.lblOperador.Name = "lblOperador";
-            this.lblOperador.Size = new System.Drawing.Size(142, 19);
+            this.lblOperador.Size = new System.Drawing.Size(178, 23);
             this.lblOperador.TabIndex = 2;
             this.lblOperador.Text = "Seleccionar Operador:";
             // 
@@ -174,9 +174,11 @@
             this.dvOperadoresDisponibles.Name = "dvOperadoresDisponibles";
             this.dvOperadoresDisponibles.ReadOnly = true;
             this.dvOperadoresDisponibles.RowHeadersVisible = false;
+            this.dvOperadoresDisponibles.RowHeadersWidth = 51;
             this.dvOperadoresDisponibles.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dvOperadoresDisponibles.Size = new System.Drawing.Size(358, 195);
+            this.dvOperadoresDisponibles.Size = new System.Drawing.Size(445, 195);
             this.dvOperadoresDisponibles.TabIndex = 6;
+            this.dvOperadoresDisponibles.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dvOperadoresDisponibles_CellDoubleClick);
             // 
             // FrmAsignarOperador
             // 

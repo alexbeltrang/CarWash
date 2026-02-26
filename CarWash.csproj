@@ -34,6 +34,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>splash_car_icon.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>packages\Newtonsoft.Json.13.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -92,9 +95,12 @@
     <Compile Include="DTOs\IngresoVehiculoDTO.cs" />
     <Compile Include="DTOs\OperariosDTO.cs" />
     <Compile Include="DTOs\PorcentajeOperadorDTO.cs" />
+    <Compile Include="DTOs\ServicioListaDTO.cs" />
+    <Compile Include="DTOs\ServicioListaGestionVehDTO.cs" />
     <Compile Include="Entidades\CajaDiaria.cs" />
     <Compile Include="Entidades\ClienteCredito.cs" />
     <Compile Include="Entidades\FormaPago.cs" />
+    <Compile Include="Entidades\GastosCaja.cs" />
     <Compile Include="Entidades\JornadaOperario.cs" />
     <Compile Include="Entidades\Modulo.cs" />
     <Compile Include="Entidades\OperarioComisiones.cs" />
@@ -107,7 +113,9 @@
     <Compile Include="Entidades\TipoVehiculo.cs" />
     <Compile Include="Entidades\Turnos.cs" />
     <Compile Include="Entidades\TurnosDiarios.cs" />
+    <Compile Include="Entidades\TurnoServicios.cs" />
     <Compile Include="Entidades\Usuario.cs" />
+    <Compile Include="Entidades\ValesOperarios.cs" />
     <Compile Include="Enum\FormaPago.cs" />
     <Compile Include="ModelosRespuestas\RespuestaUsuarioLogin.cs" />
     <Compile Include="Presentacion\Administracion\FrmAperturaCaja.cs">
@@ -134,6 +142,12 @@
     <Compile Include="Presentacion\Operacion\FrmAsignarOperador.Designer.cs">
       <DependentUpon>FrmAsignarOperador.cs</DependentUpon>
     </Compile>
+    <Compile Include="Presentacion\Operacion\FrmGastoCaja.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Presentacion\Operacion\FrmGastoCaja.Designer.cs">
+      <DependentUpon>FrmGastoCaja.cs</DependentUpon>
+    </Compile>
     <Compile Include="Presentacion\Operacion\FrmGestionDetalleVehiculo.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -145,6 +159,12 @@
     </Compile>
     <Compile Include="Presentacion\Operacion\FrmIngresoVehiculo.Designer.cs">
       <DependentUpon>FrmIngresoVehiculo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Presentacion\Operacion\FrmValeOperario.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Presentacion\Operacion\FrmValeOperario.Designer.cs">
+      <DependentUpon>FrmValeOperario.cs</DependentUpon>
     </Compile>
     <Compile Include="Presentacion\Principal\FrmDashboard.cs">
       <SubType>Form</SubType>
@@ -175,11 +195,17 @@
     <EmbeddedResource Include="Presentacion\Operacion\FrmAsignarOperador.resx">
       <DependentUpon>FrmAsignarOperador.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Presentacion\Operacion\FrmGastoCaja.resx">
+      <DependentUpon>FrmGastoCaja.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Presentacion\Operacion\FrmGestionDetalleVehiculo.resx">
       <DependentUpon>FrmGestionDetalleVehiculo.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Presentacion\Operacion\FrmIngresoVehiculo.resx">
       <DependentUpon>FrmIngresoVehiculo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Presentacion\Operacion\FrmValeOperario.resx">
+      <DependentUpon>FrmValeOperario.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Presentacion\Principal\FrmDashboard.resx">
       <DependentUpon>FrmDashboard.cs</DependentUpon>
@@ -195,6 +221,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -213,6 +240,9 @@
   <ItemGroup>
     <Folder Include="Aplicacion\" />
     <Folder Include="Infraestructura\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="splash_car_icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

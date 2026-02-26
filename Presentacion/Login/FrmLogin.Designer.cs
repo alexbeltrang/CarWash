@@ -31,6 +31,7 @@ namespace CarWash.Presentacion.Login
 
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmLogin));
             this.panelCard = new System.Windows.Forms.Panel();
             this.lblTitulo = new System.Windows.Forms.Label();
             this.lblSubtitulo = new System.Windows.Forms.Label();
@@ -67,7 +68,7 @@ namespace CarWash.Presentacion.Login
             this.lblTitulo.ForeColor = System.Drawing.Color.White;
             this.lblTitulo.Location = new System.Drawing.Point(65, 40);
             this.lblTitulo.Name = "lblTitulo";
-            this.lblTitulo.Size = new System.Drawing.Size(176, 41);
+            this.lblTitulo.Size = new System.Drawing.Size(216, 50);
             this.lblTitulo.TabIndex = 0;
             this.lblTitulo.Text = "CAR WASH";
             // 
@@ -78,7 +79,7 @@ namespace CarWash.Presentacion.Login
             this.lblSubtitulo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(220)))), ((int)(((byte)(240)))));
             this.lblSubtitulo.Location = new System.Drawing.Point(105, 85);
             this.lblSubtitulo.Name = "lblSubtitulo";
-            this.lblSubtitulo.Size = new System.Drawing.Size(126, 19);
+            this.lblSubtitulo.Size = new System.Drawing.Size(156, 23);
             this.lblSubtitulo.TabIndex = 1;
             this.lblSubtitulo.Text = "Sistema de Gestión";
             // 
@@ -88,7 +89,7 @@ namespace CarWash.Presentacion.Login
             this.lblUsuario.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(210)))), ((int)(((byte)(210)))), ((int)(((byte)(210)))));
             this.lblUsuario.Location = new System.Drawing.Point(65, 140);
             this.lblUsuario.Name = "lblUsuario";
-            this.lblUsuario.Size = new System.Drawing.Size(43, 13);
+            this.lblUsuario.Size = new System.Drawing.Size(54, 16);
             this.lblUsuario.TabIndex = 2;
             this.lblUsuario.Text = "Usuario";
             // 
@@ -99,7 +100,7 @@ namespace CarWash.Presentacion.Login
             this.txtUsuario.ForeColor = System.Drawing.Color.White;
             this.txtUsuario.Location = new System.Drawing.Point(65, 160);
             this.txtUsuario.Name = "txtUsuario";
-            this.txtUsuario.Size = new System.Drawing.Size(250, 20);
+            this.txtUsuario.Size = new System.Drawing.Size(250, 22);
             this.txtUsuario.TabIndex = 3;
             // 
             // lblPassword
@@ -108,7 +109,7 @@ namespace CarWash.Presentacion.Login
             this.lblPassword.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(210)))), ((int)(((byte)(210)))), ((int)(((byte)(210)))));
             this.lblPassword.Location = new System.Drawing.Point(65, 210);
             this.lblPassword.Name = "lblPassword";
-            this.lblPassword.Size = new System.Drawing.Size(61, 13);
+            this.lblPassword.Size = new System.Drawing.Size(76, 16);
             this.lblPassword.TabIndex = 4;
             this.lblPassword.Text = "Contraseña";
             // 
@@ -119,7 +120,7 @@ namespace CarWash.Presentacion.Login
             this.txtPassword.ForeColor = System.Drawing.Color.White;
             this.txtPassword.Location = new System.Drawing.Point(65, 230);
             this.txtPassword.Name = "txtPassword";
-            this.txtPassword.Size = new System.Drawing.Size(250, 20);
+            this.txtPassword.Size = new System.Drawing.Size(250, 22);
             this.txtPassword.TabIndex = 5;
             this.txtPassword.UseSystemPasswordChar = true;
             // 
@@ -129,7 +130,7 @@ namespace CarWash.Presentacion.Login
             this.chkMostrar.ForeColor = System.Drawing.Color.White;
             this.chkMostrar.Location = new System.Drawing.Point(65, 270);
             this.chkMostrar.Name = "chkMostrar";
-            this.chkMostrar.Size = new System.Drawing.Size(117, 17);
+            this.chkMostrar.Size = new System.Drawing.Size(144, 20);
             this.chkMostrar.TabIndex = 6;
             this.chkMostrar.Text = "Mostrar contraseña";
             this.chkMostrar.CheckedChanged += new System.EventHandler(this.chkMostrar_CheckedChanged);
@@ -174,6 +175,7 @@ namespace CarWash.Presentacion.Login
             this.Controls.Add(this.panelCard);
             this.Controls.Add(this.btnCerrar);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FrmLogin";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Login";

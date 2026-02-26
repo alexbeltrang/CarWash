@@ -58,7 +58,6 @@ namespace CarWash.Presentacion.Operacion
             this.lblOperadorAsignado = new System.Windows.Forms.Label();
             this.txtValorPagar = new System.Windows.Forms.TextBox();
             this.lblValorPagar = new System.Windows.Forms.Label();
-            this.lblServicio = new System.Windows.Forms.Label();
             this.lblTipoVehiculo = new System.Windows.Forms.Label();
             this.lblFechaIngreso = new System.Windows.Forms.Label();
             this.lblTurno = new System.Windows.Forms.Label();
@@ -75,6 +74,8 @@ namespace CarWash.Presentacion.Operacion
             this.btnCancelar = new System.Windows.Forms.Button();
             this.btnAsignarOperador = new System.Windows.Forms.Button();
             this.btnLiberarOperador = new System.Windows.Forms.Button();
+            this.lstServiciosAdquiridos = new System.Windows.Forms.ListBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.panelHeader.SuspendLayout();
             this.cardInfo.SuspendLayout();
             this.gbFormaPago.SuspendLayout();
@@ -119,6 +120,8 @@ namespace CarWash.Presentacion.Operacion
             // cardInfo
             // 
             this.cardInfo.BackColor = System.Drawing.Color.White;
+            this.cardInfo.Controls.Add(this.label1);
+            this.cardInfo.Controls.Add(this.lstServiciosAdquiridos);
             this.cardInfo.Controls.Add(this.lblClienteCredito);
             this.cardInfo.Controls.Add(this.cmbClienteCredito);
             this.cardInfo.Controls.Add(this.lblObservaciones);
@@ -126,25 +129,23 @@ namespace CarWash.Presentacion.Operacion
             this.cardInfo.Controls.Add(this.lblOperadorAsignado);
             this.cardInfo.Controls.Add(this.txtValorPagar);
             this.cardInfo.Controls.Add(this.lblValorPagar);
-            this.cardInfo.Controls.Add(this.lblServicio);
             this.cardInfo.Controls.Add(this.lblTipoVehiculo);
             this.cardInfo.Controls.Add(this.lblFechaIngreso);
             this.cardInfo.Controls.Add(this.lblTurno);
             this.cardInfo.Controls.Add(this.lblCelular);
             this.cardInfo.Controls.Add(this.lblPlaca);
             this.cardInfo.Controls.Add(this.lblCliente);
-            this.cardInfo.Controls.Add(this.lblEstado);
             this.cardInfo.Controls.Add(this.gbFormaPago);
-            this.cardInfo.Location = new System.Drawing.Point(30, 90);
+            this.cardInfo.Location = new System.Drawing.Point(30, 100);
             this.cardInfo.Name = "cardInfo";
-            this.cardInfo.Size = new System.Drawing.Size(760, 550);
+            this.cardInfo.Size = new System.Drawing.Size(760, 579);
             this.cardInfo.TabIndex = 1;
             // 
             // lblClienteCredito
             // 
             this.lblClienteCredito.AutoSize = true;
             this.lblClienteCredito.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.lblClienteCredito.Location = new System.Drawing.Point(22, 356);
+            this.lblClienteCredito.Location = new System.Drawing.Point(18, 414);
             this.lblClienteCredito.Name = "lblClienteCredito";
             this.lblClienteCredito.Size = new System.Drawing.Size(128, 23);
             this.lblClienteCredito.TabIndex = 30;
@@ -155,7 +156,7 @@ namespace CarWash.Presentacion.Operacion
             this.cmbClienteCredito.BackColor = System.Drawing.Color.White;
             this.cmbClienteCredito.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbClienteCredito.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.cmbClienteCredito.Location = new System.Drawing.Point(158, 353);
+            this.cmbClienteCredito.Location = new System.Drawing.Point(154, 411);
             this.cmbClienteCredito.MaxDropDownItems = 10;
             this.cmbClienteCredito.Name = "cmbClienteCredito";
             this.cmbClienteCredito.Size = new System.Drawing.Size(381, 31);
@@ -165,7 +166,7 @@ namespace CarWash.Presentacion.Operacion
             // 
             this.lblObservaciones.AutoSize = true;
             this.lblObservaciones.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.lblObservaciones.Location = new System.Drawing.Point(19, 398);
+            this.lblObservaciones.Location = new System.Drawing.Point(14, 444);
             this.lblObservaciones.Name = "lblObservaciones";
             this.lblObservaciones.Size = new System.Drawing.Size(120, 23);
             this.lblObservaciones.TabIndex = 13;
@@ -173,17 +174,18 @@ namespace CarWash.Presentacion.Operacion
             // 
             // txtObservaciones
             // 
-            this.txtObservaciones.Location = new System.Drawing.Point(18, 436);
+            this.txtObservaciones.Location = new System.Drawing.Point(18, 470);
             this.txtObservaciones.Multiline = true;
             this.txtObservaciones.Name = "txtObservaciones";
             this.txtObservaciones.Size = new System.Drawing.Size(722, 99);
             this.txtObservaciones.TabIndex = 6;
+            this.txtObservaciones.Tag = "opcional";
             // 
             // lblOperadorAsignado
             // 
             this.lblOperadorAsignado.AutoSize = true;
             this.lblOperadorAsignado.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.lblOperadorAsignado.Location = new System.Drawing.Point(24, 221);
+            this.lblOperadorAsignado.Location = new System.Drawing.Point(24, 189);
             this.lblOperadorAsignado.Name = "lblOperadorAsignado";
             this.lblOperadorAsignado.Size = new System.Drawing.Size(163, 23);
             this.lblOperadorAsignado.TabIndex = 10;
@@ -191,7 +193,7 @@ namespace CarWash.Presentacion.Operacion
             // 
             // txtValorPagar
             // 
-            this.txtValorPagar.Location = new System.Drawing.Point(158, 324);
+            this.txtValorPagar.Location = new System.Drawing.Point(154, 382);
             this.txtValorPagar.Name = "txtValorPagar";
             this.txtValorPagar.Size = new System.Drawing.Size(158, 22);
             this.txtValorPagar.TabIndex = 5;
@@ -203,21 +205,11 @@ namespace CarWash.Presentacion.Operacion
             // 
             this.lblValorPagar.AutoSize = true;
             this.lblValorPagar.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.lblValorPagar.Location = new System.Drawing.Point(24, 324);
+            this.lblValorPagar.Location = new System.Drawing.Point(20, 382);
             this.lblValorPagar.Name = "lblValorPagar";
             this.lblValorPagar.Size = new System.Drawing.Size(115, 23);
             this.lblValorPagar.TabIndex = 8;
             this.lblValorPagar.Text = "Valor a Pagar:";
-            // 
-            // lblServicio
-            // 
-            this.lblServicio.AutoSize = true;
-            this.lblServicio.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.lblServicio.Location = new System.Drawing.Point(24, 192);
-            this.lblServicio.Name = "lblServicio";
-            this.lblServicio.Size = new System.Drawing.Size(223, 23);
-            this.lblServicio.TabIndex = 7;
-            this.lblServicio.Text = "Servicio Atendido: Enjuague";
             // 
             // lblTipoVehiculo
             // 
@@ -285,7 +277,7 @@ namespace CarWash.Presentacion.Operacion
             this.lblEstado.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(193)))), ((int)(((byte)(7)))));
             this.lblEstado.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.lblEstado.ForeColor = System.Drawing.Color.White;
-            this.lblEstado.Location = new System.Drawing.Point(627, 20);
+            this.lblEstado.Location = new System.Drawing.Point(622, 63);
             this.lblEstado.Name = "lblEstado";
             this.lblEstado.Padding = new System.Windows.Forms.Padding(10, 5, 10, 5);
             this.lblEstado.Size = new System.Drawing.Size(134, 33);
@@ -299,9 +291,9 @@ namespace CarWash.Presentacion.Operacion
             this.gbFormaPago.Controls.Add(this.rbTransferencia);
             this.gbFormaPago.Controls.Add(this.rbDatafono);
             this.gbFormaPago.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.gbFormaPago.Location = new System.Drawing.Point(26, 247);
+            this.gbFormaPago.Location = new System.Drawing.Point(19, 221);
             this.gbFormaPago.Name = "gbFormaPago";
-            this.gbFormaPago.Size = new System.Drawing.Size(714, 70);
+            this.gbFormaPago.Size = new System.Drawing.Size(367, 155);
             this.gbFormaPago.TabIndex = 1;
             this.gbFormaPago.TabStop = false;
             this.gbFormaPago.Text = "Forma de Pago";
@@ -315,7 +307,7 @@ namespace CarWash.Presentacion.Operacion
             this.rbCredito.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(140)))), ((int)(((byte)(0)))));
             this.rbCredito.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.rbCredito.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.rbCredito.Location = new System.Drawing.Point(556, 25);
+            this.rbCredito.Location = new System.Drawing.Point(205, 25);
             this.rbCredito.Name = "rbCredito";
             this.rbCredito.Size = new System.Drawing.Size(150, 30);
             this.rbCredito.TabIndex = 5;
@@ -334,7 +326,7 @@ namespace CarWash.Presentacion.Operacion
             this.rbEfectivo.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(167)))), ((int)(((byte)(69)))));
             this.rbEfectivo.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.rbEfectivo.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.rbEfectivo.Location = new System.Drawing.Point(20, 25);
+            this.rbEfectivo.Location = new System.Drawing.Point(5, 25);
             this.rbEfectivo.Name = "rbEfectivo";
             this.rbEfectivo.Size = new System.Drawing.Size(150, 30);
             this.rbEfectivo.TabIndex = 2;
@@ -353,7 +345,7 @@ namespace CarWash.Presentacion.Operacion
             this.rbTransferencia.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(123)))), ((int)(((byte)(255)))));
             this.rbTransferencia.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.rbTransferencia.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.rbTransferencia.Location = new System.Drawing.Point(200, 25);
+            this.rbTransferencia.Location = new System.Drawing.Point(5, 66);
             this.rbTransferencia.Name = "rbTransferencia";
             this.rbTransferencia.Size = new System.Drawing.Size(170, 30);
             this.rbTransferencia.TabIndex = 3;
@@ -371,7 +363,7 @@ namespace CarWash.Presentacion.Operacion
             this.rbDatafono.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(140)))), ((int)(((byte)(0)))));
             this.rbDatafono.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.rbDatafono.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.rbDatafono.Location = new System.Drawing.Point(400, 25);
+            this.rbDatafono.Location = new System.Drawing.Point(5, 109);
             this.rbDatafono.Name = "rbDatafono";
             this.rbDatafono.Size = new System.Drawing.Size(150, 30);
             this.rbDatafono.TabIndex = 4;
@@ -387,7 +379,7 @@ namespace CarWash.Presentacion.Operacion
             this.btnFinalizar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnFinalizar.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnFinalizar.ForeColor = System.Drawing.Color.White;
-            this.btnFinalizar.Location = new System.Drawing.Point(456, 657);
+            this.btnFinalizar.Location = new System.Drawing.Point(456, 685);
             this.btnFinalizar.Name = "btnFinalizar";
             this.btnFinalizar.Size = new System.Drawing.Size(164, 45);
             this.btnFinalizar.TabIndex = 9;
@@ -402,7 +394,7 @@ namespace CarWash.Presentacion.Operacion
             this.btnCancelar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCancelar.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnCancelar.ForeColor = System.Drawing.Color.White;
-            this.btnCancelar.Location = new System.Drawing.Point(626, 657);
+            this.btnCancelar.Location = new System.Drawing.Point(626, 685);
             this.btnCancelar.Name = "btnCancelar";
             this.btnCancelar.Size = new System.Drawing.Size(164, 45);
             this.btnCancelar.TabIndex = 10;
@@ -417,7 +409,7 @@ namespace CarWash.Presentacion.Operacion
             this.btnAsignarOperador.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnAsignarOperador.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnAsignarOperador.ForeColor = System.Drawing.Color.White;
-            this.btnAsignarOperador.Location = new System.Drawing.Point(286, 657);
+            this.btnAsignarOperador.Location = new System.Drawing.Point(286, 685);
             this.btnAsignarOperador.Name = "btnAsignarOperador";
             this.btnAsignarOperador.Size = new System.Drawing.Size(164, 45);
             this.btnAsignarOperador.TabIndex = 8;
@@ -432,13 +424,32 @@ namespace CarWash.Presentacion.Operacion
             this.btnLiberarOperador.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnLiberarOperador.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnLiberarOperador.ForeColor = System.Drawing.Color.White;
-            this.btnLiberarOperador.Location = new System.Drawing.Point(25, 657);
+            this.btnLiberarOperador.Location = new System.Drawing.Point(25, 685);
             this.btnLiberarOperador.Name = "btnLiberarOperador";
             this.btnLiberarOperador.Size = new System.Drawing.Size(164, 45);
             this.btnLiberarOperador.TabIndex = 7;
             this.btnLiberarOperador.Text = "Liberar Operador";
             this.btnLiberarOperador.UseVisualStyleBackColor = false;
             this.btnLiberarOperador.Click += new System.EventHandler(this.btnLiberarOperador_Click);
+            // 
+            // lstServiciosAdquiridos
+            // 
+            this.lstServiciosAdquiridos.FormattingEnabled = true;
+            this.lstServiciosAdquiridos.ItemHeight = 16;
+            this.lstServiciosAdquiridos.Location = new System.Drawing.Point(464, 48);
+            this.lstServiciosAdquiridos.Name = "lstServiciosAdquiridos";
+            this.lstServiciosAdquiridos.Size = new System.Drawing.Size(276, 324);
+            this.lstServiciosAdquiridos.TabIndex = 31;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
+            this.label1.Location = new System.Drawing.Point(459, 20);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(192, 25);
+            this.label1.TabIndex = 32;
+            this.label1.Text = "Servicios adquiridos";
             // 
             // FrmGestionDetalleVehiculo
             // 
@@ -451,6 +462,7 @@ namespace CarWash.Presentacion.Operacion
             this.Controls.Add(this.cardInfo);
             this.Controls.Add(this.btnFinalizar);
             this.Controls.Add(this.btnCancelar);
+            this.Controls.Add(this.lblEstado);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "FrmGestionDetalleVehiculo";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -461,6 +473,7 @@ namespace CarWash.Presentacion.Operacion
             this.cardInfo.PerformLayout();
             this.gbFormaPago.ResumeLayout(false);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -469,7 +482,6 @@ namespace CarWash.Presentacion.Operacion
         private System.Windows.Forms.Label lblFechaIngreso;
         private System.Windows.Forms.Label lblTurno;
         private System.Windows.Forms.Label lblCelular;
-        private System.Windows.Forms.Label lblServicio;
         private System.Windows.Forms.Label lblTipoVehiculo;
         private System.Windows.Forms.Label lblOperadorAsignado;
         private System.Windows.Forms.TextBox txtValorPagar;
@@ -481,5 +493,7 @@ namespace CarWash.Presentacion.Operacion
         private RadioButton rbCredito;
         private Label lblClienteCredito;
         private ComboBox cmbClienteCredito;
+        private Label label1;
+        private ListBox lstServiciosAdquiridos;
     }
 }

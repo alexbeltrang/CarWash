@@ -15,7 +15,6 @@ namespace CarWash.DTOs
         public String NumeroTurno { get; set; }
         public String FechaHoraIngreso { get; set; }
         public String TipoVehiculo { get; set; }
-        public String Servicio { get; set; }
         public String OperadorAsignado { get; set; }
         public bool Estado { get; set; }
         public decimal Valor { get; set; }

@@ -20,6 +20,7 @@ namespace CarWash.Entidades
         public decimal TotalIngresosDatafono { get; set; }
         public decimal TotalIngresosCredito { get; set; }
         public decimal TotalEgresos { get; set; }
+        public decimal TotalValesOperarios { get; set; }
         public decimal TotalFinal { get; set; }
         public bool Estado { get; set; }
     }
