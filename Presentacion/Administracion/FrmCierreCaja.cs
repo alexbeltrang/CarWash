@@ -121,8 +121,6 @@ namespace CarWash.Presentacion.Administracion
             return totalEnCaja;
         }
 
-
-
         private void CerrarCaja()
         {
             try

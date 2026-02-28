@@ -11,18 +11,22 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace CarWash.Presentacion.Operacion
+namespace CarWash.Presentacion.Administracion
 {
-    public partial class FrmValeOperario : Form
+    public partial class FrmRegistroPropinasOperarios : Form
     {
         CajaDiaria cajaDiaria = new CajaDiaria();
-        decimal valorValeOperario = 0;
-        public FrmValeOperario()
+        decimal valorPropinaOperario = 0;
+        public FrmRegistroPropinasOperarios()
         {
             InitializeComponent();
             CargaOperarios();
         }
 
+        private void FrmRegistroPropinasOperarios_Load(object sender, EventArgs e)
+        {
+
+        }
 
         private void CargaOperarios()
         {
@@ -61,28 +65,24 @@ namespace CarWash.Presentacion.Operacion
                 var idoperario = ((OperariosDTO)operarioSel).idOperario;
 
                 DatabaseQueryLDB.ExecuteNonQuery(
-                        "INSERT INTO ValesOperarios (idOperario,idCaja,FechaRegsitro,Valor,Motivo) values (?,?,?,?,?)",
-                       idoperario,
-                        cajaDiaria.idCaja,
+                        "INSERT INTO RegistroPropinasOperarios (idOperario,fechaRegistro,valorPropina,observaciones,idCaja,isDelete) values (?,?,?,?,?,?)",
+                        idoperario,
                         DateTime.Now,
                         Convert.ToDecimal(txtValor.Text),
-                        txtMotivo.Text);
+                        txtObservaciones.Text,
+                        cajaDiaria.idCaja,
+                        false);
 
-                valorValeOperario = valorValeOperario + Convert.ToDecimal(txtValor.Text);
+                valorPropinaOperario = valorPropinaOperario + Convert.ToDecimal(txtValor.Text);
 
                 DatabaseQueryLDB.ExecuteNonQuery(
-                       "UPDATE CajaDiaria SET TotalEgresos = ? WHERE idCaja = ?",
-                       valorValeOperario, cajaDiaria.idCaja
+                       "UPDATE CajaDiaria SET TotalIngresosTransferencias = ? WHERE idCaja = ?",
+                       valorPropinaOperario, cajaDiaria.idCaja
                        );
 
-                MostrarToast("Gasto registrado correctamente", Color.FromArgb(40, 167, 69));
                 cargaCajaDiaria();
                 limpiacampos();
-
-
-                MostrarToast("Vale registrado correctamente", Color.FromArgb(40, 167, 69));
-                this.Close();
-
+                MostrarToast("Propina registrada correctamente", Color.FromArgb(40, 167, 69));
             }
         }
 
@@ -93,17 +93,18 @@ namespace CarWash.Presentacion.Operacion
                   FROM CajaDiaria
                   WHERE Estado = 1;").FirstOrDefault();
 
-            valorValeOperario = cajaDiaria.TotalValesOperarios;
+            valorPropinaOperario = cajaDiaria.TotalIngresosTransferencias;
         }
 
         private void btnCancelar_Click(object sender, EventArgs e)
         {
             limpiacampos();
+            this.Close();
         }
 
         private void limpiacampos()
         {
-            txtMotivo.Text = string.Empty;
+            txtObservaciones.Text = string.Empty;
             txtValor.Text = string.Empty;
             cmbOperario.SelectedIndex = 0;
         }
@@ -122,7 +123,7 @@ namespace CarWash.Presentacion.Operacion
                 MostrarToast("Ingrese el valor del vale.", Color.FromArgb(220, 53, 69));
                 return false;
             }
-            else if (string.IsNullOrEmpty(txtMotivo.Text))
+            else if (string.IsNullOrEmpty(txtObservaciones.Text))
             {
                 MostrarToast("Ingrese Descripción para el vale.", Color.FromArgb(220, 53, 69));
                 return false;
@@ -196,8 +197,6 @@ namespace CarWash.Presentacion.Operacion
             // Si llega aquí, se bloquea la tecla
             e.Handled = true;
         }
-
-
 
     }
 }

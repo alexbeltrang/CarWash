@@ -63,7 +63,7 @@ namespace CarWash.Presentacion.Administracion
                 cajaDiaria = DatabaseQueryLDB.ExecuteList<CajaDiaria>(
                 @"SELECT idCaja,FechaApertura,FechaCierre,MontoInicial,TotalIngresosEfectivo,TotalIngresosTransferencias,TotalIngresosDatafono,TotalEgresos,TotalFinal,Estado
                   FROM CajaDiaria
-                  WHERE  strftime('%Y-%m-%d',FechaApertura / 10000000 - 62135596800,'unixepoch') = date('now');");
+                  WHERE  Estado = 1;");
             }
             catch (Exception ex)
             {

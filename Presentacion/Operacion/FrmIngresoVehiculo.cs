@@ -100,7 +100,7 @@ namespace CarWash.Presentacion.Operacion
             cajaDiaria = DatabaseQueryLDB.ExecuteList<CajaDiaria>(
                 @"SELECT idCaja,FechaApertura,FechaCierre,MontoInicial,TotalIngresosEfectivo,TotalIngresosTransferencias,TotalIngresosDatafono,TotalEgresos,TotalFinal,Estado
                   FROM CajaDiaria
-                  WHERE strftime('%Y-%m-%d',FechaApertura / 10000000 - 62135596800,'unixepoch') = date('now')  and Estado = 1;").FirstOrDefault();
+                  WHERE  Estado = 1;").FirstOrDefault();
 
         }
 
@@ -254,6 +254,9 @@ namespace CarWash.Presentacion.Operacion
                 return;
             }
 
+
+            precioBaseTotalServicio = Convert.ToDecimal(txtValorBase.Text);
+            precioTotalServicio = Convert.ToDecimal(txtValor.Text);
 
 
             long idTurno = DatabaseQueryLDB.ExecuteInsert(

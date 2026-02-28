@@ -149,6 +149,7 @@ namespace CarWash.Presentacion.Login
             DatabaseHelper.CreateOrUpdateTable<TurnoServicios>();
             DatabaseHelper.CreateOrUpdateTable<ValesOperarios>();
             DatabaseHelper.CreateOrUpdateTable<GastosCaja>();
+            DatabaseHelper.CreateOrUpdateTable<RegistroPropinasOperarios>();
 
             //creacion del indice para las tablas 
 

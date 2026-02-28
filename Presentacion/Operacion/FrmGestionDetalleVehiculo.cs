@@ -86,7 +86,7 @@ namespace CarWash.Presentacion.Operacion
                 cajaDiaria = DatabaseQueryLDB.ExecuteList<CajaDiaria>(
                 @"SELECT idCaja,FechaApertura,FechaCierre,MontoInicial,TotalIngresosEfectivo,TotalIngresosTransferencias,TotalIngresosDatafono,TotalIngresosCredito, TotalEgresos,TotalFinal,Estado
                   FROM CajaDiaria
-                  WHERE  strftime('%Y-%m-%d',FechaApertura / 10000000 - 62135596800,'unixepoch') = date('now');");
+                  WHERE  Estado = 1");
                 if (cajaDiaria == null)
                 {
                     MessageBox.Show("No hay apertura de caja para el día de hoy.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);

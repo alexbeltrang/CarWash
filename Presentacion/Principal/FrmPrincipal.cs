@@ -158,5 +158,22 @@ namespace CarWash.Presentacion.Principal
                 formularioAbierto.BringToFront();
             }
         }
+
+        private void registrarPropinaRecibidaQRToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form formularioAbierto = Application.OpenForms["FrmRegistroPropinasOperarios"];
+
+            if (formularioAbierto == null)
+            {
+                using (FrmRegistroPropinasOperarios frmApertura = new FrmRegistroPropinasOperarios())
+                {
+                    frmApertura.ShowDialog(this);
+                }
+            }
+            else
+            {
+                formularioAbierto.BringToFront();
+            }
+        }
     }
 }

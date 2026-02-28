@@ -42,6 +42,7 @@ namespace CarWash.Presentacion.Principal
             this.administraciónToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.regsitrarValesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.registrarGastoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.registrarPropinaRecibidaQRToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panelContent.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.SuspendLayout();
@@ -136,7 +137,8 @@ namespace CarWash.Presentacion.Principal
             // 
             this.administraciónToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.regsitrarValesToolStripMenuItem,
-            this.registrarGastoToolStripMenuItem});
+            this.registrarGastoToolStripMenuItem,
+            this.registrarPropinaRecibidaQRToolStripMenuItem});
             this.administraciónToolStripMenuItem.Name = "administraciónToolStripMenuItem";
             this.administraciónToolStripMenuItem.Size = new System.Drawing.Size(123, 24);
             this.administraciónToolStripMenuItem.Text = "Administración";
@@ -144,16 +146,23 @@ namespace CarWash.Presentacion.Principal
             // regsitrarValesToolStripMenuItem
             // 
             this.regsitrarValesToolStripMenuItem.Name = "regsitrarValesToolStripMenuItem";
-            this.regsitrarValesToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.regsitrarValesToolStripMenuItem.Size = new System.Drawing.Size(292, 26);
             this.regsitrarValesToolStripMenuItem.Text = "&Registrar Vales";
             this.regsitrarValesToolStripMenuItem.Click += new System.EventHandler(this.regsitrarValesToolStripMenuItem_Click);
             // 
             // registrarGastoToolStripMenuItem
             // 
             this.registrarGastoToolStripMenuItem.Name = "registrarGastoToolStripMenuItem";
-            this.registrarGastoToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.registrarGastoToolStripMenuItem.Size = new System.Drawing.Size(292, 26);
             this.registrarGastoToolStripMenuItem.Text = "R&egistrar Gasto";
             this.registrarGastoToolStripMenuItem.Click += new System.EventHandler(this.registrarGastoToolStripMenuItem_Click);
+            // 
+            // registrarPropinaRecibidaQRToolStripMenuItem
+            // 
+            this.registrarPropinaRecibidaQRToolStripMenuItem.Name = "registrarPropinaRecibidaQRToolStripMenuItem";
+            this.registrarPropinaRecibidaQRToolStripMenuItem.Size = new System.Drawing.Size(292, 26);
+            this.registrarPropinaRecibidaQRToolStripMenuItem.Text = "Re&gistrar Propina Recibida QR";
+            this.registrarPropinaRecibidaQRToolStripMenuItem.Click += new System.EventHandler(this.registrarPropinaRecibidaQRToolStripMenuItem_Click);
             // 
             // FrmPrincipal
             // 
@@ -198,5 +207,6 @@ namespace CarWash.Presentacion.Principal
         private ToolStripMenuItem administraciónToolStripMenuItem;
         private ToolStripMenuItem regsitrarValesToolStripMenuItem;
         private ToolStripMenuItem registrarGastoToolStripMenuItem;
+        private ToolStripMenuItem registrarPropinaRecibidaQRToolStripMenuItem;
     }
 }

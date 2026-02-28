@@ -23,7 +23,7 @@ namespace CarWash.Presentacion.Operacion
 
         private void FrmGastoCaja_Load(object sender, EventArgs e)
         {
-
+            cargaCajaDiaria();
         }
 
         private void btnGuardar_Click(object sender, EventArgs e)
@@ -101,7 +101,7 @@ namespace CarWash.Presentacion.Operacion
 
         private bool validaCampos()
         {
-            cargaCajaDiaria();
+
             if (String.IsNullOrEmpty(txtConcepto.Text))
             {
                 MostrarToast("Ingrese el concepto del Gasto", Color.FromArgb(220, 53, 69));
@@ -158,7 +158,7 @@ namespace CarWash.Presentacion.Operacion
             cajaDiaria = DatabaseQueryLDB.ExecuteList<CajaDiaria>(
                 @"SELECT idCaja,FechaApertura,FechaCierre,MontoInicial,TotalIngresosEfectivo,TotalIngresosTransferencias,TotalIngresosDatafono,TotalEgresos,TotalFinal,Estado
                   FROM CajaDiaria
-                  WHERE strftime('%Y-%m-%d',FechaApertura / 10000000 - 62135596800,'unixepoch') = date('now')  and Estado = 1;").FirstOrDefault();
+                  WHERE Estado = 1;").FirstOrDefault();
 
 
             valorGastoCaja = cajaDiaria.TotalEgresos;
