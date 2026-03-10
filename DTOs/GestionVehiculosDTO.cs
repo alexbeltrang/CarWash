@@ -10,6 +10,8 @@ namespace CarWash.DTOs
     {
         public int IdTurno { get; set; }
         public String Placa { get; set; }
+        public string Marca { get; set; }
+        public string NumeroOrden { get; set; }
         public String NombreCliente { get; set; }
         public String NumeroCelular { get; set; }
         public String NumeroTurno { get; set; }
@@ -24,5 +26,6 @@ namespace CarWash.DTOs
         public int? idOperario { get; set; }
         public String Observaciones { get; set; }
         public bool OperadorOcupado { get; set; }
+
     }
 }

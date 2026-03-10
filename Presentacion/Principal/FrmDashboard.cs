@@ -97,7 +97,8 @@ namespace CarWash.Presentacion.Principal
             {
                 vehiculosProceso = DatabaseQueryLDB.ExecuteList<GestionVehiculosDTO>(
                @"SELECT TUR.IdTurno,TUR.Placa,TUR.NombreCliente,TUR.NumeroCelular, TUR.NumeroTurno, strftime('%Y-%m-%d %H:%M',TUR.FechaHoraIngreso / 10000000 - 62135596800,'unixepoch') AS FechaHoraIngreso, 
-                        TVH.Nombre TipoVehiculo,  COALESCE(OPE.Nombres, '') || ' ' || COALESCE(OPE.Apellidos, '') AS OperadorAsignado, '$ ' || printf('%.2f', Valor) AS ValorCliente, TUR.OperadorOcupado
+                        TVH.Nombre TipoVehiculo,  COALESCE(OPE.Nombres, '') || ' ' || COALESCE(OPE.Apellidos, '') AS OperadorAsignado, '$ ' || printf('%.2f', Valor) AS ValorCliente, TUR.OperadorOcupado,
+                        TUR.Marca, TUR.NumeroOrden
                         FROM Turnos TUR INNER JOIN TipoVehiculo TVH ON TUR.IdTipoVehiculo = TVH.idTipoVehiculo 
                         LEFT OUTER JOIN Operarios OPE ON TUR.idOperario = OPE.idOperario 
                         WHERE TUR.Estado = 0 
@@ -127,6 +128,8 @@ namespace CarWash.Presentacion.Principal
 
             dvVehiculosProceso.Columns["IdTurno"].Visible = false;
             dvVehiculosProceso.Columns["Placa"].HeaderText = "Placa";
+            dvVehiculosProceso.Columns["Marca"].HeaderText = "Marca";
+            dvVehiculosProceso.Columns["NumeroOrden"].HeaderText = "# Orden";
             dvVehiculosProceso.Columns["NombreCliente"].HeaderText = "Nombre Cliente";
             dvVehiculosProceso.Columns["NumeroCelular"].HeaderText = "Celular";
             dvVehiculosProceso.Columns["NumeroTurno"].HeaderText = "N° Turno";

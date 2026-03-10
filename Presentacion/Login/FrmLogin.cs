@@ -143,6 +143,7 @@ namespace CarWash.Presentacion.Login
             DatabaseHelper.CreateOrUpdateTable<Servicios>();
             DatabaseHelper.CreateOrUpdateTable<TipoVehiculo>();
             DatabaseHelper.CreateOrUpdateTable<Turnos>();
+            DatabaseHelper.CreateOrUpdateTable<TurnosMovimientos>();
             DatabaseHelper.CreateOrUpdateTable<PrecioServicioVehiculo>();
             DatabaseHelper.CreateOrUpdateTable<JornadaOperario>();
             DatabaseHelper.CreateOrUpdateTable<ClienteCredito>();

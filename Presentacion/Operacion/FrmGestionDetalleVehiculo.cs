@@ -21,6 +21,7 @@ namespace CarWash.Presentacion.Operacion
     {
         private int _idTurno;
         decimal valorPagar = 0;
+        decimal valorPagarTotal = 0;
         List<GestionVehiculosDTO> vehiculosProceso = new List<GestionVehiculosDTO>();
         private List<CajaDiaria> cajaDiaria = new List<CajaDiaria>();
         public FrmGestionDetalleVehiculo(int idTurno)
@@ -133,6 +134,7 @@ namespace CarWash.Presentacion.Operacion
                     lblTipoVehiculo.Text = "Tipo Vehículo: " + vehiculosProceso[0].TipoVehiculo;
                     txtValorPagar.Text = vehiculosProceso[0].Valor.ToString("N2");
                     valorPagar = vehiculosProceso[0].Valor;
+                    valorPagarTotal = vehiculosProceso[0].Valor;
                     txtObservaciones.Text = vehiculosProceso[0].Observaciones;
 
                     if (vehiculosProceso[0].idOperario.HasValue)
@@ -252,6 +254,7 @@ namespace CarWash.Presentacion.Operacion
             {
                 if (validarTurno())
                 {
+                    cargaCajaDiaria();
                     decimal valorEfectivo = cajaDiaria[0].TotalIngresosEfectivo;
                     decimal valorTransferencias = cajaDiaria[0].TotalIngresosTransferencias;
                     decimal valorDatafono = cajaDiaria[0].TotalIngresosDatafono;
@@ -289,8 +292,8 @@ namespace CarWash.Presentacion.Operacion
 
 
                     DatabaseQueryLDB.ExecuteNonQuery(
-                        "UPDATE Turnos SET Valor = ?, Observaciones = ?, IdFormaPago = ?, idClienteCredito = ?, ValorComision = ?, Estado = 1, Pagado = 1, OperadorOcupado = 0 WHERE IdTurno = ?",
-                        valorPagar, txtObservaciones.Text.Trim(), formaPago, clienteCredito, valorComision, vehiculosProceso[0].IdTurno
+                        "UPDATE Turnos SET Observaciones = ?,  idClienteCredito = ?, ValorComision = ? WHERE IdTurno = ?",
+                        txtObservaciones.Text.Trim(), clienteCredito, valorComision, vehiculosProceso[0].IdTurno
                         );
 
                     DatabaseQueryLDB.ExecuteNonQuery(
@@ -298,8 +301,31 @@ namespace CarWash.Presentacion.Operacion
                         valorEfectivo, valorTransferencias, valorDatafono, valorFinal, valorCredito, cajaDiaria[0].idCaja
                         );
 
-                    MessageBox.Show("Turno finalizado exitosamente.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    cerrarForm();
+
+                    DatabaseQueryLDB.ExecuteNonQuery(
+                        "INSERT INTO TurnosMovimientos (MontoPagado,FechaMovimiento,IdTurno,IdFormaPago) values (?,?,?,?)",
+                        valorPagar,
+                        DateTime.Now,
+                        vehiculosProceso[0].IdTurno,
+                        formaPago
+                    );
+
+                    if (valorPagar < valorPagarTotal)
+                    {
+                        valorPagarTotal = valorPagarTotal - valorPagar;
+                        txtValorPagar.Text = valorPagarTotal.ToString("N2");
+                    }
+                    else
+                    {
+
+                        DatabaseQueryLDB.ExecuteNonQuery(
+                            "UPDATE Turnos SET Estado = 1, Pagado = 1, OperadorOcupado = 0 WHERE IdTurno = ?",
+                            vehiculosProceso[0].IdTurno
+                            );
+                        MessageBox.Show("Turno finalizado exitosamente.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        cerrarForm();
+                    }
+
                 }
             }
             catch (Exception ex)
@@ -444,6 +470,11 @@ namespace CarWash.Presentacion.Operacion
             {
                 e.SuppressKeyPress = true; // Bloquea el pegado
             }
+        }
+
+        private void txtValorPagar_TextChanged(object sender, EventArgs e)
+        {
+            valorPagar = Convert.ToDecimal(txtValorPagar.Text);
         }
     }
 }

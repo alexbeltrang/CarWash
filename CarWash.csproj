@@ -90,6 +90,7 @@
     <Compile Include="Database\DatabaseHelper.cs" />
     <Compile Include="Database\DatabaseQueryLDB.cs" />
     <Compile Include="DTOs\ClienteCreditoDTO.cs" />
+    <Compile Include="DTOs\ConsultaMovimientosDTO.cs" />
     <Compile Include="DTOs\DashboardOperadoresDTO.cs" />
     <Compile Include="DTOs\GestionVehiculosDTO.cs" />
     <Compile Include="DTOs\IngresoVehiculoDTO.cs" />
@@ -115,6 +116,7 @@
     <Compile Include="Entidades\Turnos.cs" />
     <Compile Include="Entidades\TurnosDiarios.cs" />
     <Compile Include="Entidades\TurnoServicios.cs" />
+    <Compile Include="Entidades\TurnosMovimientos.cs" />
     <Compile Include="Entidades\Usuario.cs" />
     <Compile Include="Entidades\ValesOperarios.cs" />
     <Compile Include="Enum\FormaPago.cs" />
@@ -130,6 +132,12 @@
     </Compile>
     <Compile Include="Presentacion\Administracion\FrmCierreCaja.Designer.cs">
       <DependentUpon>FrmCierreCaja.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Presentacion\Consultas\FrmConsultaMovimientosCaja.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Presentacion\Consultas\FrmConsultaMovimientosCaja.Designer.cs">
+      <DependentUpon>FrmConsultaMovimientosCaja.cs</DependentUpon>
     </Compile>
     <Compile Include="Presentacion\Operacion\FrmRegistroPropinasOperarios.cs">
       <SubType>Form</SubType>
@@ -195,6 +203,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Presentacion\Administracion\FrmCierreCaja.resx">
       <DependentUpon>FrmCierreCaja.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Presentacion\Consultas\FrmConsultaMovimientosCaja.resx">
+      <DependentUpon>FrmConsultaMovimientosCaja.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Presentacion\Operacion\FrmRegistroPropinasOperarios.resx">
       <DependentUpon>FrmRegistroPropinasOperarios.cs</DependentUpon>

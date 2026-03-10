@@ -1,5 +1,6 @@
 ﻿using CarWash.Database;
 using CarWash.Presentacion.Administracion;
+using CarWash.Presentacion.Consultas;
 using CarWash.Presentacion.Operacion;
 using System;
 using System.Collections.Generic;
@@ -166,6 +167,23 @@ namespace CarWash.Presentacion.Principal
             if (formularioAbierto == null)
             {
                 using (FrmRegistroPropinasOperarios frmApertura = new FrmRegistroPropinasOperarios())
+                {
+                    frmApertura.ShowDialog(this);
+                }
+            }
+            else
+            {
+                formularioAbierto.BringToFront();
+            }
+        }
+
+        private void mocimientosToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form formularioAbierto = Application.OpenForms["FrmConsultaMovimientosCaja"];
+
+            if (formularioAbierto == null)
+            {
+                using (FrmConsultaMovimientosCaja frmApertura = new FrmConsultaMovimientosCaja())
                 {
                     frmApertura.ShowDialog(this);
                 }

@@ -119,6 +119,7 @@ namespace CarWash.Presentacion.Operacion
 
         private void cargarListaServicio(int TipoVehiculo)
         {
+            CargarListaCompletaServicios();
             servicioCombos = servicios
                 .Where(s => s.idTipoVehiculo == TipoVehiculo)
                 .Select(s => new ServicioListaDTO
@@ -262,7 +263,7 @@ namespace CarWash.Presentacion.Operacion
             long idTurno = DatabaseQueryLDB.ExecuteInsert(
                     "INSERT INTO Turnos (NumeroTurno,NombreCliente,NumeroCelular,Placa," +
                     " FechaHoraIngreso,Valor,Pagado,Observaciones,IdTipoVehiculo," +
-                    " Estado,ValorBaseComision,idCajaDiaria) values (?,?,?,?,?,?,?,?,?,?,?,?)",
+                    " Estado,ValorBaseComision,idCajaDiaria,Marca,NumeroOrden) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                     GenerarTurno(),
                     txtCliente.Text.Trim(),
                     txtCelular.Text.Trim(),
@@ -274,7 +275,9 @@ namespace CarWash.Presentacion.Operacion
                     Convert.ToInt32(cmbTipoVehiculo.SelectedValue),
                     false,
                     precioBaseTotalServicio,
-                    cajaDiaria.idCaja
+                    cajaDiaria.idCaja,
+                    txtMarca.Text.Trim(),
+                    txtNumOrden.Text.Trim()
                 );
 
 
@@ -349,6 +352,7 @@ namespace CarWash.Presentacion.Operacion
             dgvHistorico.DataSource = null;
             txtPlaca.Clear();
             txtPlaca.Focus();
+            lstServiciosVehiculo.Items.Clear();
         }
 
         private void cmbTipoVehiculo_SelectionChangeCommitted(object sender, EventArgs e)
@@ -419,7 +423,7 @@ namespace CarWash.Presentacion.Operacion
         private void BuscarVehiculoPorPlaca(string placa)
         {
             var vehiculo = DatabaseQueryLDB.ExecuteList<Turnos>(
-                @"SELECT IdTurno,NombreCliente,NumeroCelular,Placa,IdTipoVehiculo, Estado FROM Turnos
+                @"SELECT IdTurno,NombreCliente,NumeroCelular,Placa,IdTipoVehiculo, Estado, Marca FROM Turnos
                   WHERE Placa = ?  ORDER BY FechaHoraIngreso DESC", placa).FirstOrDefault();
 
             if (vehiculo != null)
@@ -429,6 +433,7 @@ namespace CarWash.Presentacion.Operacion
                 cargarListaServicio(vehiculo.IdTipoVehiculo);
                 txtCliente.Text = vehiculo.NombreCliente;
                 txtCelular.Text = vehiculo.NumeroCelular;
+                txtMarca.Text = vehiculo.Marca;
             }
             else
             {
@@ -442,7 +447,8 @@ namespace CarWash.Presentacion.Operacion
         private void CargarHistorico(string placa)
         {
             var historial = DatabaseQueryLDB.ExecuteList<IngresoVehiculoDTO>(
-                @"SELECT TUR.IdTurno,TUR.NumeroTurno, strftime('%Y-%m-%d %H:%M',TUR.FechaHoraIngreso / 10000000 - 62135596800,'unixepoch') AS FechaHoraIngreso, TUR.NombreCliente,TUR.Placa,TVH.Nombre TipoVehiculo, printf('$ %.2f', TUR.Valor) ValorPagado
+                @"SELECT TUR.IdTurno,TUR.NumeroTurno, strftime('%Y-%m-%d %H:%M',TUR.FechaHoraIngreso / 10000000 - 62135596800,'unixepoch') AS FechaHoraIngreso, TUR.NombreCliente,TUR.Placa,
+                  TVH.Nombre TipoVehiculo, printf('$ %.2f', TUR.Valor) ValorPagado, TUR.Marca
                   FROM Turnos TUR INNER JOIN TipoVehiculo TVH ON TUR.IdTipoVehiculo = TVH.idTipoVehiculo
                   WHERE TUR.Placa = ?
                   ORDER BY TUR.FechaHoraIngreso DESC",
@@ -453,11 +459,13 @@ namespace CarWash.Presentacion.Operacion
             dgvHistorico.Columns["IdTurno"].Visible = false;
             dgvHistorico.Columns["NumeroCelular"].Visible = false;
             dgvHistorico.Columns["Valor"].Visible = false;
+            dgvHistorico.Columns["NumeroTurno"].Visible = false;
 
             dgvHistorico.Columns["NumeroTurno"].HeaderText = "N° Turno";
             dgvHistorico.Columns["FechaHoraIngreso"].HeaderText = "Fecha Servicio";
             dgvHistorico.Columns["NombreCliente"].HeaderText = "Nombre Cliente";
             dgvHistorico.Columns["Placa"].HeaderText = "Placa";
+            dgvHistorico.Columns["Marca"].HeaderText = "Marca";
             dgvHistorico.Columns["TipoVehiculo"].HeaderText = "Tipo Vehiculo";
             dgvHistorico.Columns["Servicio"].HeaderText = "Servicio";
             dgvHistorico.Columns["ValorPagado"].HeaderText = "Valor ($)";
@@ -556,6 +564,21 @@ namespace CarWash.Presentacion.Operacion
         private void txtValorBase_MouseClick(object sender, MouseEventArgs e)
         {
             ((TextBox)sender).SelectAll();
+        }
+
+        private void txtMarca_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            e.KeyChar = Char.ToUpper(e.KeyChar);
+        }
+
+        private void txtCliente_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            e.KeyChar = Char.ToUpper(e.KeyChar);
+        }
+
+        private void txtPlaca_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            e.KeyChar = Char.ToUpper(e.KeyChar);
         }
     }
 }

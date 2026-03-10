@@ -176,6 +176,7 @@ namespace CarWash.Presentacion.Operacion
             this.Name = "FrmValeOperario";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Vale Operario";
+            this.Load += new System.EventHandler(this.FrmValeOperario_Load);
             this.panelCard.ResumeLayout(false);
             this.panelCard.PerformLayout();
             this.ResumeLayout(false);

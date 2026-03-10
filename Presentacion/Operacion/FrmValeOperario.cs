@@ -23,6 +23,10 @@ namespace CarWash.Presentacion.Operacion
             CargaOperarios();
         }
 
+        private void FrmValeOperario_Load(object sender, EventArgs e)
+        {
+            cargaCajaDiaria();
+        }
 
         private void CargaOperarios()
         {
@@ -70,10 +74,10 @@ namespace CarWash.Presentacion.Operacion
 
                 valorValeOperario = valorValeOperario + Convert.ToDecimal(txtValor.Text);
 
-                DatabaseQueryLDB.ExecuteNonQuery(
-                       "UPDATE CajaDiaria SET TotalEgresos = ? WHERE idCaja = ?",
-                       valorValeOperario, cajaDiaria.idCaja
-                       );
+                //DatabaseQueryLDB.ExecuteNonQuery(
+                //       "UPDATE CajaDiaria SET TotalEgresos = ? WHERE idCaja = ?",
+                //       valorValeOperario, cajaDiaria.idCaja
+                //       );
 
                 MostrarToast("Gasto registrado correctamente", Color.FromArgb(40, 167, 69));
                 cargaCajaDiaria();
@@ -111,7 +115,6 @@ namespace CarWash.Presentacion.Operacion
 
         private bool validaCampos()
         {
-            cargaCajaDiaria();
             if (cmbOperario.SelectedIndex == 0)
             {
                 MostrarToast("Seleccione un operador.", Color.FromArgb(220, 53, 69));
@@ -196,8 +199,6 @@ namespace CarWash.Presentacion.Operacion
             // Si llega aquí, se bloquea la tecla
             e.Handled = true;
         }
-
-
 
     }
 }
