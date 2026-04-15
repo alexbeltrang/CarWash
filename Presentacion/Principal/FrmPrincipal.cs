@@ -1,5 +1,6 @@
 ﻿using CarWash.Database;
 using CarWash.Presentacion.Administracion;
+using CarWash.Presentacion.Administracion.Nomina;
 using CarWash.Presentacion.Consultas;
 using CarWash.Presentacion.Operacion;
 using System;
@@ -128,39 +129,37 @@ namespace CarWash.Presentacion.Principal
 
         private void regsitrarValesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Form formularioAbierto = Application.OpenForms["FrmValeOperario"];
 
-            if (formularioAbierto == null)
-            {
-                using (FrmValeOperario frmApertura = new FrmValeOperario())
-                {
-                    frmApertura.ShowDialog(this);
-                }
-            }
-            else
-            {
-                formularioAbierto.BringToFront();
-            }
-        }
-
-        private void registrarGastoToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Form formularioAbierto = Application.OpenForms["FrmGastoCaja"];
-
-            if (formularioAbierto == null)
-            {
-                using (FrmGastoCaja frmApertura = new FrmGastoCaja())
-                {
-                    frmApertura.ShowDialog(this);
-                }
-            }
-            else
-            {
-                formularioAbierto.BringToFront();
-            }
         }
 
         private void registrarPropinaRecibidaQRToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void mocimientosToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form formularioAbierto = Application.OpenForms["FrmConsultaMovimientosCaja"];
+
+            if (formularioAbierto == null)
+            {
+                using (FrmConsultaMovimientosCaja frmApertura = new FrmConsultaMovimientosCaja())
+                {
+                    frmApertura.ShowDialog(this);
+                }
+            }
+            else
+            {
+                formularioAbierto.BringToFront();
+            }
+        }
+
+        private void asistenciaOperariosToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void registrarPropinaRecibidaQRToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             Form formularioAbierto = Application.OpenForms["FrmRegistroPropinasOperarios"];
 
@@ -177,13 +176,65 @@ namespace CarWash.Presentacion.Principal
             }
         }
 
-        private void mocimientosToolStripMenuItem_Click(object sender, EventArgs e)
+        private void registrarValesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Form formularioAbierto = Application.OpenForms["FrmConsultaMovimientosCaja"];
+            Form formularioAbierto = Application.OpenForms["FrmValeOperario"];
 
             if (formularioAbierto == null)
             {
-                using (FrmConsultaMovimientosCaja frmApertura = new FrmConsultaMovimientosCaja())
+                using (FrmValeOperario frmApertura = new FrmValeOperario())
+                {
+                    frmApertura.ShowDialog(this);
+                }
+            }
+            else
+            {
+                formularioAbierto.BringToFront();
+            }
+        }
+
+        private void asistenciaOperariosToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            Form formularioAbierto = Application.OpenForms["FrmRegistroAsistencia"];
+
+            if (formularioAbierto == null)
+            {
+                using (FrmRegistroAsistencia frmApertura = new FrmRegistroAsistencia())
+                {
+                    frmApertura.ShowDialog(this);
+                }
+            }
+            else
+            {
+                formularioAbierto.BringToFront();
+            }
+        }
+
+        private void liquidarNóminaToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form formularioAbierto = Application.OpenForms["FrmLiquidacionNominaOperarios"];
+
+            if (formularioAbierto == null)
+            {
+                using (FrmLiquidacionNominaOperarios frmApertura = new FrmLiquidacionNominaOperarios())
+                {
+                    frmApertura.ShowDialog(this);
+                }
+            }
+            else
+            {
+                formularioAbierto.BringToFront();
+            }
+
+        }
+
+        private void registrarGastoToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            Form formularioAbierto = Application.OpenForms["FrmGastoCaja"];
+
+            if (formularioAbierto == null)
+            {
+                using (FrmGastoCaja frmApertura = new FrmGastoCaja())
                 {
                     frmApertura.ShowDialog(this);
                 }

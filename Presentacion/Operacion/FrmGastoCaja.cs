@@ -28,6 +28,7 @@ namespace CarWash.Presentacion.Operacion
 
         private void btnGuardar_Click(object sender, EventArgs e)
         {
+            cargaCajaDiaria();
             if (validaCampos())
             {
 
@@ -39,7 +40,7 @@ namespace CarWash.Presentacion.Operacion
                         Convert.ToDecimal(txtValor.Text),
                         txtObservacion.Text);
 
-                valorGastoCaja = valorGastoCaja + Convert.ToDecimal(txtValor.Text);
+                valorGastoCaja = cajaDiaria.TotalEgresos + Convert.ToDecimal(txtValor.Text);
 
                 DatabaseQueryLDB.ExecuteNonQuery(
                        "UPDATE CajaDiaria SET TotalEgresos = ? WHERE idCaja = ?",

@@ -1,21 +1,32 @@
-﻿using CarWash.Database;
+﻿using CarWash.Controladores;
+using CarWash.Database;
 using CarWash.DTOs;
 using CarWash.Entidades;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 
 namespace CarWash.Presentacion.Operacion
 {
     public partial class FrmIngresoVehiculo : Form
     {
+        CajaDiariaController cajaDiariaController = new CajaDiariaController();
+        TipoVehiculoController tipoVehiculoController = new TipoVehiculoController();
+        ServiciosController serviciosController = new ServiciosController();
+        TurnosController turnosController = new TurnosController();
+        TurnosServiciosController turnosServiciosController = new TurnosServiciosController();
+        TurnosDiariosController turnosDiariosController = new TurnosDiariosController();
+
         decimal precioTotalServicio = 0;
         decimal precioBaseTotalServicio = 0;
 
@@ -83,13 +94,16 @@ namespace CarWash.Presentacion.Operacion
 
         private void cargarTipoVehiculo()
         {
+
             // Aquí puedes cargar los combos con datos de la base de datos
-            var servicios = DatabaseQueryLDB.ExecuteList<TipoVehiculo>("select idTipoVehiculo, Nombre from TipoVehiculo  where IsDelete = ?", 0);
+            var servicios = tipoVehiculoController.GetAllTipoVehiculo().Where(t => !t.IsDelete).ToList();
+
             servicios.Insert(0, new TipoVehiculo
             {
                 IdTipoVehiculo = 0,
                 Nombre = "-- Seleccione --"
             });
+
             cmbTipoVehiculo.DataSource = servicios;
             cmbTipoVehiculo.DisplayMember = "Nombre";
             cmbTipoVehiculo.ValueMember = "idTipoVehiculo";
@@ -97,24 +111,13 @@ namespace CarWash.Presentacion.Operacion
 
         private void cargaCajaDiaria()
         {
-            cajaDiaria = DatabaseQueryLDB.ExecuteList<CajaDiaria>(
-                @"SELECT idCaja,FechaApertura,FechaCierre,MontoInicial,TotalIngresosEfectivo,TotalIngresosTransferencias,TotalIngresosDatafono,TotalEgresos,TotalFinal,Estado
-                  FROM CajaDiaria
-                  WHERE  Estado = 1;").FirstOrDefault();
-
+            var cajaDiaria = cajaDiariaController.GetCajaActiva();
         }
 
 
         private void CargarListaCompletaServicios()
         {
-            // Aquí puedes cargar los combos con datos de la base de datos
-            servicios = DatabaseQueryLDB.ExecuteList<ServicioComboDTO>(
-               @"SELECT ser.idServicio, ser.Nombre, psr.precio, psr.PrecioBaseComision, tpv.idTipoVehiculo
-                  FROM PrecioServicioVehiculo psr 
-                  INNER JOIN TipoVehiculo tpv ON psr.IdTipoVehiculo = tpv.idTipoVehiculo 
-                  INNER JOIN Servicios ser ON ser.idServicio = psr.idServicio  
-                  WHERE ser.IsDelete = ?", 0);
-
+            servicios = serviciosController.CargarListaCompletaServicios();
         }
 
         private void cargarListaServicio(int TipoVehiculo)
@@ -245,6 +248,7 @@ namespace CarWash.Presentacion.Operacion
 
         private void btnGuardar_Click(object sender, EventArgs e)
         {
+            Turnos turnos = new Turnos();
             if (!ValidarCampos())
             {
                 MostrarToast("Complete todos los campos obligatorios", Color.FromArgb(220, 53, 69));
@@ -259,39 +263,37 @@ namespace CarWash.Presentacion.Operacion
             precioBaseTotalServicio = Convert.ToDecimal(txtValorBase.Text);
             precioTotalServicio = Convert.ToDecimal(txtValor.Text);
 
+            turnos.NumeroTurno = GenerarTurno();
+            turnos.NombreCliente = txtCliente.Text.Trim();
+            turnos.NumeroCelular = txtCelular.Text.Trim();
+            turnos.Placa = txtPlaca.Text.Trim();
+            turnos.FechaHoraIngreso = DateTime.Now;
+            turnos.Marca = txtMarca.Text.Trim();
+            turnos.NumeroOrden = txtNumOrden.Text.Trim();
+            turnos.Valor = precioTotalServicio;
+            turnos.ValorBaseComision = precioBaseTotalServicio;
+            turnos.Pagado = false;
+            turnos.Observaciones = txtObservaciones.Text.Trim();
+            turnos.Estado = false;
+            turnos.IdTipoVehiculo = Convert.ToInt32(cmbTipoVehiculo.SelectedValue);
+            turnos.OperadorOcupado = false;
+            turnos.idCajaDiaria = cajaDiaria.idCaja;
 
-            long idTurno = DatabaseQueryLDB.ExecuteInsert(
-                    "INSERT INTO Turnos (NumeroTurno,NombreCliente,NumeroCelular,Placa," +
-                    " FechaHoraIngreso,Valor,Pagado,Observaciones,IdTipoVehiculo," +
-                    " Estado,ValorBaseComision,idCajaDiaria,Marca,NumeroOrden) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-                    GenerarTurno(),
-                    txtCliente.Text.Trim(),
-                    txtCelular.Text.Trim(),
-                    txtPlaca.Text.Trim(),
-                    DateTime.Now,
-                    precioTotalServicio,
-                    false,
-                    txtObservaciones.Text.Trim(),
-                    Convert.ToInt32(cmbTipoVehiculo.SelectedValue),
-                    false,
-                    precioBaseTotalServicio,
-                    cajaDiaria.idCaja,
-                    txtMarca.Text.Trim(),
-                    txtNumOrden.Text.Trim()
-                );
-
+            long idTurno = turnosController.RegistrarTurno(turnos);
 
             List<int> serviciosSeleccionados = new List<int>();
 
             foreach (var item in lstServiciosVehiculo.CheckedItems)
             {
                 var servicio = (ServicioListaDTO)item;
+                TurnoServicios turnoServicios = new TurnoServicios
+                {
+                    idServicios = servicio.idServicio,
+                    IdTurno = (int)idTurno,
+                    IsDeleted = false
+                };
 
-                DatabaseQueryLDB.ExecuteInsert(
-                     "INSERT INTO TurnoServicios (idServicios,IdTurno,IsDeleted) values (?,?,?)",
-                     servicio.idServicio,
-                     idTurno,
-                     0);
+                turnosServiciosController.RegistrarTurnoServicio(turnoServicios);
             }
             MostrarToast("Ingreso registrado correctamente", Color.FromArgb(40, 167, 69));
             CLEAR();
@@ -366,35 +368,37 @@ namespace CarWash.Presentacion.Operacion
         {
             string turno = "";
             string fechaHoy = DateTime.Today.ToString("yyyy-MM-dd");
+            int? consecutivoActual = 0;
+            var turnosSel = turnosDiariosController.consultaByFecha(fechaHoy);
 
-            // Buscar consecutivo actual
-            int? consecutivoActual = DatabaseQueryLDB.ExecuteScalar<int?>(
-                "SELECT Consecutivo FROM TurnosDiarios WHERE Fecha = ?",
-                fechaHoy
-            );
-
-            int nuevoConsecutivo;
-
-            if (!consecutivoActual.HasValue)
+            if (turnosSel.Count > 0)
             {
-                nuevoConsecutivo = 1;
+                consecutivoActual = turnosSel.FirstOrDefault().Consecutivo;
+            }
+            else
+            {
+                consecutivoActual = 0;
+            }
+            // Buscar consecutivo actual
 
-                DatabaseQueryLDB.ExecuteNonQuery(
-                    "INSERT INTO TurnosDiarios (Fecha, Consecutivo) VALUES (?, ?)",
-                    fechaHoy,
-                    nuevoConsecutivo
-                );
+            int nuevoConsecutivo = 0;
+
+            if (consecutivoActual == 0)
+            {
+                TurnosDiarios turnosDiarios = new TurnosDiarios();
+                turnosDiarios.Consecutivo = 1;
+                turnosDiarios.Fecha = fechaHoy;
+                nuevoConsecutivo = 1;
+                turnosDiariosController.RegistrarTurnoDiario(turnosDiarios);
             }
             else
             {
                 // Ya existe → incrementar
                 nuevoConsecutivo = consecutivoActual.Value + 1;
 
-                DatabaseQueryLDB.ExecuteNonQuery(
-                    "UPDATE TurnosDiarios SET Consecutivo = ? WHERE Fecha = ?",
-                    nuevoConsecutivo,
-                    fechaHoy
-                );
+                turnosSel.FirstOrDefault().Consecutivo = nuevoConsecutivo;
+
+                turnosDiariosController.ActualizarTurnoDiario(turnosSel.FirstOrDefault());
             }
 
             turno = $"T-{DateTime.Today:yyyyMMdd}-{nuevoConsecutivo:000}";
@@ -422,9 +426,11 @@ namespace CarWash.Presentacion.Operacion
         }
         private void BuscarVehiculoPorPlaca(string placa)
         {
-            var vehiculo = DatabaseQueryLDB.ExecuteList<Turnos>(
-                @"SELECT IdTurno,NombreCliente,NumeroCelular,Placa,IdTipoVehiculo, Estado, Marca FROM Turnos
-                  WHERE Placa = ?  ORDER BY FechaHoraIngreso DESC", placa).FirstOrDefault();
+            var vehiculo = turnosController.BuscarByPlaca(placa);
+
+            //var vehiculo = DatabaseQueryLDB.ExecuteList<Turnos>(
+            //    @"SELECT IdTurno,NombreCliente,NumeroCelular,Placa,IdTipoVehiculo, Estado, Marca FROM Turnos
+            //      WHERE Placa = ?  ORDER BY FechaHoraIngreso DESC", placa).FirstOrDefault();
 
             if (vehiculo != null)
             {
@@ -446,14 +452,8 @@ namespace CarWash.Presentacion.Operacion
 
         private void CargarHistorico(string placa)
         {
-            var historial = DatabaseQueryLDB.ExecuteList<IngresoVehiculoDTO>(
-                @"SELECT TUR.IdTurno,TUR.NumeroTurno, strftime('%Y-%m-%d %H:%M',TUR.FechaHoraIngreso / 10000000 - 62135596800,'unixepoch') AS FechaHoraIngreso, TUR.NombreCliente,TUR.Placa,
-                  TVH.Nombre TipoVehiculo, printf('$ %.2f', TUR.Valor) ValorPagado, TUR.Marca
-                  FROM Turnos TUR INNER JOIN TipoVehiculo TVH ON TUR.IdTipoVehiculo = TVH.idTipoVehiculo
-                  WHERE TUR.Placa = ?
-                  ORDER BY TUR.FechaHoraIngreso DESC",
-                placa
-            );
+            var historial = turnosController.HistoricoByPlaca(placa);
+
             dgvHistorico.DataSource = historial;
             dgvHistorico.Columns["Valor"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
             dgvHistorico.Columns["IdTurno"].Visible = false;

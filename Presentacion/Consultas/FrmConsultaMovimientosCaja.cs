@@ -24,6 +24,7 @@ namespace CarWash.Presentacion.Consultas
         {
             InitializeComponent();
             cargarFormasPago();
+            CargaOperarios();
         }
 
 
@@ -141,6 +142,14 @@ namespace CarWash.Presentacion.Consultas
                     parametros.Add(cmbFormaPago.SelectedValue);
                 }
 
+                if (cmbOperario.SelectedIndex > 0)
+                {
+                    sql += " AND tur.idOperario = ? ";
+                    parametros.Add(cmbOperario.SelectedValue);
+                }
+
+
+
                 sql += " AND date(TUR.FechaHoraIngreso / 10000000 - 62135596800,'unixepoch') BETWEEN ? AND ? ";
 
                 parametros.Add(dtpFechaInicial.Value.ToString("yyyy-MM-dd"));
@@ -192,6 +201,26 @@ namespace CarWash.Presentacion.Consultas
         {
             dtpFechaInicial.Value = DateTime.Now;
             dtpFechaFinal.Value = DateTime.Now;
+        }
+
+        private void CargaOperarios()
+        {
+            var operadoresDisponibles = DatabaseQueryLDB.ExecuteList<OperariosDTO>(
+              @"SELECT idOperario,Nombres,Apellidos  
+                  FROM Operarios 
+                  WHERE isDelete = 0 ");
+
+            operadoresDisponibles.Insert(0, new OperariosDTO
+            {
+                idOperario = 0,
+                Nombres = "-- Seleccione --"
+            });
+
+            cmbOperario.DataSource = operadoresDisponibles;
+            cmbOperario.DisplayMember = "NombreCompleto";
+            cmbOperario.ValueMember = "idOperario";
+            cmbOperario.SelectedIndex = 0;
+
         }
     }
 }

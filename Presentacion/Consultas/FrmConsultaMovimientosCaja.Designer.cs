@@ -46,6 +46,8 @@ namespace CarWash.Presentacion.Consultas
             this.label2 = new System.Windows.Forms.Label();
             this.dtpFechaFinal = new System.Windows.Forms.DateTimePicker();
             this.lblTotal = new System.Windows.Forms.Label();
+            this.lblOperario = new System.Windows.Forms.Label();
+            this.cmbOperario = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.dtgMovimientos)).BeginInit();
             this.SuspendLayout();
             // 
@@ -79,7 +81,7 @@ namespace CarWash.Presentacion.Consultas
             this.cmbFormaPago.Location = new System.Drawing.Point(6, 111);
             this.cmbFormaPago.MaxDropDownItems = 10;
             this.cmbFormaPago.Name = "cmbFormaPago";
-            this.cmbFormaPago.Size = new System.Drawing.Size(290, 31);
+            this.cmbFormaPago.Size = new System.Drawing.Size(210, 31);
             this.cmbFormaPago.TabIndex = 4;
             // 
             // lblHistorico
@@ -139,9 +141,9 @@ namespace CarWash.Presentacion.Consultas
             // dtpFechaInicial
             // 
             this.dtpFechaInicial.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.dtpFechaInicial.Location = new System.Drawing.Point(326, 111);
+            this.dtpFechaInicial.Location = new System.Drawing.Point(231, 111);
             this.dtpFechaInicial.Name = "dtpFechaInicial";
-            this.dtpFechaInicial.Size = new System.Drawing.Size(354, 30);
+            this.dtpFechaInicial.Size = new System.Drawing.Size(302, 30);
             this.dtpFechaInicial.TabIndex = 39;
             // 
             // label1
@@ -149,7 +151,7 @@ namespace CarWash.Presentacion.Consultas
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.label1.ForeColor = System.Drawing.Color.White;
-            this.label1.Location = new System.Drawing.Point(322, 88);
+            this.label1.Location = new System.Drawing.Point(227, 88);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(94, 20);
             this.label1.TabIndex = 40;
@@ -176,7 +178,7 @@ namespace CarWash.Presentacion.Consultas
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.label2.ForeColor = System.Drawing.Color.White;
-            this.label2.Location = new System.Drawing.Point(704, 89);
+            this.label2.Location = new System.Drawing.Point(545, 89);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(86, 20);
             this.label2.TabIndex = 43;
@@ -185,9 +187,9 @@ namespace CarWash.Presentacion.Consultas
             // dtpFechaFinal
             // 
             this.dtpFechaFinal.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.dtpFechaFinal.Location = new System.Drawing.Point(708, 112);
+            this.dtpFechaFinal.Location = new System.Drawing.Point(549, 112);
             this.dtpFechaFinal.Name = "dtpFechaFinal";
-            this.dtpFechaFinal.Size = new System.Drawing.Size(354, 30);
+            this.dtpFechaFinal.Size = new System.Drawing.Size(302, 30);
             this.dtpFechaFinal.TabIndex = 42;
             // 
             // lblTotal
@@ -201,10 +203,33 @@ namespace CarWash.Presentacion.Consultas
             this.lblTotal.TabIndex = 44;
             this.lblTotal.Text = "Valor Total Movimiento";
             // 
+            // lblOperario
+            // 
+            this.lblOperario.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.lblOperario.ForeColor = System.Drawing.Color.White;
+            this.lblOperario.Location = new System.Drawing.Point(857, 89);
+            this.lblOperario.Name = "lblOperario";
+            this.lblOperario.Size = new System.Drawing.Size(100, 23);
+            this.lblOperario.TabIndex = 45;
+            this.lblOperario.Text = "Operario";
+            // 
+            // cmbOperario
+            // 
+            this.cmbOperario.BackColor = System.Drawing.Color.White;
+            this.cmbOperario.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbOperario.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.cmbOperario.Location = new System.Drawing.Point(861, 115);
+            this.cmbOperario.MaxDropDownItems = 10;
+            this.cmbOperario.Name = "cmbOperario";
+            this.cmbOperario.Size = new System.Drawing.Size(298, 31);
+            this.cmbOperario.TabIndex = 46;
+            // 
             // FrmConsultaMovimientosCaja
             // 
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(90)))), ((int)(((byte)(150)))));
             this.ClientSize = new System.Drawing.Size(1171, 685);
+            this.Controls.Add(this.cmbOperario);
+            this.Controls.Add(this.lblOperario);
             this.Controls.Add(this.lblTotal);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.dtpFechaFinal);
@@ -241,5 +266,7 @@ namespace CarWash.Presentacion.Consultas
         private Label label2;
         private DateTimePicker dtpFechaFinal;
         private Label lblTotal;
+        private Label lblOperario;
+        private ComboBox cmbOperario;
     }
 }

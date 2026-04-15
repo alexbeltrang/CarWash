@@ -4,84 +4,74 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static SQLite.SQLiteConnection;
 
 namespace CarWash.Database
 {
     public class DatabaseHelper
     {
         private static string NameDatabase = ConfigurationManager.AppSettings["NameLDB"];
-        private static string dbFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, NameDatabase);
 
-        // Generamos a generic method 
+        private static string folder = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+            "SplashCar"
+        );
+
+        private static string dbFile = Path.Combine(folder, NameDatabase);
+
+        public static SQLiteConnection GetConnection()
+        {
+            Directory.CreateDirectory(folder);
+            return new SQLiteConnection(dbFile);
+        }
+
         public static bool Insert<T>(T item)
         {
-            bool result = false;
-            using (SQLiteConnection conn = new SQLiteConnection(dbFile))
+            using (var conn = GetConnection())
             {
                 conn.CreateTable<T>();
-                int rows = conn.Insert(item);
-                if (rows > 0)
-                {
-                    result = true;
-                }
+                return conn.Insert(item) > 0;
             }
-            return result;
         }
+
         public static bool Insert<T>(T item, out T objetoaux)
         {
-            bool result = false;
-            T objeto = default(T);
-            using (SQLiteConnection conn = new SQLiteConnection(dbFile))
+            using (var conn = GetConnection())
             {
                 conn.CreateTable<T>();
                 int rows = conn.Insert(item);
-                if (rows > 0)
-                {
-                    objeto = item;
-                    result = true;
 
-                }
+                objetoaux = rows > 0 ? item : default(T);
+                return rows > 0;
             }
-            objetoaux = objeto;
-            return result;
         }
 
         public static bool Create<T>()
         {
-            bool result = false;
-            using (SQLiteConnection conn = new SQLiteConnection(dbFile))
+            try
             {
-                try
+                using (var conn = GetConnection())
                 {
                     conn.CreateTable<T>();
-                    result = true;
-                }
-                catch (Exception ex)
-                {
-                    string mes = ex.Message;
-                    result = false;
+                    return true;
                 }
             }
-            return result;
+            catch
+            {
+                return false;
+            }
         }
-
 
         public static bool CreateOrUpdateTable<T>()
         {
-            using (SQLiteConnection conn = new SQLiteConnection(dbFile))
+            try
             {
-                try
+                using (var conn = GetConnection())
                 {
                     var mapping = conn.GetMapping<T>();
                     string tableName = mapping.TableName;
 
-                    // 1️⃣ Crear tabla si no existe
                     conn.CreateTable<T>();
 
-                    // 2️⃣ Obtener columnas existentes
                     var existingColumns = conn.Query<ColumnInfo>(
                         $"PRAGMA table_info({tableName});");
 
@@ -89,7 +79,6 @@ namespace CarWash.Database
                         .Select(c => c.name)
                         .ToList();
 
-                    // 3️⃣ Comparar con propiedades del modelo
                     foreach (var column in mapping.Columns)
                     {
                         if (!existingColumnNames.Contains(column.Name))
@@ -105,118 +94,73 @@ namespace CarWash.Database
 
                     return true;
                 }
-                catch (Exception ex)
-                {
-                    string error = ex.Message;
-                    return false;
-                }
+            }
+            catch
+            {
+                return false;
             }
         }
-
 
         public static bool Drop<T>()
         {
-            bool result = false;
-            using (SQLiteConnection conn = new SQLiteConnection(dbFile))
+            try
             {
-                try
+                using (var conn = GetConnection())
                 {
                     conn.DropTable<T>();
-                    result = true;
-                }
-                catch (Exception ex)
-                {
-                    string mes = ex.Message;
-                    result = false;
+                    return true;
                 }
             }
-            return result;
-        }
-        public bool Insert1<T>(T item)
-        {
-            bool result = false;
-            using (SQLiteConnection conn = new SQLiteConnection(dbFile))
+            catch
             {
-                conn.CreateTable<T>();
-                int rows = conn.Insert(item);
-                if (rows > 0)
-                {
-                    result = true;
-                }
-                conn.Dispose();
+                return false;
             }
-            return result;
         }
+
         public static bool Update<T>(T item)
         {
-            bool result = false;
-            using (SQLiteConnection conn = new SQLiteConnection(dbFile))
+            using (var conn = GetConnection())
             {
                 conn.CreateTable<T>();
-                int rows = conn.Update(item);
-                if (rows > 0)
-                {
-                    result = true;
-                }
-                conn.Dispose();
+                return conn.Update(item) > 0;
             }
-            return result;
         }
+
         public static bool Delete<T>(T item)
         {
-            bool result = false;
-            using (SQLiteConnection conn = new SQLiteConnection(dbFile))
+            using (var conn = GetConnection())
             {
                 conn.CreateTable<T>();
-                int rows = conn.Delete(item);
-                if (rows > 0)
-                {
-                    result = true;
-                }
+                return conn.Delete(item) > 0;
             }
-            return result;
-        }
-
-        // where T:new() decimos que T puede ser lo que sea y va a tener un parametro 
-        public static List<T> Read<T>(T item) where T : new()
-        {
-            List<T> items;
-            using (SQLiteConnection conn = new SQLiteConnection(dbFile))
-            {
-                conn.CreateTable<T>();
-                items = conn.Table<T>().ToList();
-
-            }
-            return items;
         }
 
         public static List<T> Read<T>() where T : new()
         {
-            List<T> items;
-            using (SQLiteConnection conn = new SQLiteConnection(dbFile))
+            using (var conn = GetConnection())
             {
                 conn.CreateTable<T>();
-                items = conn.Table<T>().ToList();
-
+                return conn.Table<T>().ToList();
             }
-            return items;
         }
 
-
-
-        public List<T> ReadList<T>(T item) where T : new()
+        public static List<T> Read<T>(T item) where T : new()
         {
-            List<T> items;
-            using (SQLiteConnection conn = new SQLiteConnection(dbFile))
+            using (var conn = GetConnection())
             {
                 conn.CreateTable<T>();
-                items = conn.Table<T>().ToList();
-
+                return conn.Table<T>().ToList();
             }
-            return items;
         }
 
-
+        public static List<T> ReadList<T>() where T : new()
+        {
+            using (var conn = GetConnection())
+            {
+                conn.CreateTable<T>();
+                return conn.Table<T>().ToList();
+            }
+        }
 
         private static string GetSQLiteType(Type type)
         {
@@ -232,6 +176,5 @@ namespace CarWash.Database
 
             return "TEXT";
         }
-
     }
 }

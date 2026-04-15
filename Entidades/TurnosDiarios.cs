@@ -11,9 +11,9 @@ namespace CarWash.Entidades
     [Table("TurnosDiarios")]
     public class TurnosDiarios
     {
-
+        [PrimaryKey, AutoIncrement, Column("Id")]
         public int Id { get; set; }
-        public DateTime Fecha { get; set; }
+        public string Fecha { get; set; }
         public int Consecutivo { get; set; }
     }
 }

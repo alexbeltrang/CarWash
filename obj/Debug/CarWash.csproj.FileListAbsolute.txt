@@ -39,3 +39,5 @@ D:\WorkGitHub\CarWash\obj\Debug\CarWash.Presentacion.Operacion.FrmValeOperario.r
 D:\WorkGitHub\CarWash\obj\Debug\CarWash.Presentacion.Operacion.FrmGastoCaja.resources
 D:\WorkGitHub\CarWash\obj\Debug\CarWash.Presentacion.Administracion.FrmRegistroPropinasOperarios.resources
 D:\WorkGitHub\CarWash\obj\Debug\CarWash.Presentacion.Consultas.FrmConsultaMovimientosCaja.resources
+D:\WorkGitHub\CarWash\obj\Debug\CarWash.Presentacion.Administracion.FrmRegistroAsistencia.resources
+D:\WorkGitHub\CarWash\obj\Debug\CarWash.Presentacion.Administracion.Nomina.FrmLiquidacionNominaOperarios.resources

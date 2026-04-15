@@ -1,4 +1,5 @@
-﻿using CarWash.Database;
+﻿using CarWash.Controladores;
+using CarWash.Database;
 using CarWash.DTOs;
 using CarWash.Entidades;
 using CarWash.Enum;
@@ -24,6 +25,12 @@ namespace CarWash.Presentacion.Operacion
         decimal valorPagarTotal = 0;
         List<GestionVehiculosDTO> vehiculosProceso = new List<GestionVehiculosDTO>();
         private List<CajaDiaria> cajaDiaria = new List<CajaDiaria>();
+
+        CajaDiariaController cajaDiariaController = new CajaDiariaController();
+        TurnosController turnosController = new TurnosController();
+        ServiciosController serviciosController = new ServiciosController();
+        TurnosMovimientosController turnosMovimientosController = new TurnosMovimientosController();
+
         public FrmGestionDetalleVehiculo(int idTurno)
         {
             InitializeComponent();
@@ -82,22 +89,7 @@ namespace CarWash.Presentacion.Operacion
         }
         private void cargaCajaDiaria()
         {
-            try
-            {
-                cajaDiaria = DatabaseQueryLDB.ExecuteList<CajaDiaria>(
-                @"SELECT idCaja,FechaApertura,FechaCierre,MontoInicial,TotalIngresosEfectivo,TotalIngresosTransferencias,TotalIngresosDatafono,TotalIngresosCredito, TotalEgresos,TotalFinal,Estado
-                  FROM CajaDiaria
-                  WHERE  Estado = 1");
-                if (cajaDiaria == null)
-                {
-                    MessageBox.Show("No hay apertura de caja para el día de hoy.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    this.Close();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error cargando Cajas Diarias: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            cajaDiaria.Add(cajaDiariaController.GetCajaActiva());
         }
 
         private void cerrarForm()
@@ -116,13 +108,8 @@ namespace CarWash.Presentacion.Operacion
         {
             try
             {
-                vehiculosProceso = DatabaseQueryLDB.ExecuteList<GestionVehiculosDTO>(
-               @"SELECT TUR.IdTurno,TUR.Placa,TUR.NombreCliente,TUR.NumeroCelular, TUR.NumeroTurno, strftime('%Y-%m-%d %H:%M',TUR.FechaHoraIngreso / 10000000 - 62135596800,'unixepoch') AS FechaHoraIngreso, TVH.Nombre TipoVehiculo, 
-                  COALESCE(OPE.Nombres, '') || ' ' || COALESCE(OPE.Apellidos, '') AS OperadorAsignado, TUR.Valor, TUR.idOperario, TUR.Observaciones,   
-                  TUR.ValorBaseComision, TUR.ValorComision 
-                  FROM Turnos TUR INNER JOIN TipoVehiculo TVH ON TUR.IdTipoVehiculo = TVH.idTipoVehiculo 
-                  LEFT OUTER JOIN Operarios OPE ON TUR.idOperario = OPE.idOperario 
-                  WHERE TUR.IdTurno = ? ", idTurno);
+                vehiculosProceso = turnosController.VehiculoEnProceso(idTurno);
+
 
                 if (vehiculosProceso != null && vehiculosProceso.Count > 0)
                 {
@@ -172,10 +159,7 @@ namespace CarWash.Presentacion.Operacion
 
         private void cargaServiciosContratados(int idTurno)
         {
-            var serviciosAdquiridos = DatabaseQueryLDB.ExecuteList<ServicioListaDTO>(
-              @"SELECT SER.idServicio, SER.Nombre
-                FROM Servicios SER INNER JOIN TurnoServicios TUS ON SER.idServicio = TUS.idServicios
-                WHERE TUS.IsDeleted = 0 AND TUS.IdTurno = ? ", idTurno);
+            var serviciosAdquiridos = serviciosController.ServiciosPorTurno(idTurno);
 
             lstServiciosAdquiridos.DataSource = serviciosAdquiridos;
             lstServiciosAdquiridos.DisplayMember = "Nombre";
@@ -202,10 +186,13 @@ namespace CarWash.Presentacion.Operacion
 
                     if (comisionOperador.Count > 0)
                     {
-                        DatabaseQueryLDB.ExecuteNonQuery(
-                           "UPDATE Turnos SET idOperario = ?, PorcentajeComision = ?, FechaHoraAsignacionOperario = ?, OperadorOcupado =  1 WHERE IdTurno = ?",
-                           idOperador, comisionOperador[0].Porcentaje, DateTime.Now, vehiculosProceso[0].IdTurno
-                           );
+                        var turnoGestion = turnosController.consultaTurnoId(vehiculosProceso[0].IdTurno);
+                        turnoGestion.idOperario = idOperador;
+                        turnoGestion.PorcentajeComision = comisionOperador[0].Porcentaje;
+                        turnoGestion.FechaHoraAsignacionOperario = DateTime.Now;
+                        turnoGestion.OperadorOcupado = true;
+
+                        turnosController.ActualizarTurno(turnoGestion);
 
                         cargarDetalleTurnoVehiculo(vehiculosProceso[0].IdTurno);
                     }
@@ -223,7 +210,7 @@ namespace CarWash.Presentacion.Operacion
                  @" SELECT Porcentaje 
                     FROM OperarioComisiones 
                     WHERE idOperario = ?
-                    AND DiaSemana = strftime('%w','now') +1
+                    AND DiaSemana = strftime('%w','now')
                     LIMIT 1", idOperario);
             return porcentajeOperador;
         }
@@ -290,25 +277,30 @@ namespace CarWash.Presentacion.Operacion
 
                     decimal valorComision = (vehiculosProceso[0].ValorBaseComision * vehiculosProceso[0].PorcentajeComision) / 100;
 
-
-                    DatabaseQueryLDB.ExecuteNonQuery(
-                        "UPDATE Turnos SET Observaciones = ?,  idClienteCredito = ?, ValorComision = ? WHERE IdTurno = ?",
-                        txtObservaciones.Text.Trim(), clienteCredito, valorComision, vehiculosProceso[0].IdTurno
-                        );
-
-                    DatabaseQueryLDB.ExecuteNonQuery(
-                        "UPDATE CajaDiaria SET TotalIngresosEfectivo = ?, TotalIngresosTransferencias = ?, TotalIngresosDatafono = ?, TotalFinal = ?, TotalIngresosCredito= ? WHERE idCaja = ?",
-                        valorEfectivo, valorTransferencias, valorDatafono, valorFinal, valorCredito, cajaDiaria[0].idCaja
-                        );
+                    var turnoUpdate = turnosController.consultaTurnoId(vehiculosProceso[0].IdTurno);
+                    turnoUpdate.Observaciones = txtObservaciones.Text.Trim();
+                    turnoUpdate.idClienteCredito = (int)clienteCredito;
+                    turnoUpdate.ValorComision = valorComision;
+                    turnosController.ActualizarTurno(turnoUpdate);
 
 
-                    DatabaseQueryLDB.ExecuteNonQuery(
-                        "INSERT INTO TurnosMovimientos (MontoPagado,FechaMovimiento,IdTurno,IdFormaPago) values (?,?,?,?)",
-                        valorPagar,
-                        DateTime.Now,
-                        vehiculosProceso[0].IdTurno,
-                        formaPago
-                    );
+                    cajaDiaria[0].TotalIngresosEfectivo = valorEfectivo;
+                    cajaDiaria[0].TotalIngresosTransferencias = valorTransferencias;
+                    cajaDiaria[0].TotalIngresosDatafono = valorDatafono;
+                    cajaDiaria[0].TotalFinal = valorFinal;
+                    cajaDiaria[0].TotalIngresosCredito = valorCredito;
+
+                    cajaDiariaController.ActualizarCajaDiaria(cajaDiaria[0]);
+
+                    TurnosMovimientos turnosMovimiento = new TurnosMovimientos
+                    {
+                        IdTurno = vehiculosProceso[0].IdTurno,
+                        MontoPagado = valorPagar,
+                        FechaMovimiento = DateTime.Now,
+                        IdFormaPago = formaPago
+                    };
+
+                    turnosMovimientosController.RegistrarTurnoMovimiento(turnosMovimiento);
 
                     if (valorPagar < valorPagarTotal)
                     {
@@ -317,11 +309,13 @@ namespace CarWash.Presentacion.Operacion
                     }
                     else
                     {
+                        var turnoGes = turnosController.consultaTurnoId(vehiculosProceso[0].IdTurno);
+                        turnoGes.Estado = true;
+                        turnoGes.Pagado = true;
+                        turnoGes.OperadorOcupado = false;
 
-                        DatabaseQueryLDB.ExecuteNonQuery(
-                            "UPDATE Turnos SET Estado = 1, Pagado = 1, OperadorOcupado = 0 WHERE IdTurno = ?",
-                            vehiculosProceso[0].IdTurno
-                            );
+                        turnosController.ActualizarTurno(turnoGes);
+
                         MessageBox.Show("Turno finalizado exitosamente.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         cerrarForm();
                     }
@@ -369,10 +363,10 @@ namespace CarWash.Presentacion.Operacion
 
         private void btnLiberarOperador_Click(object sender, EventArgs e)
         {
-            DatabaseQueryLDB.ExecuteNonQuery(
-                   "UPDATE Turnos SET OperadorOcupado = 0 WHERE IdTurno = ?",
-                   vehiculosProceso[0].IdTurno
-                   );
+            var turnolib = turnosController.consultaTurnoId(vehiculosProceso[0].IdTurno);
+            turnolib.OperadorOcupado = false;
+
+            turnosController.ActualizarTurno(turnolib);
             MessageBox.Show("Operador liberado Exitosamente.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
             cerrarForm();
         }

@@ -1,27 +1,16 @@
-﻿using CarWash.Database;
-using CarWash.Entidades;
-using CarWash.Presentacion;
+﻿using CarWash.Controladores;
 using CarWash.Presentacion.Principal;
 using CarWash.Utilidades;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Configuration;
-using System.Data;
 using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace CarWash.Presentacion.Login
 {
     public partial class FrmLogin : Form
     {
-        private static string NameDatabase = ConfigurationManager.AppSettings["NameLDB"];
-        private static string dbFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, NameDatabase);
-        string strMensaje = string.Empty;
+        private readonly LoginController _controller = new LoginController();
+
         public FrmLogin()
         {
             InitializeComponent();
@@ -64,7 +53,7 @@ namespace CarWash.Presentacion.Login
                     t.Stop();
             };
             t.Start();
-            creaBaseLocal();
+            _controller.InicializarBaseDeDatos();
         }
 
         private void chkMostrar_CheckedChanged(object sender, EventArgs e)
@@ -79,86 +68,27 @@ namespace CarWash.Presentacion.Login
 
         private void btnLogin_Click(object sender, EventArgs e)
         {
-            if (validaCampos())
+            string mensaje;
+            if (!_controller.ValidarCampos(txtUsuario.Text, txtPassword.Text, out mensaje))
             {
-                DataTable dttConexion = new DataTable();
-                ingresaAplicativo(txtUsuario.Text, txtPassword.Text);
+                MessageBox.Show(mensaje, "Validación", MessageBoxButtons.OK, MessageBoxIcon.Stop, MessageBoxDefaultButton.Button1);
+                return;
             }
-        }
 
-
-        private bool validaCampos()
-        {
-            if (txtUsuario.Text == "" | txtUsuario.Text == null)
-            {
-                strMensaje = "Digite el " + lblUsuario.Text;
-                MessageBox.Show(strMensaje, "Validación", MessageBoxButtons.OK, MessageBoxIcon.Stop, MessageBoxDefaultButton.Button1);
-                return false;
-            }
-            else if (txtPassword.Text == "" | txtPassword.Text == null)
-            {
-                strMensaje = "Digite la " + lblPassword.Text;
-                MessageBox.Show(strMensaje, "Validación", MessageBoxButtons.OK, MessageBoxIcon.Stop, MessageBoxDefaultButton.Button1);
-                return false;
-            }
-            else
-                return true;
-        }
-
-
-
-        private void ingresaAplicativo(string strUser, string strPassword)
-        {
-            string usrCif = FunctionsEncrip.Cifrado(1, strUser);
-            string pwdCif = FunctionsEncrip.Cifrado(1, strPassword);
-
-            var resp = DatabaseQueryLDB.Login(usrCif, pwdCif);
+            var resp = _controller.Login(txtUsuario.Text, txtPassword.Text);
             if (!resp.esValido)
             {
                 MessageBox.Show(resp.respuesta, "Error Validación", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
             }
-            else
-            {
-                clsConnection.idUser = resp.Usuario.idUser;
-                clsConnection.intCodigoPerfil = resp.Usuario.PerfilId;
-                clsConnection.strNombreUsuario = resp.Usuario.DisplayName;
-                clsConnection.strEmailUsuario = resp.Usuario.Email.ToLower();
-                this.Visible = false;
-                FrmPrincipal frmPrincipalForm = new FrmPrincipal();
-                frmPrincipalForm.Show();
-            }
-        }
 
-        private void creaBaseLocal()
-        {
-            DatabaseHelper.CreateOrUpdateTable<Modulo>();
-            DatabaseHelper.CreateOrUpdateTable<TurnosDiarios>();
-            DatabaseHelper.CreateOrUpdateTable<Usuario>();
-            DatabaseHelper.CreateOrUpdateTable<OperarioComisiones>();
-            DatabaseHelper.CreateOrUpdateTable<CajaDiaria>();
-            DatabaseHelper.CreateOrUpdateTable<FormaPago>();
-            DatabaseHelper.CreateOrUpdateTable<Operarios>();
-            DatabaseHelper.CreateOrUpdateTable<Perfil>();
-            DatabaseHelper.CreateOrUpdateTable<PerfilModulo>();
-            DatabaseHelper.CreateOrUpdateTable<Servicios>();
-            DatabaseHelper.CreateOrUpdateTable<TipoVehiculo>();
-            DatabaseHelper.CreateOrUpdateTable<Turnos>();
-            DatabaseHelper.CreateOrUpdateTable<TurnosMovimientos>();
-            DatabaseHelper.CreateOrUpdateTable<PrecioServicioVehiculo>();
-            DatabaseHelper.CreateOrUpdateTable<JornadaOperario>();
-            DatabaseHelper.CreateOrUpdateTable<ClienteCredito>();
-            DatabaseHelper.CreateOrUpdateTable<TurnoServicios>();
-            DatabaseHelper.CreateOrUpdateTable<ValesOperarios>();
-            DatabaseHelper.CreateOrUpdateTable<GastosCaja>();
-            DatabaseHelper.CreateOrUpdateTable<RegistroPropinasOperarios>();
-
-            //creacion del indice para las tablas 
-
-            //using (var conn = new SQLite.SQLiteConnection(dbFile))
-            //{
-            //    conn.Execute(@"CREATE INDEX IF NOT EXISTS idx_Bills_Document_Id_Status ON Bills (Document_Id, Document_Status, Accounting_Document_No, Supplier,FechaCargaInformacion);");
-            //    conn.Execute(@"CREATE INDEX IF NOT EXISTS idx_CodingDetails_Document_Number ON CodingDetails (Document_Number, GL_Account,FechaCargaInformacion);");
-            //}
+            clsConnection.idUser = resp.Usuario.idUser;
+            clsConnection.intCodigoPerfil = resp.Usuario.PerfilId;
+            clsConnection.strNombreUsuario = resp.Usuario.DisplayName;
+            clsConnection.strEmailUsuario = resp.Usuario.Email.ToLower();
+            this.Visible = false;
+            FrmPrincipal frmPrincipalForm = new FrmPrincipal();
+            frmPrincipalForm.Show();
         }
 
         protected override void OnPaint(PaintEventArgs e)

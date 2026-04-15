@@ -13,7 +13,7 @@ namespace CarWash.Entidades
         [PrimaryKey, AutoIncrement, Column("idCaja")]
         public int idCaja { get; set; }
         public DateTime FechaApertura { get; set; }
-        public DateTime FechaCierre { get; set; }
+        public DateTime? FechaCierre { get; set; }
         public decimal MontoInicial { get; set; }
         public decimal TotalIngresosEfectivo { get; set; }
         public decimal TotalIngresosTransferencias { get; set; }

@@ -1,3 +1,7 @@
 <Solution>
+  <Project Path="Carwash.API/Carwash.API.csproj" Id="9ac2f356-4c69-4c7b-8790-842227af7cfa" />
   <Project Path="CarWash.csproj" Id="ff9fcbd0-913d-4dad-923d-49cf8398772c" />
+  <Project Path="InstaladorSplashCar/InstaladorSplashCar.vdproj" Type="Installer">
+    <Build />
+  </Project>
 </Solution>

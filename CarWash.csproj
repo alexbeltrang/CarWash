@@ -86,23 +86,39 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controladores\CajaDiariaController.cs" />
+    <Compile Include="Controladores\LoginController.cs" />
+    <Compile Include="Controladores\ServiciosController.cs" />
+    <Compile Include="Controladores\TipoVehiculoController.cs" />
+    <Compile Include="Controladores\TurnosController.cs" />
+    <Compile Include="Controladores\TurnosDiariosController.cs" />
+    <Compile Include="Controladores\TurnosMovimientosController.cs" />
+    <Compile Include="Controladores\TurnosServiciosController.cs" />
     <Compile Include="Database\ColumnInfo.cs" />
     <Compile Include="Database\DatabaseHelper.cs" />
+    <Compile Include="Database\DatabaseManager.cs" />
     <Compile Include="Database\DatabaseQueryLDB.cs" />
     <Compile Include="DTOs\ClienteCreditoDTO.cs" />
+    <Compile Include="DTOs\ComisionDTO.cs" />
     <Compile Include="DTOs\ConsultaMovimientosDTO.cs" />
     <Compile Include="DTOs\DashboardOperadoresDTO.cs" />
     <Compile Include="DTOs\GestionVehiculosDTO.cs" />
     <Compile Include="DTOs\IngresoVehiculoDTO.cs" />
+    <Compile Include="DTOs\LiquidacionResultadoDTO.cs" />
     <Compile Include="DTOs\OperariosDTO.cs" />
+    <Compile Include="DTOs\OperarioSimpleDTO.cs" />
     <Compile Include="DTOs\PorcentajeOperadorDTO.cs" />
     <Compile Include="DTOs\ServicioListaDTO.cs" />
     <Compile Include="DTOs\ServicioListaGestionVehDTO.cs" />
+    <Compile Include="DTOs\ServicioNominaDTO.cs" />
+    <Compile Include="Entidades\AsistenciaOperario.cs" />
     <Compile Include="Entidades\CajaDiaria.cs" />
     <Compile Include="Entidades\ClienteCredito.cs" />
+    <Compile Include="Entidades\Festivos.cs" />
     <Compile Include="Entidades\FormaPago.cs" />
     <Compile Include="Entidades\GastosCaja.cs" />
     <Compile Include="Entidades\JornadaOperario.cs" />
+    <Compile Include="Entidades\LiquidacionOperario.cs" />
     <Compile Include="Entidades\Modulo.cs" />
     <Compile Include="Entidades\OperarioComisiones.cs" />
     <Compile Include="Entidades\Operarios.cs" />
@@ -133,16 +149,28 @@
     <Compile Include="Presentacion\Administracion\FrmCierreCaja.Designer.cs">
       <DependentUpon>FrmCierreCaja.cs</DependentUpon>
     </Compile>
+    <Compile Include="Presentacion\Administracion\Nomina\FrmLiquidacionNominaOperarios.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Presentacion\Administracion\Nomina\FrmLiquidacionNominaOperarios.Designer.cs">
+      <DependentUpon>FrmLiquidacionNominaOperarios.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Presentacion\Administracion\Operarios\FrmRegistroAsistencia.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Presentacion\Administracion\Operarios\FrmRegistroAsistencia.Designer.cs">
+      <DependentUpon>FrmRegistroAsistencia.cs</DependentUpon>
+    </Compile>
     <Compile Include="Presentacion\Consultas\FrmConsultaMovimientosCaja.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Presentacion\Consultas\FrmConsultaMovimientosCaja.Designer.cs">
       <DependentUpon>FrmConsultaMovimientosCaja.cs</DependentUpon>
     </Compile>
-    <Compile Include="Presentacion\Operacion\FrmRegistroPropinasOperarios.cs">
+    <Compile Include="Presentacion\Administracion\Operarios\FrmRegistroPropinasOperarios.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Presentacion\Operacion\FrmRegistroPropinasOperarios.Designer.cs">
+    <Compile Include="Presentacion\Administracion\Operarios\FrmRegistroPropinasOperarios.Designer.cs">
       <DependentUpon>FrmRegistroPropinasOperarios.cs</DependentUpon>
     </Compile>
     <Compile Include="Presentacion\Login\FrmLogin.cs">
@@ -175,10 +203,10 @@
     <Compile Include="Presentacion\Operacion\FrmIngresoVehiculo.Designer.cs">
       <DependentUpon>FrmIngresoVehiculo.cs</DependentUpon>
     </Compile>
-    <Compile Include="Presentacion\Operacion\FrmValeOperario.cs">
+    <Compile Include="Presentacion\Administracion\Operarios\FrmValeOperario.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Presentacion\Operacion\FrmValeOperario.Designer.cs">
+    <Compile Include="Presentacion\Administracion\Operarios\FrmValeOperario.Designer.cs">
       <DependentUpon>FrmValeOperario.cs</DependentUpon>
     </Compile>
     <Compile Include="Presentacion\Principal\FrmDashboard.cs">
@@ -204,10 +232,16 @@
     <EmbeddedResource Include="Presentacion\Administracion\FrmCierreCaja.resx">
       <DependentUpon>FrmCierreCaja.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Presentacion\Administracion\Nomina\FrmLiquidacionNominaOperarios.resx">
+      <DependentUpon>FrmLiquidacionNominaOperarios.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Presentacion\Administracion\Operarios\FrmRegistroAsistencia.resx">
+      <DependentUpon>FrmRegistroAsistencia.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Presentacion\Consultas\FrmConsultaMovimientosCaja.resx">
       <DependentUpon>FrmConsultaMovimientosCaja.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Presentacion\Operacion\FrmRegistroPropinasOperarios.resx">
+    <EmbeddedResource Include="Presentacion\Administracion\Operarios\FrmRegistroPropinasOperarios.resx">
       <DependentUpon>FrmRegistroPropinasOperarios.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Presentacion\Login\FrmLogin.resx">
@@ -225,7 +259,7 @@
     <EmbeddedResource Include="Presentacion\Operacion\FrmIngresoVehiculo.resx">
       <DependentUpon>FrmIngresoVehiculo.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Presentacion\Operacion\FrmValeOperario.resx">
+    <EmbeddedResource Include="Presentacion\Administracion\Operarios\FrmValeOperario.resx">
       <DependentUpon>FrmValeOperario.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Presentacion\Principal\FrmDashboard.resx">

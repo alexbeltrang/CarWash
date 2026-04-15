@@ -30,6 +30,7 @@ namespace CarWash.Entidades
         public decimal PorcentajeComision { get; set; }
         public decimal ValorComision { get; set; }
         public bool Pagado { get; set; }
+        public bool PagadoNomina { get; set; }
         public string Observaciones { get; set; }
         public DateTime FechaHoraAsignacionOperario { get; set; }
         public bool Estado { get; set; }
