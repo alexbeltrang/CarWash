@@ -87,7 +87,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controladores\CajaDiariaController.cs" />
+    <Compile Include="Controladores\ClienteCreditoController.cs" />
+    <Compile Include="Controladores\FormaPagoController.cs" />
     <Compile Include="Controladores\LoginController.cs" />
+    <Compile Include="Controladores\OperarioComisionesController.cs" />
+    <Compile Include="Controladores\OperariosController.cs" />
     <Compile Include="Controladores\ServiciosController.cs" />
     <Compile Include="Controladores\TipoVehiculoController.cs" />
     <Compile Include="Controladores\TurnosController.cs" />

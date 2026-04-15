@@ -30,6 +30,8 @@ namespace CarWash.Presentacion.Operacion
         TurnosController turnosController = new TurnosController();
         ServiciosController serviciosController = new ServiciosController();
         TurnosMovimientosController turnosMovimientosController = new TurnosMovimientosController();
+        ClienteCreditoController clienteCreditoController = new ClienteCreditoController();
+        OperarioComisionesController operarioComisionesController = new OperarioComisionesController();
 
         public FrmGestionDetalleVehiculo(int idTurno)
         {
@@ -67,16 +69,15 @@ namespace CarWash.Presentacion.Operacion
         {
             try
             {
-                List<ClienteCreditoDTO> clienteCredito = DatabaseQueryLDB.ExecuteList<ClienteCreditoDTO>(
-               @"SELECT idClienteCredito, Nombre   
-                  FROM ClienteCredito
-                  WHERE Estado=1");
 
-                clienteCredito.Insert(0, new ClienteCreditoDTO
+                var clienteCredito = clienteCreditoController.ClienteCreditoActivos();
+
+                clienteCredito.Insert(0, new ClienteCredito
                 {
                     idClienteCredito = 0,
                     Nombre = "-- Seleccione --"
                 });
+
                 cmbClienteCredito.DataSource = clienteCredito;
                 cmbClienteCredito.DisplayMember = "Nombre";
                 cmbClienteCredito.ValueMember = "idClienteCredito";
@@ -184,11 +185,11 @@ namespace CarWash.Presentacion.Operacion
 
                     var comisionOperador = consultaPorcentajeOperador(idOperador);
 
-                    if (comisionOperador.Count > 0)
+                    if (comisionOperador != null)
                     {
                         var turnoGestion = turnosController.consultaTurnoId(vehiculosProceso[0].IdTurno);
                         turnoGestion.idOperario = idOperador;
-                        turnoGestion.PorcentajeComision = comisionOperador[0].Porcentaje;
+                        turnoGestion.PorcentajeComision = comisionOperador.Porcentaje;
                         turnoGestion.FechaHoraAsignacionOperario = DateTime.Now;
                         turnoGestion.OperadorOcupado = true;
 
@@ -204,14 +205,12 @@ namespace CarWash.Presentacion.Operacion
             }
         }
 
-        private List<PorcentajeOperadorDTO> consultaPorcentajeOperador(int idOperario)
+        private OperarioComisiones consultaPorcentajeOperador(int idOperario)
         {
-            List<PorcentajeOperadorDTO> porcentajeOperador = DatabaseQueryLDB.ExecuteList<PorcentajeOperadorDTO>(
-                 @" SELECT Porcentaje 
-                    FROM OperarioComisiones 
-                    WHERE idOperario = ?
-                    AND DiaSemana = strftime('%w','now')
-                    LIMIT 1", idOperario);
+            var numero = (int)DateTime.Now.DayOfWeek;
+
+            var porcentajeOperador = operarioComisionesController.ObtenerComisionbyDiaSemana(numero, idOperario);
+
             return porcentajeOperador;
         }
 
@@ -270,7 +269,7 @@ namespace CarWash.Presentacion.Operacion
                     }
 
                     object clienteCredito = (cmbClienteCredito.SelectedIndex <= 0 || cmbClienteCredito.SelectedValue == null)
-                        ? null
+                        ? 0
                         : cmbClienteCredito.SelectedValue;
 
                     valorFinal = cajaDiaria[0].TotalFinal + valorPagar;

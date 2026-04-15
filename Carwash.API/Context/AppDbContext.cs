@@ -16,6 +16,10 @@
         public DbSet<TurnosDiarios> TurnosDiarios { get; set; }
         public DbSet<Operarios> Operarios { get; set; }
         public DbSet<TurnosMovimientos> TurnosMovimientos { get; set; }
+        public DbSet<ClienteCredito> ClienteCredito { get; set; }
+        public DbSet<OperarioComisiones> OperarioComisiones { get; set; }
+        public DbSet<FormaPago> FormaPagos { get; set; }
+
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options)
         {
@@ -41,6 +45,8 @@
                         property.SetValueConverter(nullableDateTimeConverter);
                 }
             }
+
+            modelBuilder.Entity<FormaPago>().ToTable("FormaPago");
 
             base.OnModelCreating(modelBuilder);
         }

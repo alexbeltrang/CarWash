@@ -203,8 +203,7 @@ namespace Carwash.API.Controllers
                         tur.Valor,
                         tur.idOperario,
                         tur.Observaciones,
-                        tur.ValorBaseComision,
-                        tur.ValorComision
+                        tur.ValorBaseComision
                     }
                 ).FirstOrDefaultAsync();
 

@@ -12,12 +12,12 @@ using System.Threading.Tasks;
 
 namespace CarWash.Controladores
 {
-    public class TurnosMovimientosController
+    public class OperariosController
     {
         private static readonly HttpClient _httpClient;
         private static readonly string _apiBaseUrl = ConfigurationManager.AppSettings["ApiBaseUrl"];
 
-        static TurnosMovimientosController()
+        static OperariosController()
         {
             // Habilitar TLS 1.2 y TLS 1.3 requeridos para HTTPS en .NET Framework
             ServicePointManager.SecurityProtocol =
@@ -35,68 +35,54 @@ namespace CarWash.Controladores
             _httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
         }
 
-        public int RegistrarTurnoMovimiento(TurnosMovimientos turnoMovimiento)
+
+
+        public List<OperariosDTO> obtenerOperariosDisponibles()
         {
             try
             {
-                var requestBody = JsonConvert.SerializeObject(turnoMovimiento);
-                var content = new StringContent(requestBody, Encoding.UTF8, "application/json");
-
                 var response = _httpClient
-                    .PostAsync($"{_apiBaseUrl}/api/TurnosMovimientos/RegistrarTurnoMovimiento", content)
+                    .GetAsync($"{_apiBaseUrl}/api/Operarios/OperadoresDisponibles")
                     .GetAwaiter().GetResult();
 
                 response.EnsureSuccessStatusCode();
 
                 var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                var apiResponse = JsonConvert.DeserializeObject<List<OperariosDTO>>(json);
 
-                var apiResponse = JsonConvert.DeserializeObject<TurnosMovimientos>(json);
-
-                return apiResponse?.IdTurnoMovimientos ?? 0;
+                return apiResponse;
             }
             catch (Exception ex)
             {
-                // Manejo de excepciones
-                Console.WriteLine($"Error al registrar el turno de movimiento: {ex.Message}");
-                return 0;
+                return new List<OperariosDTO>
+                {
+
+                };
             }
         }
 
 
-        public List<ConsultaMovimientosDTO> GetHistoricoMovimientos(
-            DateTime fechaInicial,
-            DateTime fechaFinal,
-            int? idFormaPago,
-            int? idOperario)
+        public List<Operarios> GetOperariosActivos()
         {
             try
             {
-                string url = $"{_apiBaseUrl}/api/TurnosMovimientos/GetHistoricoMovimientos" +
-                             $"?fechaInicial={fechaInicial:yyyy-MM-dd}" +
-                             $"&fechaFinal={fechaFinal:yyyy-MM-dd}";
-
-                if (idFormaPago.HasValue)
-                    url += $"&idFormaPago={idFormaPago}";
-
-                if (idOperario.HasValue)
-                    url += $"&idOperario={idOperario}";
-
                 var response = _httpClient
-                    .GetAsync(url)
+                    .GetAsync($"{_apiBaseUrl}/api/Operarios/getOperariosActivos")
                     .GetAwaiter().GetResult();
 
                 response.EnsureSuccessStatusCode();
 
                 var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                var apiResponse = JsonConvert.DeserializeObject<List<Operarios>>(json);
 
-                var apiResponse = JsonConvert.DeserializeObject<List<ConsultaMovimientosDTO>>(json);
-
-                return apiResponse ?? new List<ConsultaMovimientosDTO>();
+                return apiResponse;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error al obtener histórico: {ex.Message}");
-                return new List<ConsultaMovimientosDTO>();
+                return new List<Operarios>
+                {
+
+                };
             }
         }
 

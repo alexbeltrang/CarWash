@@ -8,12 +8,12 @@ namespace Carwash.API.Modelos
     {
         [Key]
         public int idOperario { get; set; }
-        public string Nombres { get; set; }
-        public string Apellidos { get; set; }
-        public string Email { get; set; }
-        public string Celular { get; set; }
+        public string? Nombres { get; set; }
+        public string? Apellidos { get; set; }
+        public string? Email { get; set; }
+        public string? Celular { get; set; }
         public bool isDelete { get; set; } = false;
-        public DateTime UltimaAsignacion { get; set; }
-        public int CargaTrabajo { get; set; }
+        public DateTime? UltimaAsignacion { get; set; }
+        public int? CargaTrabajo { get; set; }
     }
 }

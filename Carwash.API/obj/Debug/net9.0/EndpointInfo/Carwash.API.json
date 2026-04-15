@@ -198,6 +198,352 @@
         }
       }
     },
+    "/api/ClienteCredito": {
+      "get": {
+        "tags": [
+          "ClienteCredito"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/ClienteCredito/{id}": {
+      "get": {
+        "tags": [
+          "ClienteCredito"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/ClienteCredito/ClienteCreditoActivos": {
+      "get": {
+        "tags": [
+          "ClienteCredito"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/FormaPago/GetAll": {
+      "get": {
+        "tags": [
+          "FormaPago"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/OperarioComisiones": {
+      "get": {
+        "tags": [
+          "OperarioComisiones"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "OperarioComisiones"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OperarioComisiones"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OperarioComisiones"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/OperarioComisiones"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/OperarioComisiones/BuscarPorDiaSemana": {
+      "get": {
+        "tags": [
+          "OperarioComisiones"
+        ],
+        "parameters": [
+          {
+            "name": "numeroDia",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "idOperario",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/OperarioComisiones/ActualizarOperarioComision/{id}": {
+      "put": {
+        "tags": [
+          "OperarioComisiones"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OperarioComisiones"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OperarioComisiones"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/OperarioComisiones"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/OperarioComisiones/{id}": {
+      "delete": {
+        "tags": [
+          "OperarioComisiones"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Operarios": {
+      "get": {
+        "tags": [
+          "Operarios"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Operarios"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Operarios"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Operarios"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Operarios"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Operarios/{id}": {
+      "get": {
+        "tags": [
+          "Operarios"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Operarios"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Operarios/getOperariosActivos": {
+      "get": {
+        "tags": [
+          "Operarios"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Operarios/OperadoresDisponibles": {
+      "get": {
+        "tags": [
+          "Operarios"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Operarios/ActualizarOperario/{id}": {
+      "put": {
+        "tags": [
+          "Operarios"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Operarios"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Operarios"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Operarios"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/Servicios/GetListaCompletaServicios": {
       "get": {
         "tags": [
@@ -715,7 +1061,19 @@
         }
       }
     },
-    "/{id}": {
+    "/api/TurnosMovimientos": {
+      "get": {
+        "tags": [
+          "TurnosMovimientos"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/TurnosMovimientos/{id}": {
       "get": {
         "tags": [
           "TurnosMovimientos"
@@ -759,7 +1117,7 @@
         }
       }
     },
-    "/RegistrarTurnoMovimiento": {
+    "/api/TurnosMovimientos/RegistrarTurnoMovimiento": {
       "post": {
         "tags": [
           "TurnosMovimientos"
@@ -790,7 +1148,7 @@
         }
       }
     },
-    "/ActualizarTurnoMovimiento/{id}": {
+    "/api/TurnosMovimientos/ActualizarTurnoMovimiento/{id}": {
       "put": {
         "tags": [
           "TurnosMovimientos"
@@ -825,6 +1183,52 @@
             }
           }
         },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/TurnosMovimientos/GetHistoricoMovimientos": {
+      "get": {
+        "tags": [
+          "TurnosMovimientos"
+        ],
+        "parameters": [
+          {
+            "name": "fechaInicial",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "fechaFinal",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "idFormaPago",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "idOperario",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -942,6 +1346,77 @@
         },
         "additionalProperties": false
       },
+      "OperarioComisiones": {
+        "type": "object",
+        "properties": {
+          "idOperarioComision": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "idOperario": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "porcentaje": {
+            "type": "number",
+            "format": "double"
+          },
+          "diaSemana": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "fechaInicio": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "fechaFin": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Operarios": {
+        "type": "object",
+        "properties": {
+          "idOperario": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "nombres": {
+            "type": "string",
+            "nullable": true
+          },
+          "apellidos": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "celular": {
+            "type": "string",
+            "nullable": true
+          },
+          "isDelete": {
+            "type": "boolean"
+          },
+          "ultimaAsignacion": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "cargaTrabajo": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "TurnoServicios": {
         "type": "object",
         "properties": {
@@ -992,7 +1467,8 @@
           },
           "fechaHoraFin": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "nullable": true
           },
           "marca": {
             "type": "string",
@@ -1030,7 +1506,8 @@
           },
           "fechaHoraAsignacionOperario": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "nullable": true
           },
           "estado": {
             "type": "boolean"
@@ -1041,18 +1518,22 @@
           },
           "idOperario": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "nullable": true
           },
           "operadorOcupado": {
-            "type": "boolean"
+            "type": "boolean",
+            "nullable": true
           },
           "idCajaDiaria": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "nullable": true
           },
           "idClienteCredito": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -1132,6 +1613,18 @@
     },
     {
       "name": "CajaDiaria"
+    },
+    {
+      "name": "ClienteCredito"
+    },
+    {
+      "name": "FormaPago"
+    },
+    {
+      "name": "OperarioComisiones"
+    },
+    {
+      "name": "Operarios"
     },
     {
       "name": "Servicios"

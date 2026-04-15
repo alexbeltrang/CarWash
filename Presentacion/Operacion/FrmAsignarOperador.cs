@@ -1,4 +1,5 @@
-﻿using CarWash.Database;
+﻿using CarWash.Controladores;
+using CarWash.Database;
 using CarWash.DTOs;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,7 @@ namespace CarWash.Presentacion.Operacion
     public partial class FrmAsignarOperador : Form
     {
         public int? OperadorSeleccionadoId { get; private set; }
+        OperariosController operariosController = new OperariosController();
 
         public FrmAsignarOperador(string placa, string cliente)
         {
@@ -87,11 +89,7 @@ namespace CarWash.Presentacion.Operacion
         {
             try
             {
-                var operadoresDisponibles = DatabaseQueryLDB.ExecuteList<OperariosDTO>(
-                @"SELECT idOperario,Nombres,Apellidos  
-                  FROM Operarios 
-                  WHERE idOperario NOT IN (SELECT idOperario FROM Turnos WHERE idOperario IS NOT NULL and OperadorOcupado = 1) 
-                  AND isDelete = 0");
+                var operadoresDisponibles = operariosController.obtenerOperariosDisponibles();
 
                 dvOperadoresDisponibles.DataSource = operadoresDisponibles;
 

@@ -1,4 +1,5 @@
-﻿using CarWash.Database;
+﻿using CarWash.Controladores;
+using CarWash.Database;
 using CarWash.DTOs;
 using CarWash.Entidades;
 using System;
@@ -19,6 +20,10 @@ namespace CarWash.Presentacion.Consultas
         decimal precioTotalServicio = 0;
         decimal precioBaseTotalServicio = 0;
 
+        TurnosMovimientosController turnosMovimientosController = new TurnosMovimientosController();
+        FormaPagoController formaPagoController = new FormaPagoController();
+        OperariosController operariosController = new OperariosController();
+
         CajaDiaria cajaDiaria = new CajaDiaria();
         public FrmConsultaMovimientosCaja()
         {
@@ -31,7 +36,8 @@ namespace CarWash.Presentacion.Consultas
         private void cargarFormasPago()
         {
             // Aquí puedes cargar los combos con datos de la base de datos
-            var formasPago = DatabaseQueryLDB.ExecuteList<FormaPago>("select IdFormaPago, Nombre from FormaPago");
+            var formasPago = formaPagoController.GetAllFormaPago();
+
             formasPago.Insert(0, new FormaPago
             {
                 IdFormaPago = 0,
@@ -117,48 +123,10 @@ namespace CarWash.Presentacion.Consultas
         {
             try
             {
-                string sql = @"SELECT TUR.Placa, 
-                       strftime('%Y-%m-%d %H:%M',TUR.FechaHoraIngreso / 10000000 - 62135596800,'unixepoch') AS FechaHoraIngreso, 
-                       tum.MontoPagado as Valor, 
-                       TUR.ValorBaseComision, 
-                       TUR.Pagado, 
-                       TUR.Observaciones, 
-                       frp.Nombre as FormaPago, 
-                       tpv.Nombre TipoVehiculo, 
-                       COALESCE(opr.Nombres,'') || ' ' || COALESCE(opr.Apellidos,'') Operario,
-                       CLC.Nombre as ClienteCredito
-                FROM Turnos tur INNER JOIN TurnosMovimientos tum ON tur.IdTurno = tum.IdTurno 
-                INNER JOIN FormaPago frp on tum.IdFormaPago = frp.IdFormaPago
-                INNER JOIN TipoVehiculo tpv on tur.IdTipoVehiculo = tpv.IdTipoVehiculo
-                INNER JOIN Operarios opr on tur.idOperario = opr.idOperario
-                LEFT OUTER JOIN ClienteCredito CLC on tur.idClienteCredito = CLC.idClienteCredito
-                WHERE 1 = 1 ";
-
-                List<object> parametros = new List<object>();
-
-                if (cmbFormaPago.SelectedIndex > 0)
-                {
-                    sql += " AND tum.IdFormaPago = ? ";
-                    parametros.Add(cmbFormaPago.SelectedValue);
-                }
-
-                if (cmbOperario.SelectedIndex > 0)
-                {
-                    sql += " AND tur.idOperario = ? ";
-                    parametros.Add(cmbOperario.SelectedValue);
-                }
-
-
-
-                sql += " AND date(TUR.FechaHoraIngreso / 10000000 - 62135596800,'unixepoch') BETWEEN ? AND ? ";
-
-                parametros.Add(dtpFechaInicial.Value.ToString("yyyy-MM-dd"));
-                parametros.Add(dtpFechaFinal.Value.ToString("yyyy-MM-dd"));
-
-                var historial = DatabaseQueryLDB.ExecuteList<ConsultaMovimientosDTO>(
-                    sql,
-                    parametros.ToArray()
-                );
+                var historial = turnosMovimientosController.GetHistoricoMovimientos(dtpFechaInicial.Value,
+                    dtpFechaFinal.Value,
+                    (int?)cmbFormaPago.SelectedValue,
+                    (int?)cmbOperario.SelectedValue);
 
                 // ===== SUMAS =====
                 decimal totalValor = historial.Sum(x => x.Valor);
@@ -205,19 +173,17 @@ namespace CarWash.Presentacion.Consultas
 
         private void CargaOperarios()
         {
-            var operadoresDisponibles = DatabaseQueryLDB.ExecuteList<OperariosDTO>(
-              @"SELECT idOperario,Nombres,Apellidos  
-                  FROM Operarios 
-                  WHERE isDelete = 0 ");
+            var operadoresDisponibles = operariosController.GetOperariosActivos();
 
-            operadoresDisponibles.Insert(0, new OperariosDTO
+
+            operadoresDisponibles.Insert(0, new Operarios
             {
                 idOperario = 0,
                 Nombres = "-- Seleccione --"
             });
 
             cmbOperario.DataSource = operadoresDisponibles;
-            cmbOperario.DisplayMember = "NombreCompleto";
+            cmbOperario.DisplayMember = "Nombres";
             cmbOperario.ValueMember = "idOperario";
             cmbOperario.SelectedIndex = 0;
 

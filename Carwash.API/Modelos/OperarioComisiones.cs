@@ -1,16 +1,10 @@
-﻿using SQLite;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace CarWash.Entidades
+namespace Carwash.API.Modelos
 {
-    [Table("OperarioComisiones")]
     public class OperarioComisiones
     {
-        [PrimaryKey, AutoIncrement, Column("IdOperarioComision")]
+        [Key]
         public int IdOperarioComision { get; set; }
         public int idOperario { get; set; }
         public decimal Porcentaje { get; set; }
