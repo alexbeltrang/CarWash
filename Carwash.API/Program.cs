@@ -12,6 +12,14 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("web",
+        p => p.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod());
+});
+
 
 var app = builder.Build();
 
@@ -23,7 +31,7 @@ if (app.Environment.IsDevelopment())
 
 var port = Environment.GetEnvironmentVariable("PORT") ?? "10256";
 app.Urls.Add($"http://0.0.0.0:{port}");
-
+app.UseCors("web");
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
