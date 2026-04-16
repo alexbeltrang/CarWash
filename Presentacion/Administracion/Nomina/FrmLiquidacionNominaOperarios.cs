@@ -1,4 +1,5 @@
-﻿using CarWash.Database;
+﻿using CarWash.Controladores;
+using CarWash.Database;
 using CarWash.DTOs;
 using CarWash.Entidades;
 using System;
@@ -15,6 +16,10 @@ namespace CarWash.Presentacion.Administracion.Nomina
 {
     public partial class FrmLiquidacionNominaOperarios : Form
     {
+        OperariosController operariosController = new OperariosController();
+        OperarioComisionesController operarioComisionesController = new OperarioComisionesController();
+        TurnosController turnosController = new TurnosController();
+
         HashSet<DateTime> festivos = new HashSet<DateTime>();
         List<LiquidacionResultadoDTO> resultadoTodos = new List<LiquidacionResultadoDTO>();
         public FrmLiquidacionNominaOperarios()
@@ -98,17 +103,28 @@ namespace CarWash.Presentacion.Administracion.Nomina
 
         public void CargarOperarios()
         {
-            var operarios = DatabaseQueryLDB.ExecuteList<Operarios>("SELECT idOperario, COALESCE(opr.Nombres,'') || ' ' || COALESCE(opr.Apellidos,'') AS Nombres FROM Operarios opr WHERE isDelete = 0");
-            operarios.Insert(0, new Operarios
+            var operarios = operariosController.GetOperariosActivos();
+
+            var operadoresDisponibles = operarios
+                            .Select(o => new OperariosDTO
+                            {
+                                idOperario = o.idOperario,
+                                Nombres = o.Nombres,
+                                Apellidos = o.Apellidos
+                            })
+                            .ToList();
+
+            operadoresDisponibles.Insert(0, new OperariosDTO
             {
                 idOperario = 0,
-                Nombres = "-- Todos --"
+                Nombres = "-- Seleccione --",
+                Apellidos = ""
             });
 
-
-            cmbOperario.DataSource = operarios;
-            cmbOperario.DisplayMember = "Nombres";
+            cmbOperario.DataSource = operadoresDisponibles;
+            cmbOperario.DisplayMember = "NombreCompleto";
             cmbOperario.ValueMember = "idOperario";
+            cmbOperario.SelectedIndex = 0;
         }
 
         private decimal ObtenerPorcentaje(DateTime fecha, HashSet<DateTime> festivos, Dictionary<int, decimal> comisiones)
@@ -127,34 +143,24 @@ namespace CarWash.Presentacion.Administracion.Nomina
 
         public Dictionary<int, decimal> ObtenerComisionesOperario(int idOperario)
         {
-            string sql = @"SELECT DiaSemana, Porcentaje
-                   FROM OperarioComisiones
-                   WHERE IdOperario = ?";
 
-            var lista = DatabaseQueryLDB.ExecuteList<ComisionDTO>(sql, idOperario);
+            var listaObtenida = operarioComisionesController.ComisionbyOperario(idOperario);
+
+
+            var lista = listaObtenida
+                            .Select(o => new ComisionDTO
+                            {
+                                DiaSemana = o.DiaSemana,
+                                Porcentaje = o.Porcentaje
+                            })
+                            .ToList();
 
             return lista.ToDictionary(x => x.DiaSemana, x => x.Porcentaje / 100m);
         }
 
         private List<ServicioNominaDTO> ObtenerServicios(int idOperario, DateTime fi, DateTime ff)
         {
-            string sql = @"
-                           SELECT 
-                                IdOperario,
-                                FechaHoraIngreso,
-                                ValorBaseComision as ValorServicio
-                            FROM Turnos
-                            WHERE IdOperario = ?
-                            AND PagadoNomina = 0 
-                            AND date(FechaHoraIngreso / 10000000 - 62135596800, 'unixepoch')
-                            BETWEEN date(?) AND date(?)";
-
-            return DatabaseQueryLDB.ExecuteList<ServicioNominaDTO>(
-                sql,
-                idOperario,
-                fi.ToString("yyyy-MM-dd"),
-                ff.ToString("yyyy-MM-dd")
-            ).ToList();
+            return turnosController.PendientesNomina(idOperario, fi, ff);
         }
 
 

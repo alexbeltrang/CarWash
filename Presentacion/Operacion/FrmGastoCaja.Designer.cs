@@ -175,6 +175,7 @@ namespace CarWash.Presentacion.Operacion
             this.Name = "FrmGastoCaja";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Gasto Caja";
+            this.Load += new System.EventHandler(this.FrmGastoCaja_Load);
             this.panelCard.ResumeLayout(false);
             this.panelCard.PerformLayout();
             this.ResumeLayout(false);

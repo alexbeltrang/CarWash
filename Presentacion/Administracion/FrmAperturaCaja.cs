@@ -1,4 +1,5 @@
-﻿using CarWash.Database;
+﻿using CarWash.Controladores;
+using CarWash.Database;
 using CarWash.DTOs;
 using CarWash.Entidades;
 using System;
@@ -16,7 +17,7 @@ namespace CarWash.Presentacion.Administracion
     public partial class FrmAperturaCaja : Form
     {
         private List<CajaDiaria> cajaDiaria = new List<CajaDiaria>();
-
+        CajaDiariaController cajaDiariaController = new CajaDiariaController();
 
         public FrmAperturaCaja()
         {
@@ -39,17 +40,19 @@ namespace CarWash.Presentacion.Administracion
         {
             if (validaProcesoGrabar())
             {
-                DatabaseQueryLDB.ExecuteNonQuery(
-                        "INSERT INTO CajaDiaria (FechaApertura,MontoInicial,TotalIngresosEfectivo,TotalIngresosTransferencias,TotalIngresosDatafono,TotalEgresos,TotalFinal,Estado) values (?,?,?,?,?,?,?,?)",
-                        DateTime.Now,
-                        txtMontoInicial.Text.Trim(),
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        true
-                    );
+                CajaDiaria cajaDiaria = new CajaDiaria
+                {
+                    FechaApertura = DateTime.Now,
+                    MontoInicial = decimal.Parse(txtMontoInicial.Text.Trim()),
+                    TotalIngresosEfectivo = 0,
+                    TotalIngresosTransferencias = 0,
+                    TotalIngresosDatafono = 0,
+                    TotalEgresos = 0,
+                    TotalFinal = 0,
+                    Estado = true
+                };
+
+                cajaDiariaController.CrearCajaDiaria(cajaDiaria);
 
                 MostrarToast("Ingreso registrado correctamente", Color.FromArgb(40, 167, 69));
                 this.Close();
@@ -60,10 +63,13 @@ namespace CarWash.Presentacion.Administracion
         {
             try
             {
-                cajaDiaria = DatabaseQueryLDB.ExecuteList<CajaDiaria>(
-                @"SELECT idCaja,FechaApertura,FechaCierre,MontoInicial,TotalIngresosEfectivo,TotalIngresosTransferencias,TotalIngresosDatafono,TotalEgresos,TotalFinal,Estado
-                  FROM CajaDiaria
-                  WHERE  Estado = 1;");
+                cajaDiaria.Clear();
+                var cajaDiariaGet = cajaDiariaController.GetCajaActiva();
+                if (cajaDiariaGet != null && cajaDiariaGet.idCaja > 0)
+                {
+                    cajaDiaria.Add(cajaDiariaGet);
+                }
+
             }
             catch (Exception ex)
             {

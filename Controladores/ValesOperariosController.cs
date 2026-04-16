@@ -11,12 +11,12 @@ using System.Threading.Tasks;
 
 namespace CarWash.Controladores
 {
-    public class OperarioComisionesController
+    public class ValesOperariosController
     {
         private static readonly HttpClient _httpClient;
         private static readonly string _apiBaseUrl = ConfigurationManager.AppSettings["ApiBaseUrl"];
 
-        static OperarioComisionesController()
+        static ValesOperariosController()
         {
             // Habilitar TLS 1.2 y TLS 1.3 requeridos para HTTPS en .NET Framework
             ServicePointManager.SecurityProtocol =
@@ -34,53 +34,52 @@ namespace CarWash.Controladores
             _httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
         }
 
-
-        public OperarioComisiones ObtenerComisionbyDiaSemana(int diaSemana, int idOperario)
+        public List<ValesOperarios> GetAllValesOperarios(int idCaja)
         {
             try
             {
                 var response = _httpClient
-                    .GetAsync($"{_apiBaseUrl}/api/OperarioComisiones/BuscarPorDiaSemana?numeroDia={diaSemana}&idOperario={idOperario}")
+                    .GetAsync($"{_apiBaseUrl}/api/ValesOperarios/GetAll?idCaja={idCaja}")
                     .GetAwaiter().GetResult();
 
                 response.EnsureSuccessStatusCode();
 
                 var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-                var apiResponse = JsonConvert.DeserializeObject<OperarioComisiones>(json);
 
-                return apiResponse;
+                var apiResponse = JsonConvert.DeserializeObject<List<ValesOperarios>>(json);
+
+                return apiResponse ?? new List<ValesOperarios>();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return new OperarioComisiones
-                {
-
-                };
+                return new List<ValesOperarios>();
             }
         }
 
-        public List<OperarioComisiones> ComisionbyOperario(int idOperario)
+        public int RegistrarValesOperarios(ValesOperarios valeOperario)
         {
             try
             {
+                var requestBody = JsonConvert.SerializeObject(valeOperario);
+                var content = new StringContent(requestBody, Encoding.UTF8, "application/json");
+
                 var response = _httpClient
-                    .GetAsync($"{_apiBaseUrl}/api/OperarioComisiones/ComisionbyOperario?idOperario={idOperario}")
+                    .PostAsync($"{_apiBaseUrl}/api/ValesOperarios/RegistrarValesOperarios", content)
                     .GetAwaiter().GetResult();
 
                 response.EnsureSuccessStatusCode();
 
                 var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-                var apiResponse = JsonConvert.DeserializeObject<List<OperarioComisiones>>(json);
 
-                return apiResponse;
+                var apiResponse = JsonConvert.DeserializeObject<ValesOperarios>(json);
+
+                return apiResponse?.IdValeOperario ?? 0;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return new List<OperarioComisiones>
-                {
-
-                };
+                return 0;
             }
         }
+
     }
 }

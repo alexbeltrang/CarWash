@@ -49,10 +49,11 @@
         }
 
         // POST: api/CajaDiaria
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CajaDiaria caja)
+        [HttpPost("CrearCaja")]
+        public async Task<IActionResult> CrearCaja([FromBody] CajaDiaria caja)
         {
             caja.TotalFinal = CalcularTotalFinal(caja);
+            caja.FechaApertura.ToString("yyyy-MM-dd HH:mm");
 
             _context.CajaDiaria.Add(caja);
             await _context.SaveChangesAsync();

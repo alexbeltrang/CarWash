@@ -45,6 +45,27 @@ namespace Carwash.API.Controllers
             }
         }
 
+        // GET: api/OperarioComisiones/5
+        [HttpGet("ComisionbyOperario")]
+        public async Task<IActionResult> ComisionbyOperario(int idOperario)
+        {
+            try
+            {
+                var operarioComision = await _context.OperarioComisiones
+                    .Where(c => c.idOperario == idOperario)
+                    .ToListAsync();
+
+                if (operarioComision == null)
+                    return NotFound();
+
+                return Ok(operarioComision);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al buscar la comisión del operario: {ex.Message}");
+            }
+        }
+
         // POST: api/OperarioComisiones
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] OperarioComisiones operarioComision)

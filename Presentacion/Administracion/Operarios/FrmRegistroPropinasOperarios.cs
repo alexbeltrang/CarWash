@@ -1,4 +1,5 @@
-﻿using CarWash.Database;
+﻿using CarWash.Controladores;
+using CarWash.Database;
 using CarWash.DTOs;
 using CarWash.Entidades;
 using System;
@@ -15,6 +16,10 @@ namespace CarWash.Presentacion.Administracion
 {
     public partial class FrmRegistroPropinasOperarios : Form
     {
+        RegistroPropinasOperariosController registroPropinasOperariosController = new RegistroPropinasOperariosController();
+        CajaDiariaController cajaDiariaController = new CajaDiariaController();
+        OperariosController operariosController = new OperariosController();
+
         CajaDiaria cajaDiaria = new CajaDiaria();
         decimal valorPropinaOperario = 0;
         public FrmRegistroPropinasOperarios()
@@ -30,19 +35,28 @@ namespace CarWash.Presentacion.Administracion
 
         private void CargaOperarios()
         {
-            var operadoresDisponibles = DatabaseQueryLDB.ExecuteList<OperariosDTO>(
-              @"SELECT idOperario,Nombres,Apellidos  
-                  FROM Operarios 
-                  WHERE isDelete = 0 ");
+
+            var operarios = operariosController.GetOperariosActivos();
+
+            var operadoresDisponibles = operarios
+                            .Select(o => new OperariosDTO
+                            {
+                                idOperario = o.idOperario,
+                                Nombres = o.Nombres,
+                                Apellidos = o.Apellidos
+                            })
+                            .ToList();
 
             operadoresDisponibles.Insert(0, new OperariosDTO
             {
                 idOperario = 0,
-                Nombres = "-- Seleccione --"
+                Nombres = "-- Seleccione --",
+                Apellidos = ""
             });
 
             cmbOperario.DataSource = operadoresDisponibles;
             cmbOperario.DisplayMember = "NombreCompleto";
+            cmbOperario.ValueMember = "idOperario";
             cmbOperario.SelectedIndex = 0;
 
         }
@@ -61,24 +75,22 @@ namespace CarWash.Presentacion.Administracion
         {
             if (validaCampos())
             {
-                var operarioSel = cmbOperario.SelectedValue;
-                var idoperario = ((OperariosDTO)operarioSel).idOperario;
+                var idoperario = Convert.ToInt32(cmbOperario.SelectedValue);
 
-                DatabaseQueryLDB.ExecuteNonQuery(
-                        "INSERT INTO RegistroPropinasOperarios (idOperario,fechaRegistro,valorPropina,observaciones,idCaja,isDelete) values (?,?,?,?,?,?)",
-                        idoperario,
-                        DateTime.Now,
-                        Convert.ToDecimal(txtValor.Text),
-                        txtObservaciones.Text,
-                        cajaDiaria.idCaja,
-                        false);
+                registroPropinasOperariosController.RegistrarRegistroPropinas(new RegistroPropinasOperarios
+                {
+                    idOperario = idoperario,
+                    fechaRegistro = DateTime.Now,
+                    valorPropina = Convert.ToDecimal(txtValor.Text),
+                    observaciones = txtObservaciones.Text,
+                    idCaja = cajaDiaria.idCaja,
+                    isDelete = false
+                });
 
                 valorPropinaOperario = valorPropinaOperario + Convert.ToDecimal(txtValor.Text);
+                cajaDiaria.TotalIngresosTransferencias = valorPropinaOperario;
 
-                DatabaseQueryLDB.ExecuteNonQuery(
-                       "UPDATE CajaDiaria SET TotalIngresosTransferencias = ? WHERE idCaja = ?",
-                       valorPropinaOperario, cajaDiaria.idCaja
-                       );
+                cajaDiariaController.ActualizarCajaDiaria(cajaDiaria);
 
                 cargaCajaDiaria();
                 limpiacampos();
@@ -88,11 +100,7 @@ namespace CarWash.Presentacion.Administracion
 
         private void cargaCajaDiaria()
         {
-            cajaDiaria = DatabaseQueryLDB.ExecuteList<CajaDiaria>(
-                @"SELECT idCaja,FechaApertura,FechaCierre,MontoInicial,TotalIngresosEfectivo,TotalIngresosTransferencias,TotalIngresosDatafono,TotalEgresos,TotalFinal,Estado,TotalValesOperarios
-                  FROM CajaDiaria
-                  WHERE Estado = 1;").FirstOrDefault();
-
+            cajaDiaria = cajaDiariaController.GetCajaActiva();
             valorPropinaOperario = cajaDiaria.TotalIngresosTransferencias;
         }
 

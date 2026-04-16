@@ -21,8 +21,8 @@ namespace CarWash.Entidades
         public DateTime FechaRegsitro { get; set; }
         public decimal Valor { get; set; }
         public string Motivo { get; set; }
-        public bool Descontado { get; set; }
-        public DateTime FechaDescuento { get; set; }
+        public bool? Descontado { get; set; }
+        public DateTime? FechaDescuento { get; set; }
     }
 }
 

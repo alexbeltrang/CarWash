@@ -1,4 +1,6 @@
-﻿using CarWash.Database;
+﻿using CarWash.Controladores;
+using CarWash.Database;
+using CarWash.DTOs;
 using CarWash.Entidades;
 using System;
 using System.Collections.Generic;
@@ -14,6 +16,8 @@ namespace CarWash.Presentacion.Administracion
 {
     public partial class FrmRegistroAsistencia : Form
     {
+        OperariosController operariosController = new OperariosController();
+        AsistenciaOperarioController asistenciaOperarioController = new AsistenciaOperarioController();
         public FrmRegistroAsistencia()
         {
             InitializeComponent();
@@ -28,15 +32,14 @@ namespace CarWash.Presentacion.Administracion
             bool asistio = rbAsistio.Checked;
             bool autorizado = rbFaltaAutorizada.Checked;
 
-            DatabaseQueryLDB.ExecuteNonQuery(
-                @"INSERT INTO AsistenciaOperario (idOperario, Fecha, Asistio, Autorizado, Observacion)
-                  VALUES (?,?,?,?,?)",
-                cmbOperario.SelectedValue,
-                dtpFecha.Value.Date,
-                asistio,
-                autorizado,
-                txtObservacion.Text.Trim()
-            );
+            asistenciaOperarioController.RegistrarAsistenciaOperario(new AsistenciaOperario
+            {
+                idOperario = (int)cmbOperario.SelectedValue,
+                Fecha = dtpFecha.Value.Date,
+                Asistio = asistio,
+                Autorizado = autorizado,
+                Observacion = txtObservacion.Text.Trim()
+            });
 
             MessageBox.Show("Asistencia registrada correctamente");
             limpiaCampos();
@@ -46,17 +49,29 @@ namespace CarWash.Presentacion.Administracion
 
         public void CargarOperarios()
         {
-            var operarios = DatabaseQueryLDB.ExecuteList<Operarios>("SELECT idOperario, COALESCE(opr.Nombres,'') || ' ' || COALESCE(opr.Apellidos,'') AS Nombres FROM Operarios opr WHERE isDelete = 0");
-            operarios.Insert(0, new Operarios
+
+            var operarios = operariosController.GetOperariosActivos();
+
+            var operadoresDisponibles = operarios
+                            .Select(o => new OperariosDTO
+                            {
+                                idOperario = o.idOperario,
+                                Nombres = o.Nombres,
+                                Apellidos = o.Apellidos
+                            })
+                            .ToList();
+
+            operadoresDisponibles.Insert(0, new OperariosDTO
             {
                 idOperario = 0,
-                Nombres = "-- Seleccione --"
+                Nombres = "-- Seleccione --",
+                Apellidos = ""
             });
 
-
-            cmbOperario.DataSource = operarios;
-            cmbOperario.DisplayMember = "Nombres";
+            cmbOperario.DataSource = operadoresDisponibles;
+            cmbOperario.DisplayMember = "NombreCompleto";
             cmbOperario.ValueMember = "idOperario";
+            cmbOperario.SelectedIndex = 0;
         }
 
         public void limpiaCampos()
@@ -68,6 +83,6 @@ namespace CarWash.Presentacion.Administracion
             txtObservacion.Clear();
         }
 
-        
+
     }
 }

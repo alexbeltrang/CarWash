@@ -1,4 +1,5 @@
-﻿using CarWash.Database;
+﻿using CarWash.Controladores;
+using CarWash.Database;
 using CarWash.Entidades;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,8 @@ namespace CarWash.Presentacion.Administracion
         private decimal totalValesOperadores = 0;
         private decimal diferencia = 0;
         private List<CajaDiaria> cajaDiaria = new List<CajaDiaria>();
+        CajaDiariaController cajaDiariaController = new CajaDiariaController();
+        ValesOperariosController valesOperariosController = new ValesOperariosController();
         public FrmCierreCaja()
         {
             InitializeComponent();
@@ -77,19 +80,18 @@ namespace CarWash.Presentacion.Administracion
 
         private void cargaCaja()
         {
-            cajaDiaria = DatabaseQueryLDB.ExecuteList<CajaDiaria>(
-               @"SELECT idCaja,FechaApertura,FechaCierre,MontoInicial,TotalIngresosCredito,TotalIngresosEfectivo,TotalIngresosTransferencias,TotalIngresosDatafono,TotalEgresos,TotalFinal,Estado
-                  FROM CajaDiaria
-                  WHERE  Estado = 1;");
+            cajaDiaria.Clear();
+            var cajaDiariaGet = cajaDiariaController.GetCajaActiva();
+            if (cajaDiariaGet != null && cajaDiariaGet.idCaja > 0)
+            {
+                cajaDiaria.Add(cajaDiariaGet);
+            }
         }
 
 
         private void cargaVales()
         {
-            var vales = DatabaseQueryLDB.ExecuteList<ValesOperarios>(
-               @"SELECT IdValeOperario,idOperario,idCaja,FechaRegsitro,Valor,Motivo,Descontado,FechaDescuento
-                 FROM ValesOperarios
-                  WHERE  idCaja = ?;", cajaDiaria[0].idCaja);
+            var vales = valesOperariosController.GetAllValesOperarios(cajaDiaria[0].idCaja);
 
             foreach (var v in vales)
             {
@@ -125,14 +127,12 @@ namespace CarWash.Presentacion.Administracion
         {
             try
             {
+
                 // Actualiza el registro de caja
-                DatabaseQueryLDB.ExecuteNonQuery(
-                    @"UPDATE CajaDiaria SET 
-                        Estado = 0, 
-                        FechaCierre = ?
-                      WHERE idCaja = ?",
-                    DateTime.Now, cajaDiaria[0].idCaja
-                );
+                cajaDiaria[0].Estado = false;
+                cajaDiaria[0].FechaCierre = DateTime.Now;
+
+                cajaDiariaController.ActualizarCajaDiaria(cajaDiaria[0]);
 
                 MessageBox.Show("Caja cerrada exitosamente.", "Cierre Caja", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 this.Close();

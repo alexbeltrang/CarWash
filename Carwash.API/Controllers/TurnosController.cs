@@ -24,6 +24,18 @@ namespace Carwash.API.Controllers
             return Ok(data);
         }
 
+
+
+        [HttpGet("GetallActivos")]
+        public async Task<IActionResult> GetallActivos()
+        {
+            var data = await _context.Turnos
+                .Where(t => t.Estado == false)
+                .ToListAsync();
+
+            return Ok(data);
+        }
+
         // GET: api/Turnos/GetById?id=5
         [HttpGet("GetById")]
         public async Task<IActionResult> GetById([FromQuery] int id)
@@ -234,6 +246,153 @@ namespace Carwash.API.Controllers
             }
         }
 
+        [HttpGet("VehiculosEnProceso")]
+        public async Task<IActionResult> VehiculosEnProceso()
+        {
+            try
+            {
+                var data = await (
+                    from tur in _context.Turnos
+                    join tvh in _context.TipoVehiculo
+                        on tur.IdTipoVehiculo equals tvh.IdTipoVehiculo
 
+                    join ope in _context.Operarios
+                        on tur.idOperario equals ope.idOperario into operariosGroup
+                    from ope in operariosGroup.DefaultIfEmpty() // LEFT JOIN
+
+                    where tur.Estado == false
+                    orderby tur.FechaHoraIngreso ascending
+
+                    select new
+                    {
+                        tur.IdTurno,
+                        tur.Placa,
+                        tur.NombreCliente,
+                        tur.NumeroCelular,
+                        tur.NumeroTurno,
+                        tur.FechaHoraIngreso,
+                        TipoVehiculo = tvh.Nombre,
+
+                        OperadorAsignado =
+                            ((ope != null ? ope.Nombres : "") ?? "") + " " +
+                            ((ope != null ? ope.Apellidos : "") ?? ""),
+
+                        tur.Valor,
+                        tur.OperadorOcupado,
+                        tur.Marca,
+                        tur.NumeroOrden
+                    }
+                ).ToListAsync();
+
+                var vehiculosProceso = data.Select(x => new GestionVehiculosDTO
+                {
+                    IdTurno = x.IdTurno,
+                    Placa = x.Placa,
+                    NombreCliente = x.NombreCliente,
+                    NumeroCelular = x.NumeroCelular,
+                    NumeroTurno = x.NumeroTurno,
+                    FechaHoraIngreso = x.FechaHoraIngreso.ToString("yyyy-MM-dd HH:mm"),
+                    TipoVehiculo = x.TipoVehiculo,
+                    OperadorAsignado = x.OperadorAsignado.Trim(),
+                    ValorCliente = "$ " + x.Valor.ToString("N2"),
+                    OperadorOcupado = (bool)x.OperadorOcupado,
+                    Marca = x.Marca,
+                    NumeroOrden = x.NumeroOrden
+                }).ToList();
+
+                return Ok(vehiculosProceso);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al obtener vehículos en proceso: {ex.Message}");
+            }
+        }
+
+        [HttpGet("DashboardOperadores")]
+        public async Task<IActionResult> DashboardOperadores()
+        {
+            try
+            {
+                var ahora = DateTime.Now;
+
+                var data = await (
+                    from t in _context.Turnos
+                    join o in _context.Operarios
+                        on t.idOperario equals o.idOperario
+                    where t.Estado == false
+                       && t.OperadorOcupado == true
+                       && t.FechaHoraAsignacionOperario != null
+                    select new
+                    {
+                        NombreOperador = (o.Nombres ?? "") + " " + (o.Apellidos ?? ""),
+                        t.Placa,
+                        t.FechaHoraAsignacionOperario
+                    }
+                ).ToListAsync();
+
+                var lista = data
+                    .Select(x =>
+                    {
+                        var segundos = (int)(ahora - x.FechaHoraAsignacionOperario.Value).TotalSeconds;
+
+                        return new DashboardOperadoresDTO
+                        {
+                            NombreOperador = x.NombreOperador.Trim(),
+                            Placa = x.Placa,
+                            MinutosTranscurridos = segundos / 60,
+                            Horas = segundos / 3600,
+                            MinutosRestantes = (segundos % 3600) / 60
+                        };
+                    })
+                    .OrderByDescending(x => x.MinutosTranscurridos)
+                    .ToList();
+
+                return Ok(lista);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al obtener dashboard de operadores: {ex.Message}");
+            }
+        }
+
+        [HttpGet("PendientesNomina")]
+        public async Task<IActionResult> PendientesNomina(
+            [FromQuery] int idOperario,
+            [FromQuery] DateTime fechaInicial,
+            [FromQuery] DateTime fechaFinal)
+        {
+            try
+            {
+                var inicio = fechaInicial.Date;
+                var fin = fechaFinal.Date.AddDays(1);
+
+                var data = await _context.Turnos
+                    .Where(t =>
+                        t.idOperario == idOperario &&
+                        t.PagadoNomina == false &&
+                        t.FechaHoraIngreso >= inicio &&
+                        t.FechaHoraIngreso < fin)
+                    .Select(t => new
+                    {
+                        t.idOperario,
+                        t.FechaHoraIngreso,
+                        ValorServicio = t.ValorBaseComision
+                    })
+                    .ToListAsync();
+
+                var resultado = data.Select(x => new
+                {
+                    x.idOperario,
+                    FechaHoraIngreso = x.FechaHoraIngreso.ToString("yyyy-MM-dd HH:mm"),
+                    x.ValorServicio
+                }).ToList();
+
+                return Ok(resultado);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al consultar pendientes de nómina: {ex.Message}");
+            }
+        }
     }
 }

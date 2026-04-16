@@ -39,12 +39,19 @@ namespace Carwash.API.Controllers
         [HttpGet("ClienteCreditoActivos")]
         public async Task<IActionResult> getClienteCreditoActivos()
         {
-            var clientes = await _context.ClienteCredito.Where(c => c.Estado == true).ToListAsync();
+            try
+            {
+                var clientes = await _context.ClienteCredito.Where(c => c.Estado == true).ToListAsync();
 
-            if (clientes == null || !clientes.Any())
-                return NotFound();
+                if (clientes == null || !clientes.Any())
+                    return NotFound();
 
-            return Ok(clientes);
+                return Ok(clientes);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
 
         }
     }

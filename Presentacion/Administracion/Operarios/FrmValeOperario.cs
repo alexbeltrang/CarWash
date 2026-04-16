@@ -1,4 +1,5 @@
-﻿using CarWash.Database;
+﻿using CarWash.Controladores;
+using CarWash.Database;
 using CarWash.DTOs;
 using CarWash.Entidades;
 using System;
@@ -15,6 +16,10 @@ namespace CarWash.Presentacion.Operacion
 {
     public partial class FrmValeOperario : Form
     {
+        CajaDiariaController cajaDiariaController = new CajaDiariaController();
+        OperariosController operariosController = new OperariosController();
+        ValesOperariosController valesOperariosController = new ValesOperariosController();
+
         CajaDiaria cajaDiaria = new CajaDiaria();
         decimal valorValeOperario = 0;
         public FrmValeOperario()
@@ -30,21 +35,28 @@ namespace CarWash.Presentacion.Operacion
 
         private void CargaOperarios()
         {
-            var operadoresDisponibles = DatabaseQueryLDB.ExecuteList<OperariosDTO>(
-              @"SELECT idOperario,Nombres,Apellidos  
-                  FROM Operarios 
-                  WHERE isDelete = 0 ");
+            var operarios = operariosController.GetOperariosActivos(); // List<Operarios>
+
+            var operadoresDisponibles = operarios
+                .Select(o => new OperariosDTO
+                {
+                    idOperario = o.idOperario,
+                    Nombres = o.Nombres,
+                    Apellidos = o.Apellidos
+                })
+                .ToList();
 
             operadoresDisponibles.Insert(0, new OperariosDTO
             {
                 idOperario = 0,
-                Nombres = "-- Seleccione --"
+                Nombres = "-- Seleccione --",
+                Apellidos = ""
             });
 
             cmbOperario.DataSource = operadoresDisponibles;
             cmbOperario.DisplayMember = "NombreCompleto";
+            cmbOperario.ValueMember = "idOperario";
             cmbOperario.SelectedIndex = 0;
-
         }
 
         private void txtValor_MouseClick(object sender, MouseEventArgs e)
@@ -61,42 +73,33 @@ namespace CarWash.Presentacion.Operacion
         {
             if (validaCampos())
             {
-                var operarioSel = cmbOperario.SelectedValue;
-                var idoperario = ((OperariosDTO)operarioSel).idOperario;
+                //var operarioSel = cmbOperario.SelectedValue;
+                var idoperario = Convert.ToInt32(cmbOperario.SelectedValue);
 
-                DatabaseQueryLDB.ExecuteNonQuery(
-                        "INSERT INTO ValesOperarios (idOperario,idCaja,FechaRegsitro,Valor,Motivo) values (?,?,?,?,?)",
-                       idoperario,
-                        cajaDiaria.idCaja,
-                        DateTime.Now,
-                        Convert.ToDecimal(txtValor.Text),
-                        txtMotivo.Text);
+
+                valesOperariosController.RegistrarValesOperarios(new ValesOperarios
+                {
+                    idOperario = idoperario,
+                    idCaja = cajaDiaria.idCaja,
+                    FechaRegsitro = DateTime.Now,
+                    Valor = Convert.ToDecimal(txtValor.Text),
+                    Motivo = txtMotivo.Text
+                });
 
                 valorValeOperario = valorValeOperario + Convert.ToDecimal(txtValor.Text);
-
-                //DatabaseQueryLDB.ExecuteNonQuery(
-                //       "UPDATE CajaDiaria SET TotalEgresos = ? WHERE idCaja = ?",
-                //       valorValeOperario, cajaDiaria.idCaja
-                //       );
-
-                MostrarToast("Gasto registrado correctamente", Color.FromArgb(40, 167, 69));
                 cargaCajaDiaria();
                 limpiacampos();
-
+                this.Close();
 
                 MostrarToast("Vale registrado correctamente", Color.FromArgb(40, 167, 69));
-                this.Close();
+
 
             }
         }
 
         private void cargaCajaDiaria()
         {
-            cajaDiaria = DatabaseQueryLDB.ExecuteList<CajaDiaria>(
-                @"SELECT idCaja,FechaApertura,FechaCierre,MontoInicial,TotalIngresosEfectivo,TotalIngresosTransferencias,TotalIngresosDatafono,TotalEgresos,TotalFinal,Estado,TotalValesOperarios
-                  FROM CajaDiaria
-                  WHERE Estado = 1;").FirstOrDefault();
-
+            cajaDiaria = cajaDiariaController.GetCajaActiva();
             valorValeOperario = cajaDiaria.TotalValesOperarios;
         }
 

@@ -1,6 +1,4 @@
 ﻿using CarWash.Entidades;
-using CarWash.ModelosRespuestas;
-using CarWash.Utilidades;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -13,12 +11,12 @@ using System.Threading.Tasks;
 
 namespace CarWash.Controladores
 {
-    public class CajaDiariaController
+    public class RegistroPropinasOperariosController
     {
         private static readonly HttpClient _httpClient;
         private static readonly string _apiBaseUrl = ConfigurationManager.AppSettings["ApiBaseUrl"];
 
-        static CajaDiariaController()
+        static RegistroPropinasOperariosController()
         {
             // Habilitar TLS 1.2 y TLS 1.3 requeridos para HTTPS en .NET Framework
             ServicePointManager.SecurityProtocol =
@@ -36,76 +34,77 @@ namespace CarWash.Controladores
             _httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
         }
 
-
-        public CajaDiaria GetCajaActiva()
+        public RegistroPropinasOperarios consultaRegistroPropinasId(int id)
         {
             try
             {
+
                 var response = _httpClient
-                    .GetAsync($"{_apiBaseUrl}/api/CajaDiaria/getCajaActiva")
+                   .GetAsync($"{_apiBaseUrl}/api/RegistroPropinasOperarios/GetById?id={id}")
+                   .GetAwaiter().GetResult();
+
+
+                response.EnsureSuccessStatusCode();
+
+                var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+
+                var apiResponse = JsonConvert.DeserializeObject<RegistroPropinasOperarios>(json);
+
+                return apiResponse ?? new RegistroPropinasOperarios();
+            }
+            catch (Exception ex)
+            {
+                return new RegistroPropinasOperarios();
+            }
+        }
+
+
+        public int ActualizarRegistroPropinas(RegistroPropinasOperarios registro)
+        {
+            try
+            {
+                var requestBody = JsonConvert.SerializeObject(registro);
+                var content = new StringContent(requestBody, Encoding.UTF8, "application/json");
+
+                var response = _httpClient
+                    .PutAsync($"{_apiBaseUrl}/api/RegistroPropinasOperarios/ActualizarRegistroPropinas/{registro.idPropina}", content)
+                    .GetAwaiter().GetResult();
+
+                response.EnsureSuccessStatusCode();
+
+                // Tu endpoint devuelve NoContent (204), así que no hay body
+                return registro.idPropina;
+            }
+            catch (Exception)
+            {
+                return 0;
+            }
+        }
+
+
+        public int RegistrarRegistroPropinas(RegistroPropinasOperarios registro)
+        {
+            try
+            {
+                var requestBody = JsonConvert.SerializeObject(registro);
+                var content = new StringContent(requestBody, Encoding.UTF8, "application/json");
+
+                var response = _httpClient
+                    .PostAsync($"{_apiBaseUrl}/api/RegistroPropinasOperarios/RegistrarRegistroPropinasOperarios", content)
                     .GetAwaiter().GetResult();
 
                 response.EnsureSuccessStatusCode();
 
                 var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-                var apiResponse = JsonConvert.DeserializeObject<CajaDiaria>(json);
 
-                return apiResponse;
+                var apiResponse = JsonConvert.DeserializeObject<RegistroPropinasOperarios>(json);
+
+                return apiResponse?.idPropina ?? 0;
             }
             catch (Exception ex)
             {
-                return new CajaDiaria
-                {
-
-                };
-            }
-        }
-
-
-        public int ActualizarCajaDiaria(CajaDiaria cajaDiaria)
-        {
-            try
-            {
-                var requestBody = JsonConvert.SerializeObject(cajaDiaria);
-                var content = new StringContent(requestBody, Encoding.UTF8, "application/json");
-
-                var response = _httpClient
-                    .PutAsync($"{_apiBaseUrl}/api/CajaDiaria/ActualizarCajaDiaria/{cajaDiaria.idCaja}", content)
-                    .GetAwaiter().GetResult();
-
-                response.EnsureSuccessStatusCode();
-
-                // Tu endpoint devuelve NoContent (204), así que no hay body
-                return cajaDiaria.idCaja;
-            }
-            catch (Exception)
-            {
                 return 0;
             }
         }
-
-
-        public int CrearCajaDiaria(CajaDiaria cajaDiaria)
-        {
-            try
-            {
-                var requestBody = JsonConvert.SerializeObject(cajaDiaria);
-                var content = new StringContent(requestBody, Encoding.UTF8, "application/json");
-
-                var response = _httpClient
-                    .PostAsync($"{_apiBaseUrl}/api/CajaDiaria/CrearCaja", content)
-                    .GetAwaiter().GetResult();
-
-                response.EnsureSuccessStatusCode();
-
-                // Tu endpoint devuelve NoContent (204), así que no hay body
-                return cajaDiaria.idCaja;
-            }
-            catch (Exception)
-            {
-                return 0;
-            }
-        }
-
     }
 }

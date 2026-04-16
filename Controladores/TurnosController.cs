@@ -130,7 +130,38 @@ namespace CarWash.Controladores
                 return new Turnos();
             }
         }
+        public List<ServicioNominaDTO> PendientesNomina(
+            int idOperario,
+            DateTime fechaInicial,
+            DateTime fechaFinal)
+        {
+            try
+            {
+                string url = $"{_apiBaseUrl}/api/Turnos/PendientesNomina" +
+                             $"?idOperario={idOperario}" +
+                             $"&fechaInicial={fechaInicial:yyyy-MM-dd}" +
+                             $"&fechaFinal={fechaFinal:yyyy-MM-dd}";
 
+                var response = _httpClient
+                    .GetAsync(url)
+                    .GetAwaiter().GetResult();
+
+                response.EnsureSuccessStatusCode();
+
+                var json = response.Content
+                    .ReadAsStringAsync()
+                    .GetAwaiter()
+                    .GetResult();
+
+                var apiResponse = JsonConvert.DeserializeObject<List<ServicioNominaDTO>>(json);
+
+                return apiResponse ?? new List<ServicioNominaDTO>();
+            }
+            catch (Exception)
+            {
+                return new List<ServicioNominaDTO>();
+            }
+        }
         public List<IngresoVehiculoDTO> HistoricoByPlaca(string placa)
         {
             try
@@ -175,6 +206,71 @@ namespace CarWash.Controladores
                 return new List<GestionVehiculosDTO>();
             }
         }
+        public List<GestionVehiculosDTO> VehiculosEnProceso()
+        {
+            try
+            {
+                var response = _httpClient
+                   .GetAsync($"{_apiBaseUrl}/api/Turnos/VehiculosEnProceso")
+                   .GetAwaiter().GetResult();
 
+                response.EnsureSuccessStatusCode();
+
+                var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+
+                var apiResponse = JsonConvert.DeserializeObject<List<GestionVehiculosDTO>>(json);
+
+                return apiResponse ?? new List<GestionVehiculosDTO>();
+            }
+            catch (Exception)
+            {
+                return new List<GestionVehiculosDTO>();
+            }
+        }
+
+        public List<DashboardOperadoresDTO> DashboardOperadores()
+        {
+            try
+            {
+                var response = _httpClient
+                   .GetAsync($"{_apiBaseUrl}/api/Turnos/DashboardOperadores")
+                   .GetAwaiter().GetResult();
+
+                response.EnsureSuccessStatusCode();
+
+                var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+
+                var apiResponse = JsonConvert.DeserializeObject<List<DashboardOperadoresDTO>>(json);
+
+                return apiResponse ?? new List<DashboardOperadoresDTO>();
+            }
+            catch (Exception)
+            {
+                return new List<DashboardOperadoresDTO>();
+            }
+        }
+
+
+        public List<Turnos> GetallActivos()
+        {
+            try
+            {
+                var response = _httpClient
+                   .GetAsync($"{_apiBaseUrl}/api/Turnos/GetallActivos")
+                   .GetAwaiter().GetResult();
+
+                response.EnsureSuccessStatusCode();
+
+                var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+
+                var apiResponse = JsonConvert.DeserializeObject<List<Turnos>>(json);
+
+                return apiResponse ?? new List<Turnos>();
+            }
+            catch (Exception)
+            {
+                return new List<Turnos>();
+            }
+        }
     }
 }

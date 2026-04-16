@@ -86,21 +86,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controladores\AsistenciaOperarioController.cs" />
     <Compile Include="Controladores\CajaDiariaController.cs" />
     <Compile Include="Controladores\ClienteCreditoController.cs" />
     <Compile Include="Controladores\FormaPagoController.cs" />
+    <Compile Include="Controladores\GastosCajaController.cs" />
     <Compile Include="Controladores\LoginController.cs" />
     <Compile Include="Controladores\OperarioComisionesController.cs" />
     <Compile Include="Controladores\OperariosController.cs" />
+    <Compile Include="Controladores\RegistroPropinasOperariosController.cs" />
     <Compile Include="Controladores\ServiciosController.cs" />
     <Compile Include="Controladores\TipoVehiculoController.cs" />
     <Compile Include="Controladores\TurnosController.cs" />
     <Compile Include="Controladores\TurnosDiariosController.cs" />
     <Compile Include="Controladores\TurnosMovimientosController.cs" />
     <Compile Include="Controladores\TurnosServiciosController.cs" />
+    <Compile Include="Controladores\ValesOperariosController.cs" />
     <Compile Include="Database\ColumnInfo.cs" />
     <Compile Include="Database\DatabaseHelper.cs" />
-    <Compile Include="Database\DatabaseManager.cs" />
     <Compile Include="Database\DatabaseQueryLDB.cs" />
     <Compile Include="DTOs\ClienteCreditoDTO.cs" />
     <Compile Include="DTOs\ComisionDTO.cs" />

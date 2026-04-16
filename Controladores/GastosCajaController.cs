@@ -11,12 +11,12 @@ using System.Threading.Tasks;
 
 namespace CarWash.Controladores
 {
-    public class OperarioComisionesController
+    public class GastosCajaController
     {
         private static readonly HttpClient _httpClient;
         private static readonly string _apiBaseUrl = ConfigurationManager.AppSettings["ApiBaseUrl"];
 
-        static OperarioComisionesController()
+        static GastosCajaController()
         {
             // Habilitar TLS 1.2 y TLS 1.3 requeridos para HTTPS en .NET Framework
             ServicePointManager.SecurityProtocol =
@@ -34,52 +34,28 @@ namespace CarWash.Controladores
             _httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
         }
 
-
-        public OperarioComisiones ObtenerComisionbyDiaSemana(int diaSemana, int idOperario)
+        public int RegistrarGastoCaja(GastosCaja gasto)
         {
             try
             {
+                var requestBody = JsonConvert.SerializeObject(gasto);
+                var content = new StringContent(requestBody, Encoding.UTF8, "application/json");
+
                 var response = _httpClient
-                    .GetAsync($"{_apiBaseUrl}/api/OperarioComisiones/BuscarPorDiaSemana?numeroDia={diaSemana}&idOperario={idOperario}")
+                    .PostAsync($"{_apiBaseUrl}/api/GastosCaja/RegistrarGastoCaja", content)
                     .GetAwaiter().GetResult();
 
                 response.EnsureSuccessStatusCode();
 
                 var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-                var apiResponse = JsonConvert.DeserializeObject<OperarioComisiones>(json);
 
-                return apiResponse;
+                var apiResponse = JsonConvert.DeserializeObject<GastosCaja>(json);
+
+                return apiResponse?.IdGasto ?? 0;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return new OperarioComisiones
-                {
-
-                };
-            }
-        }
-
-        public List<OperarioComisiones> ComisionbyOperario(int idOperario)
-        {
-            try
-            {
-                var response = _httpClient
-                    .GetAsync($"{_apiBaseUrl}/api/OperarioComisiones/ComisionbyOperario?idOperario={idOperario}")
-                    .GetAwaiter().GetResult();
-
-                response.EnsureSuccessStatusCode();
-
-                var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-                var apiResponse = JsonConvert.DeserializeObject<List<OperarioComisiones>>(json);
-
-                return apiResponse;
-            }
-            catch (Exception ex)
-            {
-                return new List<OperarioComisiones>
-                {
-
-                };
+                return 0;
             }
         }
     }

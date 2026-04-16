@@ -1,4 +1,5 @@
-﻿using CarWash.Database;
+﻿using CarWash.Controladores;
+using CarWash.Database;
 using CarWash.DTOs;
 using CarWash.Entidades;
 using CarWash.Presentacion.Operacion;
@@ -23,6 +24,7 @@ namespace CarWash.Presentacion.Principal
         private Timer timerMinuto;
         private bool _formDetalleAbierto = false;
         private List<GestionVehiculosDTO> vehiculosProceso;
+        TurnosController turnosController = new TurnosController();
 
         public FrmDashboard()
         {
@@ -66,9 +68,10 @@ namespace CarWash.Presentacion.Principal
         {
             try
             {
+                var serviciosActivosCon = turnosController.GetallActivos();
+
                 // Servicios activos (ejemplo campo Estado = 1)
-                int serviciosActivos = DatabaseQueryLDB.ExecuteScalar<int>(
-                    "SELECT COUNT(*) FROM Turnos WHERE Estado = 0");
+                int serviciosActivos = serviciosActivosCon.Count();
 
                 lblServicios.Text = "Servicios Activos: " + serviciosActivos;
             }
@@ -95,15 +98,7 @@ namespace CarWash.Presentacion.Principal
 
             try
             {
-                vehiculosProceso = DatabaseQueryLDB.ExecuteList<GestionVehiculosDTO>(
-               @"SELECT TUR.IdTurno,TUR.Placa,TUR.NombreCliente,TUR.NumeroCelular, TUR.NumeroTurno, strftime('%Y-%m-%d %H:%M',TUR.FechaHoraIngreso / 10000000 - 62135596800,'unixepoch') AS FechaHoraIngreso, 
-                        TVH.Nombre TipoVehiculo,  COALESCE(OPE.Nombres, '') || ' ' || COALESCE(OPE.Apellidos, '') AS OperadorAsignado, '$ ' || printf('%.2f', Valor) AS ValorCliente, TUR.OperadorOcupado,
-                        TUR.Marca, TUR.NumeroOrden
-                        FROM Turnos TUR INNER JOIN TipoVehiculo TVH ON TUR.IdTipoVehiculo = TVH.idTipoVehiculo 
-                        LEFT OUTER JOIN Operarios OPE ON TUR.idOperario = OPE.idOperario 
-                        WHERE TUR.Estado = 0 
-                        ORDER BY TUR.FechaHoraIngreso ASC");
-
+                vehiculosProceso = turnosController.VehiculosEnProceso();
 
                 llenarDataGrid(vehiculosProceso);
             }
@@ -154,26 +149,7 @@ namespace CarWash.Presentacion.Principal
             flpOperadores.SuspendLayout();
             flpOperadores.Controls.Clear();
 
-            var lista = DatabaseQueryLDB.ExecuteList<DashboardOperadoresDTO>(
-            @"WITH Diferencia AS (
-                    SELECT 
-                        o.Nombres || ' ' || o.Apellidos AS NombreOperador,
-                        t.Placa,
-                        (strftime('%s','now','localtime') - 
-                        (t.FechaHoraAsignacionOperario / 10000000 - 62135596800)
-                        ) AS Segundos
-                    FROM Turnos t
-                    INNER JOIN Operarios o ON o.idOperario = t.idOperario
-                    WHERE t.Estado = 0 and t.OperadorOcupado = 1
-                )
-                SELECT 
-                    NombreOperador,
-                    Placa,
-                    Segundos / 60 AS MinutosTranscurridos,
-                    Segundos / 3600 AS Horas,
-                    (Segundos % 3600) / 60 AS MinutosRestantes
-                FROM Diferencia
-                ORDER BY MinutosTranscurridos DESC;");
+            var lista = turnosController.DashboardOperadores();
 
             int ranking = 1;
 

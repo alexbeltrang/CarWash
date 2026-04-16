@@ -1,4 +1,5 @@
-﻿using CarWash.Database;
+﻿using CarWash.Controladores;
+using CarWash.Database;
 using CarWash.Entidades;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,9 @@ namespace CarWash.Presentacion.Operacion
 {
     public partial class FrmGastoCaja : Form
     {
+        GastosCajaController gastosCajaController = new GastosCajaController();
+        CajaDiariaController cajaDiariaController = new CajaDiariaController();
+
         CajaDiaria cajaDiaria = new CajaDiaria();
         decimal valorGastoCaja = 0;
         public FrmGastoCaja()
@@ -31,21 +35,21 @@ namespace CarWash.Presentacion.Operacion
             cargaCajaDiaria();
             if (validaCampos())
             {
-
-                DatabaseQueryLDB.ExecuteNonQuery(
-                        "INSERT INTO GastosCaja (idCaja,FechaRegistro,Concepto,Valor,Observaciones) values (?,?,?,?,?)",
-                        cajaDiaria.idCaja,
-                        DateTime.Now,
-                        txtConcepto.Text,
-                        Convert.ToDecimal(txtValor.Text),
-                        txtObservacion.Text);
+                var regGasto = gastosCajaController.RegistrarGastoCaja(new GastosCaja
+                {
+                    idCaja = cajaDiaria.idCaja,
+                    FechaRegistro = DateTime.Now,
+                    Concepto = txtConcepto.Text,
+                    Valor = Convert.ToDecimal(txtValor.Text),
+                    Observaciones = txtObservacion.Text
+                });
 
                 valorGastoCaja = cajaDiaria.TotalEgresos + Convert.ToDecimal(txtValor.Text);
 
-                DatabaseQueryLDB.ExecuteNonQuery(
-                       "UPDATE CajaDiaria SET TotalEgresos = ? WHERE idCaja = ?",
-                       valorGastoCaja, cajaDiaria.idCaja
-                       );
+                cajaDiaria.TotalEgresos = valorGastoCaja;
+
+                cajaDiariaController.ActualizarCajaDiaria(cajaDiaria);
+                cargaCajaDiaria();
 
                 MostrarToast("Gasto registrado correctamente", Color.FromArgb(40, 167, 69));
                 cargaCajaDiaria();
@@ -156,13 +160,10 @@ namespace CarWash.Presentacion.Operacion
 
         private void cargaCajaDiaria()
         {
-            cajaDiaria = DatabaseQueryLDB.ExecuteList<CajaDiaria>(
-                @"SELECT idCaja,FechaApertura,FechaCierre,MontoInicial,TotalIngresosEfectivo,TotalIngresosTransferencias,TotalIngresosDatafono,TotalEgresos,TotalFinal,Estado
-                  FROM CajaDiaria
-                  WHERE Estado = 1;").FirstOrDefault();
-
-
+            cajaDiaria = cajaDiariaController.GetCajaActiva();
             valorGastoCaja = cajaDiaria.TotalEgresos;
         }
+
+
     }
 }

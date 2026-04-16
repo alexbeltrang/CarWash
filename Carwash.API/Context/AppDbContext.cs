@@ -1,6 +1,8 @@
 ﻿namespace Carwash.API.Context
 {
+    using Carwash.API.Controllers;
     using Carwash.API.Modelos;
+    using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
@@ -19,6 +21,10 @@
         public DbSet<ClienteCredito> ClienteCredito { get; set; }
         public DbSet<OperarioComisiones> OperarioComisiones { get; set; }
         public DbSet<FormaPago> FormaPagos { get; set; }
+        public DbSet<ValesOperarios> valesOperarios { get; set; }
+        public DbSet<GastosCaja> GastosCaja { get; set; }
+        public DbSet<RegistroPropinasOperarios> RegistroPropinasOperarios { get; set; }
+        public DbSet<AsistenciaOperario> AsistenciaOperario { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options)
