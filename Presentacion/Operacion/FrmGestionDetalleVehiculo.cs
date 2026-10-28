@@ -181,25 +181,44 @@ namespace CarWash.Presentacion.Operacion
 
                 if (frm.ShowDialog() == DialogResult.OK)
                 {
+                    if (!frm.OperadorSeleccionadoId.HasValue)
+                    {
+                        MessageBox.Show("No se seleccionó un operador válido.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
                     int idOperador = frm.OperadorSeleccionadoId.Value;
 
                     var comisionOperador = consultaPorcentajeOperador(idOperador);
 
-                    if (comisionOperador != null)
+                    if (comisionOperador != null && comisionOperador.Porcentaje > 0)
                     {
-                        var turnoGestion = turnosController.consultaTurnoId(vehiculosProceso[0].IdTurno);
+                        var turnoGestion = obtenerTurnoParaGestion();
+
+                        if (turnoGestion == null || turnoGestion.IdTurno <= 0)
+                        {
+                            MessageBox.Show("No fue posible cargar el turno para asignar el operador.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+
                         turnoGestion.idOperario = idOperador;
                         turnoGestion.PorcentajeComision = comisionOperador.Porcentaje;
                         turnoGestion.FechaHoraAsignacionOperario = DateTime.Now;
                         turnoGestion.OperadorOcupado = true;
 
-                        turnosController.ActualizarTurno(turnoGestion);
+                        int turnoActualizado = turnosController.ActualizarTurno(turnoGestion);
+
+                        if (turnoActualizado <= 0)
+                        {
+                            MessageBox.Show("No fue posible asignar el operador. Verifique la configuración de comisión y la conexión con la API.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
 
                         cargarDetalleTurnoVehiculo(vehiculosProceso[0].IdTurno);
                     }
                     else
                     {
-                        MessageBox.Show("El operador no tiene comision asignada.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("El operador no tiene comisión válida asignada para el día actual.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
             }
@@ -212,6 +231,23 @@ namespace CarWash.Presentacion.Operacion
             var porcentajeOperador = operarioComisionesController.ObtenerComisionbyDiaSemana(numero, idOperario);
 
             return porcentajeOperador;
+        }
+
+        private Turnos obtenerTurnoParaGestion()
+        {
+            var turno = turnosController.consultaTurnoId(vehiculosProceso[0].IdTurno);
+
+            if (turno != null && turno.IdTurno > 0)
+                return turno;
+
+            if (!string.IsNullOrWhiteSpace(vehiculosProceso[0].Placa))
+            {
+                turno = turnosController.BuscarByPlaca(vehiculosProceso[0].Placa);
+                if (turno != null && turno.IdTurno > 0)
+                    return turno;
+            }
+
+            return null;
         }
 
 
@@ -276,7 +312,12 @@ namespace CarWash.Presentacion.Operacion
 
                     decimal valorComision = (vehiculosProceso[0].ValorBaseComision * vehiculosProceso[0].PorcentajeComision) / 100;
 
-                    var turnoUpdate = turnosController.consultaTurnoId(vehiculosProceso[0].IdTurno);
+                    var turnoUpdate = obtenerTurnoParaGestion();
+                    if (turnoUpdate == null || turnoUpdate.IdTurno <= 0)
+                    {
+                        MessageBox.Show("No fue posible cargar el turno para actualizar el pago.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
                     turnoUpdate.Observaciones = txtObservaciones.Text.Trim();
                     turnoUpdate.idClienteCredito = (int)clienteCredito;
                     turnoUpdate.ValorComision = valorComision;
@@ -308,7 +349,12 @@ namespace CarWash.Presentacion.Operacion
                     }
                     else
                     {
-                        var turnoGes = turnosController.consultaTurnoId(vehiculosProceso[0].IdTurno);
+                        var turnoGes = obtenerTurnoParaGestion();
+                        if (turnoGes == null || turnoGes.IdTurno <= 0)
+                        {
+                            MessageBox.Show("No fue posible cargar el turno para finalizarlo.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
                         turnoGes.Estado = true;
                         turnoGes.Pagado = true;
                         turnoGes.OperadorOcupado = false;
@@ -362,7 +408,12 @@ namespace CarWash.Presentacion.Operacion
 
         private void btnLiberarOperador_Click(object sender, EventArgs e)
         {
-            var turnolib = turnosController.consultaTurnoId(vehiculosProceso[0].IdTurno);
+            var turnolib = obtenerTurnoParaGestion();
+            if (turnolib == null || turnolib.IdTurno <= 0)
+            {
+                MessageBox.Show("No fue posible cargar el turno para liberar el operador.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             turnolib.OperadorOcupado = false;
 
             turnosController.ActualizarTurno(turnolib);

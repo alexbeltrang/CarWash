@@ -1,0 +1,10 @@
+<api type="debug" assembly-name="CarWash.Mobile" mvid="8e3d533f3b0f4f429a9c6478da8391d9">
+  <java-to-managed>
+    <entry java-name="crc64ac5e3d2b3687c613/MainActivity" managed-name="CarWash.Mobile.MainActivity, CarWash.Mobile" managed-type-token-id="33554442" />
+    <entry java-name="crc64ac5e3d2b3687c613/MainApplication" managed-name="CarWash.Mobile.MainApplication, CarWash.Mobile" managed-type-token-id="33554443" />
+  </java-to-managed>
+  <managed-to-java>
+    <entry java-name="crc64ac5e3d2b3687c613/MainActivity" managed-name="CarWash.Mobile.MainActivity, CarWash.Mobile" managed-type-token-id="33554442" />
+    <entry java-name="crc64ac5e3d2b3687c613/MainApplication" managed-name="CarWash.Mobile.MainApplication, CarWash.Mobile" managed-type-token-id="33554443" />
+  </managed-to-java>
+</api>

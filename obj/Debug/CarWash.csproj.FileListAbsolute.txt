@@ -41,3 +41,4 @@ D:\WorkGitHub\CarWash\obj\Debug\CarWash.Presentacion.Administracion.FrmRegistroP
 D:\WorkGitHub\CarWash\obj\Debug\CarWash.Presentacion.Consultas.FrmConsultaMovimientosCaja.resources
 D:\WorkGitHub\CarWash\obj\Debug\CarWash.Presentacion.Administracion.FrmRegistroAsistencia.resources
 D:\WorkGitHub\CarWash\obj\Debug\CarWash.Presentacion.Administracion.Nomina.FrmLiquidacionNominaOperarios.resources
+D:\WorkGitHub\CarWash\bin\Debug\BouncyCastle.Crypto.dll

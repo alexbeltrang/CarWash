@@ -50,12 +50,9 @@ namespace CarWash.Controladores
 
                 return apiResponse;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return new OperarioComisiones
-                {
-
-                };
+                return null;
             }
         }
 

@@ -40,21 +40,31 @@ namespace CarWash.Controladores
         {
             try
             {
+                var urls = new[]
+                {
+                    $"{_apiBaseUrl}/api/Turnos/GetById?id={IdTurno}",
+                    $"{_apiBaseUrl}/api/Turnos/GetById/{IdTurno}"
+                };
 
-                var response = _httpClient
-                   .GetAsync($"{_apiBaseUrl}/api/Turnos/GetById?id={IdTurno}")
-                   .GetAwaiter().GetResult();
+                foreach (var url in urls)
+                {
+                    var response = _httpClient
+                        .GetAsync(url)
+                        .GetAwaiter().GetResult();
 
+                    if (!response.IsSuccessStatusCode)
+                        continue;
 
-                response.EnsureSuccessStatusCode();
+                    var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                    var apiResponse = JsonConvert.DeserializeObject<Turnos>(json);
 
-                var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                    if (apiResponse != null && apiResponse.IdTurno > 0)
+                        return apiResponse;
+                }
 
-                var apiResponse = JsonConvert.DeserializeObject<Turnos>(json);
-
-                return apiResponse ?? new Turnos();
+                return new Turnos();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return new Turnos();
             }
