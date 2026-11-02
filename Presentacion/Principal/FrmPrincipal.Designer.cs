@@ -127,6 +127,7 @@ namespace CarWash.Presentacion.Principal
             this.reporteDiarioToolStripMenuItem.Name = "reporteDiarioToolStripMenuItem";
             this.reporteDiarioToolStripMenuItem.Size = new System.Drawing.Size(213, 26);
             this.reporteDiarioToolStripMenuItem.Text = "&Reporte Diario";
+            this.reporteDiarioToolStripMenuItem.Click += new System.EventHandler(this.reporteDiarioToolStripMenuItem_Click);
             // 
             // operaciónToolStripMenuItem
             // 

@@ -25,6 +25,11 @@ namespace CarWash.Presentacion.Principal
 
         private void FrmPrincipal_Load(object sender, EventArgs e)
         {
+            if (LicenseManager.UsageMode == LicenseUsageMode.Designtime || DesignMode)
+            {
+                return;
+            }
+
             this.WindowState = FormWindowState.Maximized;
             this.Bounds = Screen.PrimaryScreen.Bounds;
             cargaDashBoard();
@@ -237,6 +242,23 @@ namespace CarWash.Presentacion.Principal
                 using (FrmGastoCaja frmApertura = new FrmGastoCaja())
                 {
                     frmApertura.ShowDialog(this);
+                }
+            }
+            else
+            {
+                formularioAbierto.BringToFront();
+            }
+        }
+
+        private void reporteDiarioToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form formularioAbierto = Application.OpenForms["FrmReporteDiarioVentas"];
+
+            if (formularioAbierto == null)
+            {
+                using (FrmReporteDiarioVentas frmReporte = new FrmReporteDiarioVentas())
+                {
+                    frmReporte.ShowDialog(this);
                 }
             }
             else

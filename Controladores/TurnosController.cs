@@ -56,7 +56,7 @@ namespace CarWash.Controladores
                         continue;
 
                     var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-                    var apiResponse = JsonConvert.DeserializeObject<Turnos>(json);
+                    var apiResponse = JsonConvert.DeserializeObject<Turnos>(json, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 
                     if (apiResponse != null && apiResponse.IdTurno > 0)
                         return apiResponse;
@@ -109,13 +109,28 @@ namespace CarWash.Controladores
 
                 var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
 
-                var apiResponse = JsonConvert.DeserializeObject<Turnos>(json);
+                var apiResponse = JsonConvert.DeserializeObject<Turnos>(json, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 
                 return apiResponse?.IdTurno ?? 0;
             }
             catch (Exception)
             {
                 return 0;
+            }
+        }
+
+        public bool NotificarEmail(int idTurno)
+        {
+            try
+            {
+                var response = _httpClient
+                    .PostAsync($"{_apiBaseUrl}/api/Turnos/{idTurno}/notificacion-email", null)
+                    .GetAwaiter().GetResult();
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception)
+            {
+                return false;
             }
         }
 
@@ -131,7 +146,7 @@ namespace CarWash.Controladores
 
                 var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
 
-                var apiResponse = JsonConvert.DeserializeObject<Turnos>(json);
+                var apiResponse = JsonConvert.DeserializeObject<Turnos>(json, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 
                 return apiResponse;
             }
@@ -273,7 +288,7 @@ namespace CarWash.Controladores
 
                 var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
 
-                var apiResponse = JsonConvert.DeserializeObject<List<Turnos>>(json);
+                var apiResponse = JsonConvert.DeserializeObject<List<Turnos>>(json, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 
                 return apiResponse ?? new List<Turnos>();
             }

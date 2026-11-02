@@ -237,15 +237,9 @@ namespace CarWash.Presentacion.Operacion
         {
             var turno = turnosController.consultaTurnoId(vehiculosProceso[0].IdTurno);
 
-            if (turno != null && turno.IdTurno > 0)
+            // BuscarByPlaca devuelve solo datos parciales; actualizarlo sobrescribiria el turno completo.
+            if (turno != null && turno.IdTurno > 0 && turno.FechaHoraIngreso != default(DateTime))
                 return turno;
-
-            if (!string.IsNullOrWhiteSpace(vehiculosProceso[0].Placa))
-            {
-                turno = turnosController.BuscarByPlaca(vehiculosProceso[0].Placa);
-                if (turno != null && turno.IdTurno > 0)
-                    return turno;
-            }
 
             return null;
         }

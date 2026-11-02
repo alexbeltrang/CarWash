@@ -11,9 +11,9 @@
     <TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-        <LangVersion>latest</LangVersion>
+    <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
-<NuGetPackageImportStamp>
+    <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -188,6 +188,9 @@
     <Compile Include="Presentacion\Administracion\Operarios\FrmRegistroPropinasOperarios.Designer.cs">
       <DependentUpon>FrmRegistroPropinasOperarios.cs</DependentUpon>
     </Compile>
+    <Compile Include="Presentacion\Consultas\FrmReporteDiarioVentas.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Presentacion\Login\FrmLogin.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -314,6 +317,5 @@
   <ItemGroup>
     <Content Include="splash_car_icon.ico" />
   </ItemGroup>
-  
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -39,12 +39,12 @@ namespace CarWash.Presentacion.Operacion
             this.DoubleBuffered = true;
             btnGuardar.MouseEnter += (s, e) =>
             {
-                btnGuardar.BackColor = Color.FromArgb(33, 136, 56);
+                btnGuardar.BackColor = Color.FromArgb(18, 86, 163);
             };
 
             btnGuardar.MouseLeave += (s, e) =>
             {
-                btnGuardar.BackColor = Color.FromArgb(40, 167, 69);
+                btnGuardar.BackColor = Color.FromArgb(21, 101, 192);
             };
 
             btnCancelar.MouseEnter += (s, e) =>
@@ -84,6 +84,7 @@ namespace CarWash.Presentacion.Operacion
             EstilizarTextBox(txtCliente);
             EstilizarTextBox(txtValor);
             EstilizarTextBox(txtCelular);
+            EstilizarTextBox(txtCorreoElectronico);
             EstilizarTextBox(txtValorBase);
             EstilizarTextBox(txtObservaciones);
             cargarTipoVehiculo();
@@ -266,10 +267,11 @@ namespace CarWash.Presentacion.Operacion
             turnos.NumeroTurno = GenerarTurno();
             turnos.NombreCliente = txtCliente.Text.Trim();
             turnos.NumeroCelular = txtCelular.Text.Trim();
+            turnos.CorreoElectronico = txtCorreoElectronico.Text.Trim();
             turnos.Placa = txtPlaca.Text.Trim();
             turnos.FechaHoraIngreso = DateTime.Now;
             turnos.Marca = txtMarca.Text.Trim();
-            turnos.NumeroOrden = txtNumOrden.Text.Trim();
+            turnos.NumeroOrden = string.Empty;
             turnos.Valor = precioTotalServicio;
             turnos.ValorBaseComision = precioBaseTotalServicio;
             turnos.Pagado = false;
@@ -295,7 +297,8 @@ namespace CarWash.Presentacion.Operacion
 
                 turnosServiciosController.RegistrarTurnoServicio(turnoServicios);
             }
-            MostrarToast("Ingreso registrado correctamente", Color.FromArgb(40, 167, 69));
+            _ = Task.Run(() => turnosController.NotificarEmail((int)idTurno));
+            MostrarToast("Ingreso registrado correctamente", Color.FromArgb(21, 101, 192));
             CLEAR();
         }
 
@@ -439,6 +442,7 @@ namespace CarWash.Presentacion.Operacion
                 cargarListaServicio(vehiculo.IdTipoVehiculo);
                 txtCliente.Text = vehiculo.NombreCliente;
                 txtCelular.Text = vehiculo.NumeroCelular;
+                txtCorreoElectronico.Text = vehiculo.CorreoElectronico;
                 txtMarca.Text = vehiculo.Marca;
             }
             else

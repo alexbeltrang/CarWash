@@ -66,7 +66,6 @@ C:\Work\CarWash\bin\Debug\System.Memory.xml
 C:\Work\CarWash\bin\Debug\System.Numerics.Vectors.xml
 C:\Work\CarWash\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
 C:\Work\CarWash\obj\Debug\CarWash.csproj.AssemblyReference.cache
-C:\Work\CarWash\obj\Debug\CarWash.exe.config
 C:\Work\CarWash\obj\Debug\CarWash.Presentacion.Administracion.FrmAperturaCaja.resources
 C:\Work\CarWash\obj\Debug\CarWash.Presentacion.Administracion.FrmCierreCaja.resources
 C:\Work\CarWash\obj\Debug\CarWash.Presentacion.Administracion.Nomina.FrmLiquidacionNominaOperarios.resources

@@ -38,6 +38,8 @@ namespace CarWash.Presentacion.Operacion
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmIngresoVehiculo));
             this.lblCelular = new System.Windows.Forms.Label();
             this.txtCelular = new System.Windows.Forms.TextBox();
+            this.lblCorreoElectronico = new System.Windows.Forms.Label();
+            this.txtCorreoElectronico = new System.Windows.Forms.TextBox();
             this.lblTitulo = new System.Windows.Forms.Label();
             this.lblPlaca = new System.Windows.Forms.Label();
             this.txtPlaca = new System.Windows.Forms.TextBox();
@@ -84,6 +86,27 @@ namespace CarWash.Presentacion.Operacion
             this.txtCelular.Size = new System.Drawing.Size(264, 30);
             this.txtCelular.TabIndex = 5;
             this.txtCelular.Tag = "opcional";
+            // 
+            // lblCorreoElectronico
+            // 
+            this.lblCorreoElectronico.AutoSize = true;
+            this.lblCorreoElectronico.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.lblCorreoElectronico.ForeColor = System.Drawing.Color.White;
+            this.lblCorreoElectronico.Location = new System.Drawing.Point(20, 133);
+            this.lblCorreoElectronico.Name = "lblCorreoElectronico";
+            this.lblCorreoElectronico.Size = new System.Drawing.Size(143, 20);
+            this.lblCorreoElectronico.TabIndex = 45;
+            this.lblCorreoElectronico.Text = "Correo electrónico:";
+            // 
+            // txtCorreoElectronico
+            // 
+            this.txtCorreoElectronico.BackColor = System.Drawing.Color.White;
+            this.txtCorreoElectronico.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtCorreoElectronico.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.txtCorreoElectronico.Location = new System.Drawing.Point(170, 133);
+            this.txtCorreoElectronico.Name = "txtCorreoElectronico";
+            this.txtCorreoElectronico.Size = new System.Drawing.Size(264, 30);
+            this.txtCorreoElectronico.TabIndex = 3;
             // 
             // lblTitulo
             // 
@@ -356,6 +379,7 @@ namespace CarWash.Presentacion.Operacion
             this.label3.Size = new System.Drawing.Size(69, 20);
             this.label3.TabIndex = 43;
             this.label3.Text = "# Orden:";
+            this.label3.Visible = false;
             // 
             // txtNumOrden
             // 
@@ -366,6 +390,8 @@ namespace CarWash.Presentacion.Operacion
             this.txtNumOrden.Name = "txtNumOrden";
             this.txtNumOrden.Size = new System.Drawing.Size(264, 30);
             this.txtNumOrden.TabIndex = 3;
+            this.txtNumOrden.Tag = "opcional";
+            this.txtNumOrden.Visible = false;
             // 
             // lstServiciosVehiculo
             // 
@@ -391,6 +417,8 @@ namespace CarWash.Presentacion.Operacion
             this.Controls.Add(this.txtValorBase);
             this.Controls.Add(this.lblCelular);
             this.Controls.Add(this.txtCelular);
+            this.Controls.Add(this.lblCorreoElectronico);
+            this.Controls.Add(this.txtCorreoElectronico);
             this.Controls.Add(this.lblTitulo);
             this.Controls.Add(this.lblPlaca);
             this.Controls.Add(this.txtPlaca);
@@ -424,6 +452,8 @@ namespace CarWash.Presentacion.Operacion
 
         private Label lblCelular;
         private TextBox txtCelular;
+        private Label lblCorreoElectronico;
+        private TextBox txtCorreoElectronico;
         private Label lblTitulo;
         private Label lblPlaca;
         private TextBox txtPlaca;

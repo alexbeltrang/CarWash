@@ -13,6 +13,7 @@ namespace CarWash.DTOs
         public String FechaHoraIngreso { get; set; }
         public String NombreCliente { get; set; }
         public String NumeroCelular { get; set; }
+        public String CorreoElectronico { get; set; }
         public String Placa { get; set; }
         public String Marca { get; set; }
         public String TipoVehiculo { get; set; }
