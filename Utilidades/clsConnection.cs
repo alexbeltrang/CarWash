@@ -18,6 +18,68 @@ namespace CarWash.Utilidades
         public static int idUser;
         public static int intCodigoPerfil;
 
+        private static readonly object apiSessionLock = new object();
+        private static string apiAccessToken = string.Empty;
+        private static Uri? apiOrigin;
+        public static bool EsAdministrador { get; private set; }
+
+        public static void SetApiSession(string? accessToken, string baseUrl, bool isAdmin)
+        {
+            lock (apiSessionLock)
+            {
+                apiAccessToken = string.Empty;
+                apiOrigin = null;
+                EsAdministrador = isAdmin;
+                Uri origin;
+                if (!Uri.TryCreate(baseUrl, UriKind.Absolute, out origin) || !string.IsNullOrEmpty(origin.UserInfo)
+                    || (origin.Scheme != Uri.UriSchemeHttp && origin.Scheme != Uri.UriSchemeHttps)) return;
+                if (string.IsNullOrEmpty(accessToken) || accessToken.Length != 43) return;
+                try
+                {
+                    var decoded = Convert.FromBase64String(accessToken.Replace('-', '+').Replace('_', '/') + "=");
+                    if (decoded.Length != 32 || Convert.ToBase64String(decoded).TrimEnd('=').Replace('+', '-').Replace('/', '_') != accessToken) return;
+                }
+                catch (FormatException) { return; }
+                apiOrigin = new Uri(origin.GetLeftPart(UriPartial.Authority));
+                apiAccessToken = accessToken;
+            }
+        }
+
+        public static void AddSessionCredential(System.Net.Http.HttpRequestMessage request)
+        {
+            lock (apiSessionLock)
+            {
+                if (apiOrigin == null || string.IsNullOrEmpty(apiAccessToken))
+                    throw new UnauthorizedAccessException("Inicie sesion de nuevo para consultar ventas.");
+                if (Uri.Compare(apiOrigin, request.RequestUri, UriComponents.SchemeAndServer,
+                    UriFormat.SafeUnescaped, StringComparison.OrdinalIgnoreCase) != 0)
+                    throw new UnauthorizedAccessException("El servidor cambio. Inicie sesion de nuevo.");
+                EnsureTrustedTransport(request.RequestUri);
+                request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiAccessToken);
+            }
+        }
+
+        public static void EnsureTrustedTransport(Uri target)
+        {
+            bool ignoreCertificates;
+            if (target.Scheme == Uri.UriSchemeHttps && bool.TryParse(
+                System.Configuration.ConfigurationManager.AppSettings["ApiIgnorarSSL"], out ignoreCertificates) && ignoreCertificates)
+                throw new InvalidOperationException("Configure un certificado HTTPS confiable y desactive ApiIgnorarSSL para usar la sesion temporal.");
+        }
+
+        public static bool TakeApiSession(out Uri? origin, out string token)
+        {
+            lock (apiSessionLock)
+            {
+                origin = apiOrigin;
+                token = apiAccessToken;
+                apiOrigin = null;
+                apiAccessToken = string.Empty;
+                EsAdministrador = false;
+                return origin != null && !string.IsNullOrEmpty(token);
+            }
+        }
+
 
 
         public static string strNombreUsuario;

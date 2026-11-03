@@ -2,6 +2,7 @@
 using CarWash.Database;
 using CarWash.DTOs;
 using CarWash.Entidades;
+using CarWash.Utilidades;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -28,6 +29,15 @@ namespace CarWash.Presentacion.Consultas
         public FrmConsultaMovimientosCaja()
         {
             InitializeComponent();
+            if (!clsConnection.EsAdministrador)
+            {
+                Shown += (sender, args) =>
+                {
+                    MessageBox.Show("Solo el perfil Administrador puede consultar ventas.", "Sin permiso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    Close();
+                };
+                return;
+            }
             cargarFormasPago();
             CargaOperarios();
         }
@@ -123,6 +133,8 @@ namespace CarWash.Presentacion.Consultas
         {
             try
             {
+                if (!clsConnection.EsAdministrador)
+                    throw new System.Security.SecurityException("Solo el perfil Administrador puede consultar ventas.");
                 var historial = turnosMovimientosController.GetHistoricoMovimientos(dtpFechaInicial.Value,
                     dtpFechaFinal.Value,
                     (int?)cmbFormaPago.SelectedValue,
@@ -155,7 +167,13 @@ namespace CarWash.Presentacion.Consultas
             }
             catch (Exception ex)
             {
-                var msg = ex.Message;
+                dtgMovimientos.DataSource = null;
+                lblTotal.Text = "Valor Total Movimiento: No disponible";
+                MessageBox.Show(ex.Message, "Consulta no disponible", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                if (ex is UnauthorizedAccessException)
+                {
+                    using (var login = new CarWash.Presentacion.Login.FrmLogin(true)) login.ShowDialog(this);
+                }
             }
         }
 

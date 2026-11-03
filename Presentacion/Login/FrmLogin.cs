@@ -10,9 +10,13 @@ namespace CarWash.Presentacion.Login
     public partial class FrmLogin : Form
     {
         private readonly LoginController _controller = new LoginController();
+        private readonly bool reauthentication;
 
-        public FrmLogin()
+        public FrmLogin() : this(false) { }
+
+        public FrmLogin(bool reauthentication)
         {
+            this.reauthentication = reauthentication;
             InitializeComponent();
             btnLogin.MouseEnter += (s, e) =>
             {
@@ -53,7 +57,7 @@ namespace CarWash.Presentacion.Login
                     t.Stop();
             };
             t.Start();
-            _controller.InicializarBaseDeDatos();
+            if (!reauthentication) _controller.InicializarBaseDeDatos();
         }
 
         private void chkMostrar_CheckedChanged(object sender, EventArgs e)
@@ -63,6 +67,12 @@ namespace CarWash.Presentacion.Login
 
         private void btnCerrar_Click(object sender, EventArgs e)
         {
+            if (reauthentication)
+            {
+                DialogResult = DialogResult.Cancel;
+                Close();
+                return;
+            }
             Application.Exit();
         }
 
@@ -76,6 +86,7 @@ namespace CarWash.Presentacion.Login
             }
 
             var resp = _controller.Login(txtUsuario.Text, txtPassword.Text);
+            txtPassword.Clear();
             if (!resp.esValido)
             {
                 MessageBox.Show(resp.respuesta, "Error Validación", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -86,6 +97,12 @@ namespace CarWash.Presentacion.Login
             clsConnection.intCodigoPerfil = resp.Usuario.PerfilId;
             clsConnection.strNombreUsuario = resp.Usuario.DisplayName;
             clsConnection.strEmailUsuario = resp.Usuario.Email.ToLower();
+            if (reauthentication)
+            {
+                DialogResult = DialogResult.OK;
+                Close();
+                return;
+            }
             this.Visible = false;
             FrmPrincipal frmPrincipalForm = new FrmPrincipal();
             frmPrincipalForm.Show();

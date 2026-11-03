@@ -1,6 +1,7 @@
 using CarWash.Controladores;
 using CarWash.DTOs;
 using CarWash.Entidades;
+using CarWash.Utilidades;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -137,6 +138,30 @@ namespace CarWash.Presentacion.Consultas
         }
 
         private void CargarReporte()
+        {
+            try
+            {
+                if (!clsConnection.EsAdministrador)
+                    throw new System.Security.SecurityException("Solo el perfil Administrador puede consultar ventas.");
+                CargarDatosReporte();
+            }
+            catch (Exception exception)
+            {
+                dtgMovimientos.DataSource = null;
+                lblTotalVentas.Text = "Total ventas: No disponible";
+                lblTotalGastos.Text = "Total gastos: No disponible";
+                lblTotalVales.Text = "Total vales operarios: No disponible";
+                lblNeto.Text = "Neto del dia: No disponible";
+                lblDetalleCaja.Text = string.Empty;
+                MessageBox.Show(exception.Message, "Consulta no disponible", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                if (exception is UnauthorizedAccessException)
+                {
+                    using (var login = new CarWash.Presentacion.Login.FrmLogin(true)) login.ShowDialog(this);
+                }
+            }
+        }
+
+        private void CargarDatosReporte()
         {
             var fechaHoy = DateTime.Today;
             lblFecha.Text = "Fecha: " + fechaHoy.ToString("dd/MM/yyyy");

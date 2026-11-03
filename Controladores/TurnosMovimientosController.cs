@@ -1,5 +1,6 @@
 ﻿using CarWash.DTOs;
 using CarWash.Entidades;
+using CarWash.Utilidades;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ namespace CarWash.Controladores
     public class TurnosMovimientosController
     {
         private static readonly HttpClient _httpClient;
+        private static readonly HttpClient _readClient = new HttpClient(new HttpClientHandler { AllowAutoRedirect = false });
         private static readonly string _apiBaseUrl = ConfigurationManager.AppSettings["ApiBaseUrl"];
 
         static TurnosMovimientosController()
@@ -71,6 +73,8 @@ namespace CarWash.Controladores
         {
             try
             {
+                if (!clsConnection.EsAdministrador)
+                    throw new System.Security.SecurityException("Solo el perfil Administrador puede consultar ventas.");
                 string url = $"{_apiBaseUrl}/api/TurnosMovimientos/GetHistoricoMovimientos" +
                              $"?fechaInicial={fechaInicial:yyyy-MM-dd}" +
                              $"&fechaFinal={fechaFinal:yyyy-MM-dd}";
@@ -81,22 +85,32 @@ namespace CarWash.Controladores
                 if (idOperario.HasValue)
                     url += $"&idOperario={idOperario}";
 
-                var response = _httpClient
-                    .GetAsync(url)
-                    .GetAwaiter().GetResult();
-
-                response.EnsureSuccessStatusCode();
-
-                var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-
-                var apiResponse = JsonConvert.DeserializeObject<List<ConsultaMovimientosDTO>>(json);
-
-                return apiResponse ?? new List<ConsultaMovimientosDTO>();
+                using (var request = new HttpRequestMessage(HttpMethod.Get, url))
+                {
+                    clsConnection.AddSessionCredential(request);
+                    using (var response = _readClient.SendAsync(request).GetAwaiter().GetResult())
+                    {
+                        if (response.StatusCode == HttpStatusCode.Unauthorized)
+                        {
+                            clsConnection.SetApiSession(null, _apiBaseUrl, false);
+                            throw new UnauthorizedAccessException("La sesion vencio. Inicie sesion de nuevo para consultar ventas.");
+                        }
+                        if (response.StatusCode == HttpStatusCode.Forbidden)
+                        {
+                            clsConnection.SetApiSession(null, _apiBaseUrl, false);
+                            throw new System.Security.SecurityException("Solo el perfil Administrador puede consultar ventas.");
+                        }
+                        response.EnsureSuccessStatusCode();
+                        var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                        return JsonConvert.DeserializeObject<List<ConsultaMovimientosDTO>>(json) ?? new List<ConsultaMovimientosDTO>();
+                    }
+                }
             }
+            catch (UnauthorizedAccessException) { throw; }
+            catch (System.Security.SecurityException) { throw; }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error al obtener histórico: {ex.Message}");
-                return new List<ConsultaMovimientosDTO>();
+                throw new InvalidOperationException("No se pudo consultar el historico. Intente de nuevo.", ex);
             }
         }
 

@@ -8,6 +8,8 @@ using System.Configuration;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CarWash.Controladores
 {
@@ -22,15 +24,8 @@ namespace CarWash.Controladores
             ServicePointManager.SecurityProtocol =
                 SecurityProtocolType.Tls12 | (SecurityProtocolType)12288;
 
-            // Ignorar validación del certificado SSL en entornos de desarrollo
-            bool ignorarSSL;
-            if (bool.TryParse(ConfigurationManager.AppSettings["ApiIgnorarSSL"], out ignorarSSL) && ignorarSSL)
-            {
-                ServicePointManager.ServerCertificateValidationCallback =
-                    (sender, cert, chain, errors) => true;
-            }
-
-            _httpClient = new HttpClient();
+            // Ignorar validaciï¿½n del certificado SSL en entornos de desarrollo
+            _httpClient = new HttpClient(new HttpClientHandler { AllowAutoRedirect = false });
             _httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
         }
 
@@ -44,7 +39,7 @@ namespace CarWash.Controladores
 
             if (string.IsNullOrEmpty(password))
             {
-                mensaje = "Digite la Contraseña";
+                mensaje = "Digite la Contraseï¿½a";
                 return false;
             }
 
@@ -56,6 +51,8 @@ namespace CarWash.Controladores
         {
             try
             {
+                clsConnection.TakeApiSession(out _, out _);
+                clsConnection.EnsureTrustedTransport(new Uri(_apiBaseUrl));
                 string usrCif = FunctionsEncrip.Cifrado(1, usuario);
                 string pwdCif = FunctionsEncrip.Cifrado(1, password);
 
@@ -73,6 +70,9 @@ namespace CarWash.Controladores
 
                 if (!apiResponse.EsValido)
                     return new RespuestaUsuarioLogin { esValido = false, respuesta = apiResponse.Respuesta };
+
+                clsConnection.SetApiSession(apiResponse.TokenType == "Bearer" && apiResponse.ExpiresAt.HasValue
+                    ? apiResponse.AccessToken : null, _apiBaseUrl, apiResponse.Usuario.EsAdministrador);
 
                 return new RespuestaUsuarioLogin
                 {
@@ -129,6 +129,10 @@ namespace CarWash.Controladores
             public bool EsValido { get; set; }
             public string Respuesta { get; set; }
             public UsuarioApiResponse Usuario { get; set; }
+            public string? AccessToken { get; set; }
+            public string? TokenType { get; set; }
+            public DateTimeOffset? ExpiresAt { get; set; }
+            public int? IdleTimeoutSeconds { get; set; }
         }
 
         private class UsuarioApiResponse
@@ -137,6 +141,33 @@ namespace CarWash.Controladores
             public string DisplayName { get; set; }
             public string Email { get; set; }
             public int PerfilId { get; set; }
+            public bool EsAdministrador { get; set; }
+        }
+
+        public static async Task<bool> CerrarSesionAsync()
+        {
+            Uri? origin;
+            string token;
+            var hadSession = clsConnection.TakeApiSession(out origin, out token);
+            clsConnection.idUser = 0;
+            clsConnection.intCodigoPerfil = 0;
+            clsConnection.strNombreUsuario = string.Empty;
+            clsConnection.strEmailUsuario = string.Empty;
+            if (!hadSession || origin == null) return false;
+            try
+            {
+                clsConnection.EnsureTrustedTransport(origin);
+                using (var cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(3)))
+                using (var request = new HttpRequestMessage(HttpMethod.Post, new Uri(origin, "/api/Auth/logout")))
+                {
+                    request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                    using (var response = await _httpClient.SendAsync(request, cancellation.Token).ConfigureAwait(false))
+                        return response.StatusCode == HttpStatusCode.NoContent;
+                }
+            }
+            catch (HttpRequestException) { return false; }
+            catch (OperationCanceledException) { return false; }
+            catch (InvalidOperationException) { return false; }
         }
     }
 }

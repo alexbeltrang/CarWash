@@ -23,6 +23,13 @@ namespace CarWash.Presentacion.Principal
             InitializeComponent();
         }
 
+        protected override void OnActivated(EventArgs e)
+        {
+            base.OnActivated(e);
+            mocimientosToolStripMenuItem.Enabled = CarWash.Utilidades.clsConnection.EsAdministrador;
+            reporteDiarioToolStripMenuItem.Enabled = CarWash.Utilidades.clsConnection.EsAdministrador;
+        }
+
         private void FrmPrincipal_Load(object sender, EventArgs e)
         {
             if (LicenseManager.UsageMode == LicenseUsageMode.Designtime || DesignMode)
@@ -63,9 +70,10 @@ namespace CarWash.Presentacion.Principal
             AbrirFormularioEnPanel(new FrmIngresoVehiculo(), splitContainer1.Panel1);
         }
 
-        private void FrmPrincipal_FormClosed(object sender, FormClosedEventArgs e)
+        private async void FrmPrincipal_FormClosed(object sender, FormClosedEventArgs e)
         {
-            Application.Exit();
+            try { await CarWash.Controladores.LoginController.CerrarSesionAsync(); }
+            finally { Application.Exit(); }
         }
 
         private void tlsIngresoVehiculo_Click(object sender, EventArgs e)
@@ -144,6 +152,7 @@ namespace CarWash.Presentacion.Principal
 
         private void mocimientosToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (!CarWash.Utilidades.clsConnection.EsAdministrador) return;
             Form formularioAbierto = Application.OpenForms["FrmConsultaMovimientosCaja"];
 
             if (formularioAbierto == null)
@@ -252,6 +261,7 @@ namespace CarWash.Presentacion.Principal
 
         private void reporteDiarioToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (!CarWash.Utilidades.clsConnection.EsAdministrador) return;
             Form formularioAbierto = Application.OpenForms["FrmReporteDiarioVentas"];
 
             if (formularioAbierto == null)
