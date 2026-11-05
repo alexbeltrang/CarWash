@@ -9,9 +9,9 @@ namespace CarWash.DTOs
     public class ServicioNominaDTO
     {
         public int IdOperario { get; set; }
-        public long FechaHoraIngreso { get; set; }
+        public DateTime FechaHoraIngreso { get; set; }
         public decimal ValorServicio { get; set; }
-        public DateTime Fecha => new DateTime(FechaHoraIngreso);
+        public DateTime Fecha => FechaHoraIngreso;
     }
 
 }
