@@ -17,17 +17,67 @@ namespace CarWash.Presentacion.Principal
 {
     public partial class FrmPrincipal : Form
     {
+        private readonly ToolStripMenuItem empresaMenu = new ToolStripMenuItem("Empresa", SystemIcons.Information.ToBitmap());
+        private readonly ToolStripMenuItem facturacionMenu = new ToolStripMenuItem("Configuracion facturacion", SystemIcons.Information.ToBitmap());
+        private readonly ToolStripLabel empresaIdentity = new ToolStripLabel();
+        private bool readingCompany;
 
         public FrmPrincipal()
         {
             InitializeComponent();
+            operaciónToolStripMenuItem.Owner.Items.Insert(0, empresaIdentity);
+            operaciónToolStripMenuItem.Owner.Items.Add(empresaMenu);
+            operaciónToolStripMenuItem.Owner.Items.Add(facturacionMenu);
+            facturacionMenu.Click += (_, __) =>
+            {
+                if (!CarWash.Utilidades.clsConnection.EsAdministrador) return;
+                using (var form = new FrmFacturacion()) form.ShowDialog(this);
+            };
+            empresaMenu.Click += async (_, __) =>
+            {
+                if (!CarWash.Utilidades.clsConnection.EsAdministrador) return;
+                using (var form = new FrmEmpresa()) form.ShowDialog(this);
+                await RefreshCompanyAsync();
+            };
+            operaciónToolStripMenuItem.DropDownItems.Add(new ToolStripMenuItem("Comprobante y retiro", SystemIcons.Information.ToBitmap(), (_, __) =>
+            {
+                using (var form = new FrmRetiroVehiculo()) form.ShowDialog(this);
+            }));
+            operaciónToolStripMenuItem.DropDownItems.Add(new ToolStripMenuItem("Facturas", SystemIcons.Information.ToBitmap(), (_, __) =>
+            {
+                using (var form = new FrmFactura()) form.ShowDialog(this);
+            }));
         }
 
-        protected override void OnActivated(EventArgs e)
+        protected override async void OnActivated(EventArgs e)
         {
             base.OnActivated(e);
             mocimientosToolStripMenuItem.Enabled = CarWash.Utilidades.clsConnection.EsAdministrador;
             reporteDiarioToolStripMenuItem.Enabled = CarWash.Utilidades.clsConnection.EsAdministrador;
+            empresaMenu.Enabled = CarWash.Utilidades.clsConnection.EsAdministrador;
+            empresaMenu.Visible = empresaMenu.Enabled;
+            facturacionMenu.Visible = facturacionMenu.Enabled = CarWash.Utilidades.clsConnection.EsAdministrador;
+            if (!DesignMode && !readingCompany) await RefreshCompanyAsync();
+        }
+
+        private async Task RefreshCompanyAsync()
+        {
+            if (readingCompany || IsDisposed) return;
+            readingCompany = true;
+            try
+            {
+                var company = await new CarWash.Controladores.EmpresaController().ConsultarAsync(System.Threading.CancellationToken.None);
+                if (IsDisposed) return;
+                Text = company == null ? "CarWash" : company.NombreComercial + " - CarWash";
+                empresaIdentity.Text = company?.NombreComercial ?? "";
+                Image? image = null;
+                if (company?.LogoBase64 != null)
+                    using (var stream = new System.IO.MemoryStream(Convert.FromBase64String(company.LogoBase64)))
+                    using (var logo = Image.FromStream(stream)) image = new Bitmap(logo);
+                var previous = empresaIdentity.Image; empresaIdentity.Image = image; previous?.Dispose();
+            }
+            catch { if (!IsDisposed) { Text = "CarWash"; empresaIdentity.Text = ""; var image = empresaIdentity.Image; empresaIdentity.Image = null; image?.Dispose(); } }
+            finally { readingCompany = false; }
         }
 
         private void FrmPrincipal_Load(object sender, EventArgs e)

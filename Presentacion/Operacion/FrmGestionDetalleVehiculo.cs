@@ -353,10 +353,28 @@ namespace CarWash.Presentacion.Operacion
                         turnoGes.Pagado = true;
                         turnoGes.OperadorOcupado = false;
 
-                        turnosController.ActualizarTurno(turnoGes);
-
-                        MessageBox.Show("Turno finalizado exitosamente.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        cerrarForm();
+                        btnFinalizar.Enabled = false;
+                        if (turnosController.ActualizarTurno(turnoGes) != turnoGes.IdTurno)
+                        {
+                            var confirmed = turnosController.consultaTurnoId(turnoGes.IdTurno);
+                            if (confirmed.IdTurno != turnoGes.IdTurno || !confirmed.Estado || !confirmed.Pagado)
+                            {
+                                MessageBox.Show("El cobro fue registrado, pero la finalizacion no esta confirmada. Consulte el turno antes de continuar.", "Cobro", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                return;
+                            }
+                        }
+                        try
+                        {
+                            FacturarCobroConfirmado(this, MessageBox.Show, () =>
+                            {
+                                using (var factura = new FrmFactura(turnoGes.IdTurno, true)) factura.ShowDialog(this);
+                            });
+                        }
+                        catch (Exception)
+                        {
+                            MessageBox.Show("El cobro finalizo. No se pudo abrir la factura; consultela desde Facturas.", "Factura", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        }
+                        finally { cerrarForm(); }
                     }
 
                 }
@@ -367,6 +385,14 @@ namespace CarWash.Presentacion.Operacion
             }
         }
 
+
+        private static void FacturarCobroConfirmado(IWin32Window owner,
+            Func<IWin32Window, string, string, MessageBoxButtons, MessageBoxIcon, MessageBoxDefaultButton, DialogResult> preguntar,
+            Action abrirFactura)
+        {
+            if (preguntar(owner, "¿Desea generar la factura?", "Factura", MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes) abrirFactura();
+        }
 
         private bool validarTurno()
         {

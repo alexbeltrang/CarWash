@@ -103,6 +103,9 @@
     <Compile Include="Controladores\OperarioComisionesController.cs" />
     <Compile Include="Controladores\OperariosController.cs" />
     <Compile Include="Controladores\RegistroPropinasOperariosController.cs" />
+    <Compile Include="Controladores\RetiroVehiculosController.cs" />
+    <Compile Include="Controladores\EmpresaController.cs" />
+    <Compile Include="Controladores\FacturasController.cs" />
     <Compile Include="Controladores\ServiciosController.cs" />
     <Compile Include="Controladores\TipoVehiculoController.cs" />
     <Compile Include="Controladores\TurnosController.cs" />
@@ -115,6 +118,9 @@
     <Compile Include="Database\DatabaseQueryLDB.cs" />
     <Compile Include="DTOs\ClienteCreditoDTO.cs" />
     <Compile Include="DTOs\ComisionDTO.cs" />
+    <Compile Include="DTOs\ComprobanteRetiroDTO.cs" />
+    <Compile Include="DTOs\EmpresaDTO.cs" />
+    <Compile Include="DTOs\FacturaDTO.cs" />
     <Compile Include="DTOs\ConsultaMovimientosDTO.cs" />
     <Compile Include="DTOs\DashboardOperadoresDTO.cs" />
     <Compile Include="DTOs\GestionVehiculosDTO.cs" />
@@ -152,7 +158,12 @@
     <Compile Include="Entidades\ValesOperarios.cs" />
     <Compile Include="Enum\FormaPago.cs" />
     <Compile Include="ModelosRespuestas\RespuestaUsuarioLogin.cs" />
+    <Compile Include="Presentacion\Administracion\FrmFacturacion.cs"><SubType>Form</SubType></Compile>
+    <Compile Include="Presentacion\Operacion\FrmFactura.cs"><SubType>Form</SubType></Compile>
     <Compile Include="Presentacion\Administracion\FrmAperturaCaja.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Presentacion\Administracion\FrmEmpresa.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Presentacion\Administracion\FrmAperturaCaja.Designer.cs">
@@ -210,6 +221,9 @@
       <DependentUpon>FrmGastoCaja.cs</DependentUpon>
     </Compile>
     <Compile Include="Presentacion\Operacion\FrmGestionDetalleVehiculo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Presentacion\Operacion\FrmRetiroVehiculo.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Presentacion\Operacion\FrmGestionDetalleVehiculo.Designer.cs">

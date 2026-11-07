@@ -247,7 +247,7 @@ namespace CarWash.Presentacion.Operacion
             };
         }
 
-        private void btnGuardar_Click(object sender, EventArgs e)
+        private async void btnGuardar_Click(object sender, EventArgs e)
         {
             Turnos turnos = new Turnos();
             if (!ValidarCampos())
@@ -282,6 +282,7 @@ namespace CarWash.Presentacion.Operacion
             turnos.idCajaDiaria = cajaDiaria.idCaja;
 
             long idTurno = turnosController.RegistrarTurno(turnos);
+            if (idTurno <= 0) return;
 
             List<int> serviciosSeleccionados = new List<int>();
 
@@ -296,10 +297,25 @@ namespace CarWash.Presentacion.Operacion
                 };
 
                 turnosServiciosController.RegistrarTurnoServicio(turnoServicios);
+                serviciosSeleccionados.Add(servicio.idServicio);
             }
             _ = Task.Run(() => turnosController.NotificarEmail((int)idTurno));
             MostrarToast("Ingreso registrado correctamente", Color.FromArgb(21, 101, 192));
             CLEAR();
+            btnGuardar.Enabled = false;
+            try
+            {
+                var job = await new RetiroVehiculosController().ImprimirIngresoAsync((int)idTurno, serviciosSeleccionados.ToArray(), System.Threading.CancellationToken.None);
+                if (!IsDisposed) MostrarToast(job.Estado == "FAILED" || job.Estado == "UNKNOWN"
+                    ? "Ingreso guardado. Revise la impresion en Comprobante y retiro."
+                    : "Comprobante de 80 mm solicitado. Compruebe el papel.", Color.FromArgb(21, 101, 192));
+            }
+            catch (Exception)
+            {
+                if (!IsDisposed) MessageBox.Show(this, "El ingreso esta guardado. No se confirmo la impresion; consulte Comprobante y retiro antes de solicitar otra copia.",
+                    "Impresion pendiente de revision", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            finally { if (!IsDisposed) btnGuardar.Enabled = true; }
         }
 
         private void MostrarToast(string mensaje, Color color)
