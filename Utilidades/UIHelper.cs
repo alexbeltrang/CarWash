@@ -6,6 +6,10 @@ using System.Windows.Forms;
 
 public class UIHelper
 {
+    public static bool EnModoDiseno(Control control) =>
+        System.ComponentModel.LicenseManager.UsageMode == System.ComponentModel.LicenseUsageMode.Designtime
+        || control.Site?.DesignMode == true;
+
     [DllImport("Gdi32.dll", EntryPoint = "CreateRoundRectRgn")]
     private static extern IntPtr CreateRoundRectRgn
     (

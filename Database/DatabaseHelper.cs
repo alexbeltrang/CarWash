@@ -9,7 +9,7 @@ namespace CarWash.Database
 {
     public class DatabaseHelper
     {
-        private static string NameDatabase = ConfigurationManager.AppSettings["NameLDB"];
+        private static string NameDatabase = Environment.ExpandEnvironmentVariables(ConfigurationManager.AppSettings["NameLDB"] ?? "CarWash.db");
 
         private static string folder = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
@@ -20,7 +20,7 @@ namespace CarWash.Database
 
         public static SQLiteConnection GetConnection()
         {
-            Directory.CreateDirectory(folder);
+            Directory.CreateDirectory(Path.GetDirectoryName(dbFile));
             return new SQLiteConnection(dbFile);
         }
 

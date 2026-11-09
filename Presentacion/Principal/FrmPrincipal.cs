@@ -17,52 +17,56 @@ namespace CarWash.Presentacion.Principal
 {
     public partial class FrmPrincipal : Form
     {
-        private readonly ToolStripMenuItem empresaMenu = new ToolStripMenuItem("Empresa", SystemIcons.Information.ToBitmap());
-        private readonly ToolStripMenuItem facturacionMenu = new ToolStripMenuItem("Configuracion facturacion", SystemIcons.Information.ToBitmap());
-        private readonly ToolStripLabel empresaIdentity = new ToolStripLabel();
         private bool readingCompany;
 
         public FrmPrincipal()
         {
             InitializeComponent();
-            operaciónToolStripMenuItem.Owner.Items.Insert(0, empresaIdentity);
-            operaciónToolStripMenuItem.Owner.Items.Add(empresaMenu);
-            operaciónToolStripMenuItem.Owner.Items.Add(facturacionMenu);
-            facturacionMenu.Click += (_, __) =>
-            {
-                if (!CarWash.Utilidades.clsConnection.EsAdministrador) return;
-                using (var form = new FrmFacturacion()) form.ShowDialog(this);
-            };
-            empresaMenu.Click += async (_, __) =>
-            {
-                if (!CarWash.Utilidades.clsConnection.EsAdministrador) return;
-                using (var form = new FrmEmpresa()) form.ShowDialog(this);
-                await RefreshCompanyAsync();
-            };
-            operaciónToolStripMenuItem.DropDownItems.Add(new ToolStripMenuItem("Comprobante y retiro", SystemIcons.Information.ToBitmap(), (_, __) =>
-            {
-                using (var form = new FrmRetiroVehiculo()) form.ShowDialog(this);
-            }));
-            operaciónToolStripMenuItem.DropDownItems.Add(new ToolStripMenuItem("Facturas", SystemIcons.Information.ToBitmap(), (_, __) =>
-            {
-                using (var form = new FrmFactura()) form.ShowDialog(this);
-            }));
+        }
+
+        private void FacturacionMenu_Click(object sender, EventArgs e)
+        {
+            if (!CarWash.Utilidades.clsConnection.EsAdministrador) return;
+            using (var form = new FrmFacturacion()) form.ShowDialog(this);
+        }
+
+        private async void EmpresaMenu_Click(object sender, EventArgs e)
+        {
+            if (!CarWash.Utilidades.clsConnection.EsAdministrador) return;
+            using (var form = new FrmEmpresa()) form.ShowDialog(this);
+            await RefreshCompanyAsync();
+        }
+
+        private void RetiroMenu_Click(object sender, EventArgs e)
+        {
+            using (var form = new FrmRetiroVehiculo()) form.ShowDialog(this);
+        }
+
+        private void FacturasMenu_Click(object sender, EventArgs e)
+        {
+            using (var form = new FrmFactura()) form.ShowDialog(this);
         }
 
         protected override async void OnActivated(EventArgs e)
         {
             base.OnActivated(e);
+            if (UIHelper.EnModoDiseno(this)) return;
+            ActualizarPermisosMenu();
+            if (!readingCompany) await RefreshCompanyAsync();
+        }
+
+        private void ActualizarPermisosMenu()
+        {
             mocimientosToolStripMenuItem.Enabled = CarWash.Utilidades.clsConnection.EsAdministrador;
             reporteDiarioToolStripMenuItem.Enabled = CarWash.Utilidades.clsConnection.EsAdministrador;
             empresaMenu.Enabled = CarWash.Utilidades.clsConnection.EsAdministrador;
             empresaMenu.Visible = empresaMenu.Enabled;
             facturacionMenu.Visible = facturacionMenu.Enabled = CarWash.Utilidades.clsConnection.EsAdministrador;
-            if (!DesignMode && !readingCompany) await RefreshCompanyAsync();
         }
 
         private async Task RefreshCompanyAsync()
         {
-            if (readingCompany || IsDisposed) return;
+            if (UIHelper.EnModoDiseno(this) || readingCompany || IsDisposed) return;
             readingCompany = true;
             try
             {
@@ -122,6 +126,7 @@ namespace CarWash.Presentacion.Principal
 
         private async void FrmPrincipal_FormClosed(object sender, FormClosedEventArgs e)
         {
+            if (UIHelper.EnModoDiseno(this)) return;
             try { await CarWash.Controladores.LoginController.CerrarSesionAsync(); }
             finally { Application.Exit(); }
         }

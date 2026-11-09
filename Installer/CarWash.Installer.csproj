@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net481</TargetFramework>
+    <Platforms>x64</Platforms>
+    <PlatformTarget>x64</PlatformTarget>
+    <EnableDefaultItems>false</EnableDefaultItems>
+    <AutomaticallyUseReferenceAssemblyPackages>false</AutomaticallyUseReferenceAssemblyPackages>
+    <BuildInstaller Condition="'$(BuildInstaller)' == '' and '$(Configuration)' == 'Release'">true</BuildInstaller>
+    <BuildInstaller Condition="'$(BuildInstaller)' == ''">false</BuildInstaller>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CarWash.csproj" ReferenceOutputAssembly="false" />
+    <None Include="build.ps1;CarWash.iss;configure.ps1;uninstall.ps1;test.ps1;README.md" />
+  </ItemGroup>
+  <Target Name="CreateInstaller" AfterTargets="Build" Condition="'$(DesignTimeBuild)' != 'true' and '$(BuildInstaller)' == 'true'">
+    <Exec Command="powershell.exe -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\build.ps1&quot; -MSBuildPath &quot;$(MSBuildToolsPath)\MSBuild.exe&quot;" />
+  </Target>
+</Project>

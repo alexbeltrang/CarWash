@@ -1,3 +1,11 @@
 <Solution>
-  <Project Path="CarWash.csproj" Id="ff9fcbd0-913d-4dad-923d-49cf8398772c" />
+  <Configurations>
+    <Platform Name="x64" />
+  </Configurations>
+  <Project Path="CarWash.csproj" Id="ff9fcbd0-913d-4dad-923d-49cf8398772c">
+    <Platform Solution="*|x64" Project="x64" />
+  </Project>
+  <Project Path="Installer/CarWash.Installer.csproj">
+    <Platform Solution="*|x64" Project="x64" />
+  </Project>
 </Solution>

@@ -12,23 +12,10 @@ using System.Windows.Forms;
 
 namespace CarWash.Presentacion.Operacion
 {
-    public sealed class FrmRetiroVehiculo : Form
+    public sealed partial class FrmRetiroVehiculo : Form
     {
         private readonly RetiroVehiculosController source = new RetiroVehiculosController();
         private readonly CancellationTokenSource lifetime = new CancellationTokenSource();
-        private readonly TextBox plate = new TextBox { CharacterCasing = CharacterCasing.Upper, MaxLength = 20, Dock = DockStyle.Fill };
-        private readonly TextBox detail = new TextBox { Multiline = true, ReadOnly = true, ScrollBars = ScrollBars.Vertical, Dock = DockStyle.Fill, Font = new Font("Consolas", 10) };
-        private readonly Label status = new Label { AutoSize = true, Dock = DockStyle.Fill };
-        private readonly CheckBox reviewed = new CheckBox { Text = "Entrega fisica del vehiculo revisada por el encargado", Dock = DockStyle.Fill, Height = 48 };
-        private readonly Button search = new Button { Text = "Consultar", AutoSize = true };
-        private readonly Button refresh = new Button { Text = "Consultar estado", AutoSize = true };
-        private readonly Button confirm = new Button { Text = "Confirmar entrega", AutoSize = true };
-        private readonly Button preview = new Button { Text = "Vista previa", AutoSize = true };
-        private readonly Button print = new Button { Text = "Imprimir", AutoSize = true };
-        private readonly Button printCheck = new Button { Text = "Consultar impresion", AutoSize = true };
-        private readonly Label printStatus = new Label { AutoSize = true, Dock = DockStyle.Fill };
-        private readonly Button email = new Button { Text = "Correo", AutoSize = true };
-        private readonly Label paper = new Label { Text = "80 mm", AutoSize = true, Padding = new Padding(0, 6, 8, 0) };
         private ComprobanteRetiroDTO? receipt;
         private bool busy;
         private bool checkRequired;
@@ -39,34 +26,10 @@ namespace CarWash.Presentacion.Operacion
 
         public FrmRetiroVehiculo()
         {
-            Text = "Comprobante y retiro";
-            Name = "FrmRetiroVehiculo";
-            Size = new Size(640, 760);
-            MinimumSize = new Size(520, 600);
-            StartPosition = FormStartPosition.CenterParent;
-            Font = new Font("Segoe UI", 10);
-            var root = new TableLayoutPanel { Dock = DockStyle.Fill, Padding = new Padding(18), ColumnCount = 1, RowCount = 6 };
-            root.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-            root.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-            root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-            for (var index = 3; index < 6; index++) root.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-            var lookup = new TableLayoutPanel { AutoSize = true, Dock = DockStyle.Top, ColumnCount = 3 };
-            lookup.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
-            lookup.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-            lookup.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
-            lookup.Controls.Add(new Label { Text = "Placa", AutoSize = true }, 0, 0);
-            lookup.Controls.Add(plate, 1, 0); lookup.Controls.Add(search, 2, 0);
-            root.Controls.Add(lookup, 0, 0); root.Controls.Add(status, 0, 1); root.Controls.Add(detail, 0, 2);
-            var output = new FlowLayoutPanel { AutoSize = true, Dock = DockStyle.Fill, WrapContents = true };
-            output.Controls.AddRange(new Control[] { paper, preview, print, printCheck, email, refresh });
-            var printArea = new TableLayoutPanel { AutoSize = true, Dock = DockStyle.Fill, ColumnCount = 1 };
-            printArea.Controls.Add(output); printArea.Controls.Add(printStatus);
-            printStatus.MaximumSize = new Size(Math.Max(200, ClientSize.Width - 60), 0);
+            InitializeComponent();
+            if (UIHelper.EnModoDiseno(this)) return;
             Resize += (_, __) => printStatus.MaximumSize = new Size(Math.Max(200, ClientSize.Width - 60), 0);
-            root.Controls.Add(printArea, 0, 3);
-            root.Controls.Add(reviewed, 0, 4); root.Controls.Add(confirm, 0, 5);
-            Controls.Add(root);
-            AcceptButton = search;
+            btnCerrar.Click += (_, __) => Close();
             search.Click += async (_, __) => await SearchAsync();
             refresh.Click += async (_, __) => await RefreshAsync();
             confirm.Click += async (_, __) => await ConfirmAsync();
@@ -311,7 +274,7 @@ namespace CarWash.Presentacion.Operacion
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing) { lifetime.Cancel(); lifetime.Dispose(); }
+            if (disposing) { lifetime.Cancel(); lifetime.Dispose(); components?.Dispose(); }
             base.Dispose(disposing);
         }
     }

@@ -11,24 +11,12 @@ using System.Windows.Forms;
 
 namespace CarWash.Presentacion.Operacion
 {
-    public sealed class FrmFactura : Form
+    public sealed partial class FrmFactura : Form
     {
         private readonly FacturasController source = new FacturasController();
         private readonly RetiroVehiculosController printing = new RetiroVehiculosController();
         private readonly CancellationTokenSource lifetime = new CancellationTokenSource();
         private readonly int? turnoConfirmado;
-        private readonly TextBox lookup = new TextBox { MaxLength = 20, CharacterCasing = CharacterCasing.Upper, Width = 160 };
-        private readonly Button search = new Button { Text = "Consultar", AutoSize = true }, reload = new Button { Text = "Actualizar", AutoSize = true };
-        private readonly Button issue = new Button { Text = "Emitir factura", AutoSize = true, Image = SystemIcons.Information.ToBitmap(), TextImageRelation = TextImageRelation.ImageBeforeText };
-        private readonly Button preview = new Button { Text = "Vista previa", AutoSize = true }, print = new Button { Text = "Imprimir", AutoSize = true }, checkPrint = new Button { Text = "Consultar impresion", AutoSize = true };
-        private readonly Label status = new Label { AutoSize = true, MaximumSize = new Size(820, 0), Margin = new Padding(4) };
-        private readonly TextBox detail = new TextBox { ReadOnly = true, Multiline = true, TabStop = false, ScrollBars = ScrollBars.Vertical, Dock = DockStyle.Fill, Font = new Font("Consolas", 10) };
-        private readonly PictureBox logo = new PictureBox { SizeMode = PictureBoxSizeMode.Zoom, Dock = DockStyle.Top, Height = 70, Visible = false };
-        private readonly TextBox name = new TextBox(), document = new TextBox(), address = new TextBox(), phone = new TextBox(), email = new TextBox();
-        private readonly ComboBox type = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList };
-        private readonly TableLayoutPanel buyerFields = new TableLayoutPanel { AutoSize = true, Dock = DockStyle.Top, ColumnCount = 2, Padding = new Padding(0, 8, 12, 0) };
-        private readonly DataGridView history = new DataGridView { Dock = DockStyle.Fill, ReadOnly = true, AllowUserToAddRows = false, AllowUserToDeleteRows = false, RowHeadersVisible = false,
-            MultiSelect = false, SelectionMode = DataGridViewSelectionMode.FullRowSelect, AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill };
         private PreparacionFacturaDTO? preparation;
         private FacturaDTO? invoice;
         private Guid issueId = Guid.NewGuid();
@@ -37,32 +25,21 @@ namespace CarWash.Presentacion.Operacion
         private bool busy, issueUnknown, printKnown, printUnknown;
         private bool resourcesDisposed;
 
-        public FrmFactura(int? idTurno = null) : this(idTurno, false) { }
+        public FrmFactura() : this(null, false) { }
+
+        public FrmFactura(int? idTurno) : this(idTurno, false) { }
 
         public FrmFactura(int? idTurno, bool emisionConfirmada)
         {
             turnoConfirmado = emisionConfirmada ? idTurno : null;
-            Text = "Facturas de venta en papel"; Name = "FrmFactura";
-            Size = new Size(1040, 800); MinimumSize = new Size(800, 650); StartPosition = FormStartPosition.CenterParent;
-            var top = new FlowLayoutPanel { AutoSize = true, Dock = DockStyle.Top, Padding = new Padding(12) };
-            top.Controls.AddRange(new Control[] { new Label { Text = "Turno o placa", AutoSize = true, Margin = new Padding(0, 7, 8, 0) }, lookup, search, reload });
-            var body = new TableLayoutPanel { ColumnCount = 2, Dock = DockStyle.Fill, Padding = new Padding(12) };
-            body.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 40)); body.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 60));
-            buyerFields.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 130)); buyerFields.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-            type.Items.AddRange(new object[] { "CC", "NIT", "CE", "TI", "PAS", "PEP", "PPT" });
-            AddBuyer("Comprador *", name, 160); AddBuyer("Tipo documento *", type); AddBuyer("Documento *", document, 30);
-            AddBuyer("Direccion", address, 200); AddBuyer("Telefono", phone, 30); AddBuyer("Correo", email, 254);
-            var buyerScroll = new Panel { Dock = DockStyle.Fill, AutoScroll = true }; buyerScroll.Controls.Add(buyerFields);
-            var documentArea = new Panel { Dock = DockStyle.Fill }; documentArea.Controls.Add(detail); documentArea.Controls.Add(logo);
-            body.Controls.Add(buyerScroll, 0, 0); body.Controls.Add(documentArea, 1, 0);
-            history.Columns.Add("date", "Fecha"); history.Columns.Add("number", "Factura"); history.Columns.Add("plate", "Placa"); history.Columns.Add("buyer", "Comprador"); history.Columns.Add("total", "Total COP");
-            history.Columns[4].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
-            var sections = new TableLayoutPanel { Dock = DockStyle.Fill, RowCount = 2 };
-            sections.RowStyles.Add(new RowStyle(SizeType.Percent, 72)); sections.RowStyles.Add(new RowStyle(SizeType.Percent, 28)); sections.Controls.Add(body, 0, 0); sections.Controls.Add(history, 0, 1);
-            var actions = new FlowLayoutPanel { AutoSize = true, Dock = DockStyle.Fill, Padding = new Padding(12) };
-            actions.Controls.AddRange(new Control[] { issue, preview, print, checkPrint });
-            var footer = new TableLayoutPanel { AutoSize = true, Dock = DockStyle.Bottom, ColumnCount = 1 };
-            footer.Controls.Add(actions); footer.Controls.Add(status); Controls.Add(sections); Controls.Add(top); Controls.Add(footer);
+            InitializeComponent();
+            if (UIHelper.EnModoDiseno(this)) return;
+            foreach (Control control in buyerFields.Controls)
+            {
+                if (control is TextBox box) box.TextChanged += (_, __) => UpdateControls();
+                if (control is ComboBox combo) combo.SelectedIndexChanged += (_, __) => UpdateControls();
+            }
+            btnCerrar.Click += (_, __) => Close();
             search.Click += async (_, __) => await SearchAsync(); reload.Click += async (_, __) => await RefreshAsync();
             issue.Click += async (_, __) => await IssueAsync(); print.Click += async (_, __) => await PrintAsync(); checkPrint.Click += async (_, __) => await CheckPrintAsync();
             preview.Click += (_, __) => Preview();
@@ -82,15 +59,6 @@ namespace CarWash.Presentacion.Operacion
             FormClosed += (_, __) => lifetime.Cancel();
             Resize += (_, __) => status.MaximumSize = new Size(Math.Max(400, ClientSize.Width - 40), 0);
             UpdateControls();
-        }
-
-        private void AddBuyer(string label, Control control, int max = 0)
-        {
-            var row = buyerFields.RowCount++; buyerFields.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-            buyerFields.Controls.Add(new Label { Text = label, AutoSize = true, Margin = new Padding(0, 10, 8, 10) }, 0, row);
-            control.Dock = DockStyle.Fill; control.Margin = new Padding(0, 6, 0, 6); buyerFields.Controls.Add(control, 1, row);
-            if (control is TextBox box) { box.MaxLength = max; box.TextChanged += (_, __) => UpdateControls(); }
-            if (control is ComboBox combo) combo.SelectedIndexChanged += (_, __) => UpdateControls();
         }
         private async Task SearchAsync()
         {
@@ -173,8 +141,15 @@ namespace CarWash.Presentacion.Operacion
         }
         private void SetBuyer(CompradorFacturaDTO value)
         { name.Text = value.Nombre; type.SelectedItem = value.TipoDocumento; document.Text = value.NumeroDocumento; address.Text = value.Direccion; phone.Text = value.Telefono; email.Text = value.Correo; }
-        private CompradorFacturaDTO Buyer() => new CompradorFacturaDTO { Nombre = name.Text.Trim(), TipoDocumento = type.Text, NumeroDocumento = document.Text.Trim(),
-            Direccion = address.Text.Trim(), Telefono = phone.Text.Trim(), Correo = string.IsNullOrWhiteSpace(email.Text) ? null : email.Text.Trim() };
+        private CompradorFacturaDTO Buyer() => new CompradorFacturaDTO
+        {
+            Nombre = name.Text.Trim(),
+            TipoDocumento = type.Text,
+            NumeroDocumento = document.Text.Trim(),
+            Direccion = address.Text.Trim(),
+            Telefono = phone.Text.Trim(),
+            Correo = string.IsNullOrWhiteSpace(email.Text) ? null : email.Text.Trim()
+        };
         private void SetLogo(string? encoded)
         {
             Image? image = null;
@@ -293,6 +268,6 @@ namespace CarWash.Presentacion.Operacion
             print.Text = printJob != null ? "Otra copia" : printId.HasValue ? "Reintentar solicitud" : "Imprimir";
         }
         protected override void Dispose(bool disposing)
-        { if (disposing && !resourcesDisposed) { resourcesDisposed = true; lifetime.Cancel(); lifetime.Dispose(); logo.Image?.Dispose(); } base.Dispose(disposing); }
+        { if (disposing && !resourcesDisposed) { resourcesDisposed = true; lifetime.Cancel(); lifetime.Dispose(); logo?.Image?.Dispose(); components?.Dispose(); } base.Dispose(disposing); }
     }
 }

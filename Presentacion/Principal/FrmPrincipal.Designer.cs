@@ -49,6 +49,11 @@ namespace CarWash.Presentacion.Principal
             this.asistenciaOperariosToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.consultasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mocimientosToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.empresaMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this.facturacionMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this.retiroMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this.facturasMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this.empresaIdentity = new System.Windows.Forms.ToolStripLabel();
             this.panelContent.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.SuspendLayout();
@@ -80,6 +85,7 @@ namespace CarWash.Presentacion.Principal
             // 
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.empresaIdentity,
             this.sistemaToolStripMenuItem,
             this.operaciónToolStripMenuItem,
             this.administraciónToolStripMenuItem,
@@ -96,8 +102,7 @@ namespace CarWash.Presentacion.Principal
             this.sistemaToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.abrirCajaToolStripMenuItem,
             this.cerrarCajaToolStripMenuItem,
-            this.jornadaOperariosToolStripMenuItem,
-            this.reporteDiarioToolStripMenuItem});
+            this.jornadaOperariosToolStripMenuItem});
             this.sistemaToolStripMenuItem.Name = "sistemaToolStripMenuItem";
             this.sistemaToolStripMenuItem.Size = new System.Drawing.Size(75, 26);
             this.sistemaToolStripMenuItem.Text = "&Sistema";
@@ -147,7 +152,12 @@ namespace CarWash.Presentacion.Principal
             // 
             this.administraciónToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.OperacionAutoLavadoToolStripMenuItem,
-            this.operariosToolStripMenuItem});
+            this.operariosToolStripMenuItem,
+            this.empresaMenu,
+            this.facturacionMenu,
+            this.reporteDiarioToolStripMenuItem,
+            this.retiroMenu,
+            this.facturasMenu});
             this.administraciónToolStripMenuItem.Name = "administraciónToolStripMenuItem";
             this.administraciónToolStripMenuItem.Size = new System.Drawing.Size(123, 26);
             this.administraciónToolStripMenuItem.Text = "Administración";
@@ -221,6 +231,22 @@ namespace CarWash.Presentacion.Principal
             this.mocimientosToolStripMenuItem.Text = "&Movimientos";
             this.mocimientosToolStripMenuItem.Click += new System.EventHandler(this.mocimientosToolStripMenuItem_Click);
             // 
+            // empresaMenu
+            // 
+            this.empresaMenu.Name = "empresaMenu";
+            this.empresaMenu.Text = "Empresa";
+            this.empresaMenu.Click += new System.EventHandler(this.EmpresaMenu_Click);
+            this.facturacionMenu.Name = "facturacionMenu";
+            this.facturacionMenu.Text = "Configuracion facturacion";
+            this.facturacionMenu.Click += new System.EventHandler(this.FacturacionMenu_Click);
+            this.retiroMenu.Name = "retiroMenu";
+            this.retiroMenu.Text = "Comprobante y retiro";
+            this.retiroMenu.Click += new System.EventHandler(this.RetiroMenu_Click);
+            this.facturasMenu.Name = "facturasMenu";
+            this.facturasMenu.Text = "Facturas";
+            this.facturasMenu.Click += new System.EventHandler(this.FacturasMenu_Click);
+            this.empresaIdentity.Name = "empresaIdentity";
+            // 
             // FrmPrincipal
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -271,5 +297,10 @@ namespace CarWash.Presentacion.Principal
         private ToolStripMenuItem asistenciaOperariosToolStripMenuItem1;
         private ToolStripMenuItem registrarGastoToolStripMenuItem1;
         private ToolStripMenuItem liquidarNóminaToolStripMenuItem;
+        private ToolStripMenuItem empresaMenu;
+        private ToolStripMenuItem facturacionMenu;
+        private ToolStripMenuItem retiroMenu;
+        private ToolStripMenuItem facturasMenu;
+        private ToolStripLabel empresaIdentity;
     }
 }

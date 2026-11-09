@@ -10,121 +10,24 @@ using System.Windows.Forms;
 
 namespace CarWash.Presentacion.Consultas
 {
-    public class FrmReporteDiarioVentas : Form
+    public partial class FrmReporteDiarioVentas : Form
     {
         private readonly TurnosMovimientosController turnosMovimientosController = new TurnosMovimientosController();
         private readonly CajaDiariaController cajaDiariaController = new CajaDiariaController();
         private readonly ValesOperariosController valesOperariosController = new ValesOperariosController();
 
-        private Label lblTitulo;
-        private Label lblFecha;
-        private Label lblTotalVentas;
-        private Label lblTotalGastos;
-        private Label lblTotalVales;
-        private Label lblNeto;
-        private Label lblDetalleCaja;
-        private Button btnActualizar;
-        private DataGridView dtgMovimientos;
-
         public FrmReporteDiarioVentas()
         {
             InitializeComponent();
-        }
-
-        private void InitializeComponent()
-        {
-            lblTitulo = new Label();
-            lblFecha = new Label();
-            lblTotalVentas = new Label();
-            lblTotalGastos = new Label();
-            lblTotalVales = new Label();
-            lblNeto = new Label();
-            lblDetalleCaja = new Label();
-            btnActualizar = new Button();
-            dtgMovimientos = new DataGridView();
-
-            SuspendLayout();
-
-            BackColor = Color.FromArgb(20, 90, 150);
-            ClientSize = new Size(1000, 650);
-            StartPosition = FormStartPosition.CenterScreen;
-            Text = "Reporte Diario";
-
-            lblTitulo.AutoSize = true;
-            lblTitulo.Font = new Font("Segoe UI", 16F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblTitulo.ForeColor = Color.White;
-            lblTitulo.Location = new Point(20, 10);
-            lblTitulo.Text = "REPORTE DIARIO DE VENTAS";
-
-            btnActualizar.BackColor = Color.FromArgb(21, 101, 192);
-            btnActualizar.FlatAppearance.BorderSize = 0;
-            btnActualizar.FlatStyle = FlatStyle.Flat;
-            btnActualizar.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            btnActualizar.ForeColor = Color.White;
-            btnActualizar.Location = new Point(850, 18);
-            btnActualizar.Size = new Size(120, 35);
-            btnActualizar.Text = "Actualizar";
-            btnActualizar.UseVisualStyleBackColor = false;
-            btnActualizar.Click += btnActualizar_Click;
-
-            lblFecha.AutoSize = true;
-            lblFecha.Font = new Font("Segoe UI", 10F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblFecha.ForeColor = Color.White;
-            lblFecha.Location = new Point(20, 60);
-
-            lblTotalVentas.AutoSize = true;
-            lblTotalVentas.Font = new Font("Segoe UI", 10F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblTotalVentas.ForeColor = Color.White;
-            lblTotalVentas.Location = new Point(20, 95);
-
-            lblTotalGastos.AutoSize = true;
-            lblTotalGastos.Font = new Font("Segoe UI", 10F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblTotalGastos.ForeColor = Color.White;
-            lblTotalGastos.Location = new Point(20, 125);
-
-            lblTotalVales.AutoSize = true;
-            lblTotalVales.Font = new Font("Segoe UI", 10F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblTotalVales.ForeColor = Color.White;
-            lblTotalVales.Location = new Point(20, 155);
-
-            lblNeto.AutoSize = true;
-            lblNeto.Font = new Font("Segoe UI", 10F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblNeto.ForeColor = Color.White;
-            lblNeto.Location = new Point(20, 185);
-
-            lblDetalleCaja.AutoSize = true;
-            lblDetalleCaja.Font = new Font("Segoe UI", 10F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblDetalleCaja.ForeColor = Color.White;
-            lblDetalleCaja.Location = new Point(20, 215);
-
-            dtgMovimientos.AllowUserToAddRows = false;
-            dtgMovimientos.AllowUserToDeleteRows = false;
-            dtgMovimientos.AllowUserToResizeColumns = false;
-            dtgMovimientos.AllowUserToResizeRows = false;
-            dtgMovimientos.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            dtgMovimientos.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
-            dtgMovimientos.BackgroundColor = Color.White;
-            dtgMovimientos.BorderStyle = BorderStyle.None;
-            dtgMovimientos.Location = new Point(20, 250);
-            dtgMovimientos.ReadOnly = true;
-            dtgMovimientos.RowHeadersVisible = false;
-            dtgMovimientos.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dtgMovimientos.Size = new Size(950, 380);
-
-            Controls.Add(lblTitulo);
-            Controls.Add(btnActualizar);
-            Controls.Add(lblFecha);
-            Controls.Add(lblTotalVentas);
-            Controls.Add(lblTotalGastos);
-            Controls.Add(lblTotalVales);
-            Controls.Add(lblNeto);
-            Controls.Add(lblDetalleCaja);
-            Controls.Add(dtgMovimientos);
-
+            if (UIHelper.EnModoDiseno(this)) return;
             Load += FrmReporteDiarioVentas_Load;
-
-            ResumeLayout(false);
-            PerformLayout();
+            btnActualizar.Click += btnActualizar_Click;
+            btnCerrar.Click += (_, __) => Close();
+            Resize += (_, __) =>
+            {
+                foreach (var label in new[] { lblFecha, lblTotalVentas, lblTotalGastos, lblTotalVales, lblNeto, lblDetalleCaja })
+                    label.MaximumSize = new Size(Math.Max(300, ClientSize.Width - 100), 0);
+            };
         }
 
         private void FrmReporteDiarioVentas_Load(object sender, EventArgs e)

@@ -753,7 +753,8 @@
             </summary>
             <param name="objects">
             An <see cref="T:System.Collections.IEnumerable"/> of the objects to insert.
-            <param name="runInTransaction"/>
+            </param>
+            <param name="runInTransaction">
             A boolean indicating if the inserts should be wrapped in a transaction.
             </param>
             <returns>
@@ -1122,6 +1123,14 @@
             This can be overridden in combination with the <see cref="M:SQLite.SQLiteConnection.NewCommand"/>
             method to hook into the life-cycle of objects.
             </remarks>
+        </member>
+        <member name="M:SQLite.FastColumnSetter.GetFastSetterMethodInfoUnsafe(System.Type)">
+            <summary>
+            Gets a <see cref="T:System.Reflection.MethodInfo"/> for a generic <see cref="M:SQLite.FastColumnSetter.GetFastSetterMethodInfoUnsafe(System.Type)"/> method, suppressing AOT warnings.
+            </summary>
+            <param name="mappedType">The type of the destination object that the query will read into.</param>
+            <returns>The generic <see cref="T:System.Reflection.MethodInfo"/> instance.</returns>
+            <remarks>This should only be called when <paramref name="mappedType"/> is a reference type.</remarks>
         </member>
         <member name="M:SQLite.FastColumnSetter.GetFastSetter``1(SQLite.SQLiteConnection,SQLite.TableMapping.Column)">
              <summary>
@@ -1941,7 +1950,8 @@
             </summary>
             <param name="objects">
             An <see cref="T:System.Collections.IEnumerable"/> of the objects to insert.
-            <param name="runInTransaction"/>
+            </param>
+            <param name="runInTransaction">
             A boolean indicating if the inserts should be wrapped in a transaction.
             </param>
             <returns>
