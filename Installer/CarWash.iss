@@ -1,4 +1,4 @@
-#define AppVersion "1.0.0"
+#define AppVersion "1.1.0"
 
 [Setup]
 AppId={{D6E4A1A7-38C2-43E3-8A89-C954D7AE2D23}
@@ -38,25 +38,26 @@ Source: "cache\vc_redist.x64.exe"; Flags: dontcopy
 Source: "configure.ps1"; Flags: dontcopy
 Source: "staging\desktop\*.exe"; DestDir: "{app}\Desktop"; Components: desktop; Flags: ignoreversion
 Source: "staging\desktop\*.dll"; DestDir: "{app}\Desktop"; Components: desktop; Flags: ignoreversion
-Source: "staging\desktop\CarWash.exe.config"; DestDir: "{app}\Desktop"; Components: desktop; Flags: onlyifdoesntexist uninsneveruninstall
+Source: "staging\desktop\CarWash.exe.config"; DestDir: "{app}\Desktop"; Components: desktop; Flags: onlyifdoesntexist
 Source: "staging\desktop\CarWash.exe.config"; DestDir: "{app}\Templates"; DestName: "desktop.config"; Components: desktop; Flags: ignoreversion
 Source: "staging\api\*"; DestDir: "{app}\Api"; Components: api; Excludes: "*.pdb,appsettings*.json,*.db,*.db-wal,*.db-shm"; Flags: recursesubdirs ignoreversion
-Source: "staging\api\appsettings.json"; DestDir: "{app}\Api"; Components: api; Flags: onlyifdoesntexist uninsneveruninstall
+Source: "staging\api\appsettings.json"; DestDir: "{app}\Api"; Components: api; Flags: onlyifdoesntexist
 Source: "staging\empty.db"; DestDir: "{app}"; Components: api\newdb; Flags: ignoreversion
 Source: "configure.ps1"; DestDir: "{app}"; Flags: ignoreversion
-Source: "uninstall.ps1"; DestDir: "{app}"; Components: api; Flags: ignoreversion
+Source: "uninstall.ps1"; DestDir: "{app}"; Flags: ignoreversion
 Source: "staging\payload-manifest.json"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\CarWash"; Filename: "{app}\Desktop\CarWash.exe"; WorkingDir: "{app}\Desktop"; Components: desktop
 Name: "{autodesktop}\CarWash"; Filename: "{app}\Desktop\CarWash.exe"; WorkingDir: "{app}\Desktop"; Components: desktop
 
-[UninstallRun]
-Filename: "{sys}\WindowsPowerShell\v1.0\powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\uninstall.ps1"" -InstallDir ""{app}"""; Flags: runhidden waituntilterminated; RunOnceId: "RemoveOwnedApi"; Check: FileExists(ExpandConstant('{app}\uninstall.ps1'))
+[UninstallDelete]
+Type: dirifempty; Name: "{app}"
 
 [Code]
 var
   DatabasePage, UserPage, UrlPage: TInputQueryWizardPage;
+  BackupPage: TInputDirWizardPage;
   RestartPending: Boolean;
 
 function JsonEscape(Value: String): String;
@@ -85,6 +86,7 @@ begin
     ',"Api":' + JsonBoolean(WizardIsComponentSelected('api')) +
     ',"NewDatabase":' + JsonBoolean(WizardIsComponentSelected('api\newdb')) +
     ',"ApiUrl":"' + JsonEscape(Url) + '","DatabasePath":"' + JsonEscape(DatabasePage.Values[0]) +
+    '","BackupDirectory":"' + JsonEscape(BackupPage.Values[0]) +
     '","Usuario":"' + JsonEscape(UserPage.Values[0]) + '","Clave":"' + JsonEscape(UserPage.Values[1]) + '"}';
   if not SaveStringToFile(ExpandConstant('{tmp}\selection.json'), Utf8Encode(Json), False) then
     RaiseException('No se pudo guardar la seleccion temporal.');
@@ -109,8 +111,13 @@ begin
     'Archivo SQLite del equipo', 'Si no crea una base nueva, indique una base CarWash existente.');
   DatabasePage.Add('Ruta completa del archivo .db:', False);
   DatabasePage.Values[0] := ExpandConstant('{commonappdata}\SplashCar\CarWash.db');
-  UserPage := CreateInputQueryPage(DatabasePage.ID, 'Administrador inicial',
-    'Usuario de la base nueva', 'Use de 4 a 64 caracteres ASCII. No hay contrasena predeterminada.');
+  BackupPage := CreateInputDirPage(DatabasePage.ID, 'Respaldos automaticos',
+    'Carpeta local dedicada para los respaldos de la API',
+    'Se realiza un respaldo cada hora. Elija una carpeta fuera de la instalacion y de SplashCar. Las copias externas se conservan al desinstalar. Para protegerse de una falla del disco, use otro disco y mantenga ademas una copia externa.', False, 'CarWashBackups');
+  BackupPage.Add('Carpeta de respaldo:');
+  BackupPage.Values[0] := ExpandConstant('{commonappdata}\CarWashBackups');
+  UserPage := CreateInputQueryPage(BackupPage.ID, 'Administrador inicial',
+    'Usuario inicial de CarWash', 'Solo se crea si la base no tiene usuarios activos; los existentes se conservan. Use de 4 a 64 caracteres ASCII. No hay contrasena predeterminada.');
   UserPage.Add('Usuario:', False);
   UserPage.Add('Contrasena:', True);
   UserPage.Add('Confirmar contrasena:', True);
@@ -123,7 +130,8 @@ end;
 function ShouldSkipPage(PageID: Integer): Boolean;
 begin
   Result := ((PageID = DatabasePage.ID) and not WizardIsComponentSelected('api')) or
-    ((PageID = UserPage.ID) and not WizardIsComponentSelected('api\newdb')) or
+    ((PageID = BackupPage.ID) and not WizardIsComponentSelected('api')) or
+    ((PageID = UserPage.ID) and not WizardIsComponentSelected('api')) or
     ((PageID = UrlPage.ID) and (not WizardIsComponentSelected('desktop') or WizardIsComponentSelected('api')));
 end;
 
@@ -146,7 +154,8 @@ begin
   end;
   if CurPageID = UserPage.ID then
     Result := ValidCredential(UserPage.Values[0]) and ValidCredential(UserPage.Values[1]) and (UserPage.Values[1] = UserPage.Values[2]);
-  if not Result then MsgBox('Revise la seleccion: base nueva no puede reemplazar un archivo existente; API sin base nueva requiere una base existente y las claves deben coincidir.', mbError, MB_OK);
+  if CurPageID = BackupPage.ID then Result := Length(Trim(BackupPage.Values[0])) > 3;
+  if not Result then MsgBox('Revise la seleccion: base nueva no puede reemplazar un archivo existente; API sin base nueva requiere una base existente, la carpeta de respaldo debe ser valida y las claves deben coincidir.', mbError, MB_OK);
 end;
 
 function RunPrerequisite(Name, Arguments: String): String;
@@ -168,7 +177,7 @@ begin
   WriteSelection;
   ExtractTemporaryFile('configure.ps1');
   if not Configure('Validate', False) then begin
-    Result := 'La configuracion no es valida. Revise URL, ruta de base y credenciales.';
+    Result := 'La configuracion no es valida. Revise URL, ruta de base, carpeta de respaldo y credenciales.';
     Exit;
   end;
   if WizardIsComponentSelected('desktop') and
@@ -190,4 +199,24 @@ end;
 function NeedRestart: Boolean;
 begin
   Result := RestartPending;
+end;
+
+function InitializeUninstall: Boolean;
+begin
+  Result := MsgBox('Desinstalar CarWash eliminara PERMANENTEMENTE su base de datos, configuracion y archivos locales de todos los usuarios. Las copias de la carpeta externa de respaldo se conservan. Haga un respaldo FUERA de las carpetas CarWash antes de continuar. Desea eliminar todo CarWash?',
+    mbConfirmation, MB_YESNO or MB_DEFBUTTON2) = IDYES;
+end;
+
+procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
+var
+  ResultCode: Integer;
+begin
+  if CurUninstallStep = usUninstall then begin
+    if not FileExists(ExpandConstant('{app}\uninstall.ps1')) then
+      RaiseException('Falta el script de limpieza. Reinstale esta version antes de desinstalar.');
+    if not Exec(ExpandConstant('{sys}\WindowsPowerShell\v1.0\powershell.exe'),
+      '-NoProfile -ExecutionPolicy Bypass -File "' + ExpandConstant('{app}\uninstall.ps1') +
+      '" -InstallDir "' + ExpandConstant('{app}') + '"', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) or (ResultCode <> 0) then
+      RaiseException('No se pudo completar la limpieza de CarWash. Revise permisos, archivos en uso u otras instalaciones. No se declara una desinstalacion completa.');
+  end;
 end;
