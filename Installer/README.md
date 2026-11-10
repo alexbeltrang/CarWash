@@ -134,9 +134,9 @@ creado por configuracion sobre la base existente vacia. No distribuye usuarios
 de trabajo ni credenciales predeterminadas. No reiniciar servidores reales
 como parte de las pruebas.
 
-## Respaldos Automaticos 1.1.0
+## Respaldos Automaticos 1.1.1
 
-Entrega CarWash-Setup-x64-1.1.0.exe. Al seleccionar API, el asistente permite
+Entrega CarWash-Setup-x64-1.1.1.exe. Al seleccionar API, el asistente permite
 elegir una carpeta local dedicada; predeterminada `%ProgramData%/CarWashBackups`.
 No puede estar dentro de la instalacion, SplashCar o AppData/CarWash, contener
 la base/instalacion ni usar enlaces. Una carpeta no vacia requiere el marcador
@@ -151,10 +151,14 @@ solapadas y tiene limite de una hora. Usa SQLite BackupDatabase con la API
 activa, incluso con WAL; no copia directamente el archivo abierto. Comprueba
 integridad, calcula SHA256 y publica cada carpeta solo al terminar. Incluye
 CarWash.db y copias de appsettings.json, email.json y printing.json si existen.
-No respalda binarios ni otros archivos personalizados. La retencion conserva
-la union de las 24 copias mas recientes, una por cada uno de los ultimos 7 dias
-con copias y una por cada una de las ultimas 4 semanas ISO con copias.
-Solo depura copias identificadas como propias; conserva archivos ajenos.
+No respalda binarios ni otros archivos personalizados. Desde1.1.1 conserva
+todas las copias del dia actual y solo la ultima de cada uno de los 30 dias
+calendario anteriores, segun la hora local del equipo. No conserva copias
+semanales adicionales. Solo despues de publicar un respaldo valido elimina
+duplicadas de dias anteriores y copias mas antiguas; no borra archivos ajenos.
+Los dias sin respaldos no se rellenan con copias de mas de 30 dias. La regla
+se aplica tambien a las copias propias existentes en la siguiente ejecucion
+exitosa, una vez actualizado el motor; no basta con conservar la version1.1.0.
 
 En el Programador de tareas revisar CarWashBackup y su ultimo resultado:
 0 indica exito, 1 fallo del motor. backup-status.json guarda Success,
