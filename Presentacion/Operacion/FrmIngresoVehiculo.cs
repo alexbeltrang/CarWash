@@ -308,7 +308,7 @@ namespace CarWash.Presentacion.Operacion
                 var job = await new RetiroVehiculosController().ImprimirIngresoAsync((int)idTurno, serviciosSeleccionados.ToArray(), System.Threading.CancellationToken.None);
                 if (!IsDisposed) MostrarToast(job.Estado == "FAILED" || job.Estado == "UNKNOWN"
                     ? "Ingreso guardado. Revise la impresion en Comprobante y retiro."
-                    : "Comprobante de 80 mm solicitado. Compruebe el papel.", Color.FromArgb(21, 101, 192));
+                    : "Comprobante de 60 mm solicitado. Compruebe el papel.", Color.FromArgb(21, 101, 192));
             }
             catch (Exception)
             {

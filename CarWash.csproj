@@ -114,6 +114,7 @@
     <Compile Include="Controladores\RetiroVehiculosController.cs" />
     <Compile Include="Controladores\EmpresaController.cs" />
     <Compile Include="Controladores\FacturasController.cs" />
+    <Compile Include="Controladores\CajaComandosClient.cs" />
     <Compile Include="Controladores\ServiciosController.cs" />
     <Compile Include="Controladores\TipoVehiculoController.cs" />
     <Compile Include="Controladores\TurnosController.cs" />
@@ -129,6 +130,7 @@
     <Compile Include="DTOs\ComprobanteRetiroDTO.cs" />
     <Compile Include="DTOs\EmpresaDTO.cs" />
     <Compile Include="DTOs\FacturaDTO.cs" />
+    <Compile Include="DTOs\CajaContracts.cs" />
     <Compile Include="DTOs\ConsultaMovimientosDTO.cs" />
     <Compile Include="DTOs\DashboardOperadoresDTO.cs" />
     <Compile Include="DTOs\GestionVehiculosDTO.cs" />

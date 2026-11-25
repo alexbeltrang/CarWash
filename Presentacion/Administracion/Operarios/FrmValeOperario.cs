@@ -11,26 +11,27 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using CancellationTokenSource = System.Threading.CancellationTokenSource;
 
 namespace CarWash.Presentacion.Operacion
 {
     public partial class FrmValeOperario : Form
     {
-        CajaDiariaController cajaDiariaController = new CajaDiariaController();
         OperariosController operariosController = new OperariosController();
-        ValesOperariosController valesOperariosController = new ValesOperariosController();
-
-        CajaDiaria cajaDiaria = new CajaDiaria();
-        decimal valorValeOperario = 0;
+        private readonly CajaComandosClient comandos = new CajaComandosClient();
+        private readonly CancellationTokenSource lifetime = new CancellationTokenSource();
+        private CajaResumenDTO? resumen;
+        private CajaValeDTO? pendiente;
+        private bool ocupado;
+        private bool confirmado;
         public FrmValeOperario()
         {
             InitializeComponent();
-            CargaOperarios();
         }
 
-        private void FrmValeOperario_Load(object sender, EventArgs e)
+        private async void FrmValeOperario_Load(object sender, EventArgs e)
         {
-            cargaCajaDiaria();
+            if (!UIHelper.EnModoDiseno(this)) await CargarAsync();
         }
 
         private void CargaOperarios()
@@ -69,43 +70,75 @@ namespace CarWash.Presentacion.Operacion
             ((TextBox)sender).SelectAll();
         }
 
-        private void btnGuardar_Click(object sender, EventArgs e)
+        private async void btnGuardar_Click(object sender, EventArgs e)
         {
-            if (validaCampos())
-            {
-                //var operarioSel = cmbOperario.SelectedValue;
-                var idoperario = Convert.ToInt32(cmbOperario.SelectedValue);
-
-
-                valesOperariosController.RegistrarValesOperarios(new ValesOperarios
-                {
-                    idOperario = idoperario,
-                    idCaja = cajaDiaria.idCaja,
-                    FechaRegsitro = DateTime.Now,
-                    Valor = Convert.ToDecimal(txtValor.Text),
-                    Motivo = txtMotivo.Text
-                });
-
-                valorValeOperario = valorValeOperario + Convert.ToDecimal(txtValor.Text);
-                cargaCajaDiaria();
-                limpiacampos();
-                this.Close();
-
-                MostrarToast("Vale registrado correctamente", Color.FromArgb(40, 167, 69));
-
-
-            }
+            var answer = MessageBox.Show(this, "Confirmar vale y medio de salida?", "Vale de operario", MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+            await GuardarAsync(answer == DialogResult.Yes);
         }
 
-        private void cargaCajaDiaria()
+        private async Task GuardarAsync(bool confirmacion)
         {
-            cajaDiaria = cajaDiariaController.GetCajaActiva();
-            valorValeOperario = cajaDiaria.TotalValesOperarios;
+            if (!confirmacion || ocupado || confirmado || resumen == null) return;
+            if (pendiente == null && !validaCampos()) return;
+            pendiente = pendiente ?? new CajaValeDTO { RevisionEsperada = resumen.Revision,
+                Importe = CajaComandosClient.Dinero(decimal.Parse(txtValor.Text)), IdFormaPagoSalida = ((CajaMedioDTO)medio.SelectedItem).IdFormaPago,
+                IdOperario = Convert.ToInt32(cmbOperario.SelectedValue), Motivo = txtMotivo.Text.Trim() };
+            ocupado = true;
+            ActualizarControles();
+            try
+            {
+                var result = await comandos.ValeAsync(resumen.IdCaja, pendiente, lifetime.Token);
+                if (IsDisposed) return;
+                if ((int?)result.Resultado["idCaja"] != resumen.IdCaja || (int?)result.Resultado["idValeOperario"] is not int id || id <= 0) throw new System.IO.IOException();
+                pendiente = null;
+                confirmado = true;
+                estado.Text = "Vale confirmado. ID " + id;
+            }
+            catch (CajaHttpException error) when (error.EscrituraRechazada)
+            { if (!IsDisposed) { pendiente = null; resumen = null; estado.Text = error.Message + " Consulte nuevamente."; } }
+            catch (Exception error) when (error is System.IO.IOException || error is System.Net.Http.HttpRequestException || error is OperationCanceledException || error is UnauthorizedAccessException)
+            { if (!IsDisposed) estado.Text = "Resultado desconocido. UUID: " + pendiente?.IdOperacion; }
+            finally { ocupado = false; if (!IsDisposed) ActualizarControles(); }
+        }
+
+        private async Task CargarAsync()
+        {
+            if (ocupado || pendiente != null || confirmado || IsDisposed) return;
+            ocupado = true;
+            resumen = null;
+            ActualizarControles();
+            try
+            {
+                var active = await comandos.ActivaAsync(lifetime.Token);
+                if (IsDisposed) return;
+                if (active == null) { estado.Text = "No hay caja abierta."; return; }
+                var loaded = await comandos.ResumenAsync(active.idCaja, lifetime.Token);
+                var media = await comandos.MediosAsync(lifetime.Token);
+                var operators = await Task.Run(() => operariosController.GetOperariosActivos(), lifetime.Token);
+                if (IsDisposed) return;
+                var previous = (medio.SelectedItem as CajaMedioDTO)?.IdFormaPago;
+                var previousOperator = cmbOperario.SelectedValue as int?;
+                medio.DisplayMember = "Nombre";
+                medio.DataSource = media.Where(row => !string.Equals(row.Nombre, "Credito", StringComparison.OrdinalIgnoreCase) && !string.Equals(row.Nombre, "Crédito", StringComparison.OrdinalIgnoreCase)).ToList();
+                medio.SelectedIndex = -1;
+                if (previous != null) medio.SelectedItem = ((IEnumerable<CajaMedioDTO>)medio.DataSource).FirstOrDefault(row => row.IdFormaPago == previous);
+                cmbOperario.DisplayMember = "NombreCompleto";
+                cmbOperario.ValueMember = "idOperario";
+                cmbOperario.DataSource = operators.Select(row => new OperariosDTO { idOperario = row.idOperario, Nombres = row.Nombres, Apellidos = row.Apellidos }).ToList();
+                cmbOperario.SelectedIndex = -1;
+                if (previousOperator != null) cmbOperario.SelectedValue = previousOperator.Value;
+                resumen = loaded;
+                estado.Text = "Jornada abierta. Seleccione operario y medio de salida.";
+            }
+            catch (Exception error) when (error is System.IO.IOException || error is System.Net.Http.HttpRequestException || error is OperationCanceledException || error is UnauthorizedAccessException)
+            { if (!IsDisposed) estado.Text = "No se pudo consultar la caja. No se confirma ausencia."; }
+            finally { ocupado = false; if (!IsDisposed) ActualizarControles(); }
         }
 
         private void btnCancelar_Click(object sender, EventArgs e)
         {
-            limpiacampos();
+            Close();
         }
 
         private void limpiacampos()
@@ -118,30 +151,30 @@ namespace CarWash.Presentacion.Operacion
 
         private bool validaCampos()
         {
-            if (cmbOperario.SelectedIndex == 0)
-            {
-                MostrarToast("Seleccione un operador.", Color.FromArgb(220, 53, 69));
-                return false;
-            }
-            else if (string.IsNullOrEmpty(txtValor.Text))
-            {
-                MostrarToast("Ingrese el valor del vale.", Color.FromArgb(220, 53, 69));
-                return false;
-            }
-            else if (string.IsNullOrEmpty(txtMotivo.Text))
-            {
-                MostrarToast("Ingrese Descripción para el vale.", Color.FromArgb(220, 53, 69));
-                return false;
-            }
-            else if (cajaDiaria == null)
-            {
-                MostrarToast("No existe caja abierta para el día de hoy.", Color.FromArgb(220, 53, 69));
-                return false;
-            }
-            else
-            {
-                return true;
-            }
+            decimal amount;
+            var valid = cmbOperario.SelectedItem != null && Convert.ToInt32(cmbOperario.SelectedValue) > 0
+                && !string.IsNullOrWhiteSpace(txtMotivo.Text) && txtMotivo.Text.Trim().Length <= 500
+                && decimal.TryParse(txtValor.Text, out amount) && amount > 0 && decimal.Round(amount, 2) == amount
+                && medio.SelectedItem is CajaMedioDTO && resumen?.Estado == "ABIERTA";
+            if (!valid) estado.Text = "Revise operario, motivo, importe positivo y medio de salida.";
+            return valid;
+        }
+
+        private void ActualizarControles()
+        {
+            cmbOperario.Enabled = txtValor.Enabled = txtMotivo.Enabled = medio.Enabled = !ocupado && pendiente == null && !confirmado;
+            btnGuardar.Enabled = !ocupado && !confirmado && resumen != null;
+            btnGuardar.Text = pendiente == null ? "Guardar" : "Consultar / reintentar";
+            btnConsultar.Enabled = !ocupado && pendiente == null && !confirmado;
+        }
+
+        private async void btnConsultar_Click(object sender, EventArgs e) => await CargarAsync();
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            if ((ocupado || pendiente != null) && e.CloseReason == CloseReason.UserClosing)
+            { e.Cancel = true; estado.Text = "Operacion pendiente. Consulte el UUID: " + pendiente?.IdOperacion; }
+            base.OnFormClosing(e);
         }
 
         private void MostrarToast(string mensaje, Color color)

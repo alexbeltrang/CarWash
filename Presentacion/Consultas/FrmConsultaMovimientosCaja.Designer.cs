@@ -16,6 +16,7 @@ namespace CarWash.Presentacion.Consultas
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
+            if (disposing && !vida.IsCancellationRequested) vida.Cancel();
             if (disposing && (components != null))
             {
                 components.Dispose();
@@ -48,6 +49,23 @@ namespace CarWash.Presentacion.Consultas
             this.lblTotal = new System.Windows.Forms.Label();
             this.lblOperario = new System.Windows.Forms.Label();
             this.cmbOperario = new System.Windows.Forms.ComboBox();
+            this.accionesAdmin = new TableLayoutPanel();
+            this.cajaConsulta = new NumericUpDown();
+            this.paginaConsulta = new NumericUpDown();
+            this.cargarCaja = new Button();
+            this.alcance = new ComboBox();
+            this.verImpacto = new Button();
+            this.impactoDetalle = new TextBox();
+            this.importeCorreccion = new NumericUpDown();
+            this.medioCorreccion = new ComboBox();
+            this.motivoAdmin = new TextBox();
+            this.corregir = new Button();
+            this.borrar = new Button();
+            this.estadoAdmin = new Label();
+            this.cargarCierres = new Button();
+            this.verCierre = new Button();
+            this.reabrir = new Button();
+            this.recerrar = new Button();
             ((System.ComponentModel.ISupportInitialize)(this.dtgMovimientos)).BeginInit();
             this.SuspendLayout();
             // 
@@ -93,7 +111,7 @@ namespace CarWash.Presentacion.Consultas
             this.lblHistorico.Name = "lblHistorico";
             this.lblHistorico.Size = new System.Drawing.Size(189, 23);
             this.lblHistorico.TabIndex = 37;
-            this.lblHistorico.Text = "Histórico del Vehículo:";
+            this.lblHistorico.Text = "Movimientos / versiones de cierre:";
             // 
             // dtgMovimientos
             // 
@@ -135,7 +153,7 @@ namespace CarWash.Presentacion.Consultas
             dataGridViewCellStyle4.ForeColor = System.Drawing.Color.Black;
             this.dtgMovimientos.RowsDefaultCellStyle = dataGridViewCellStyle4;
             this.dtgMovimientos.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dtgMovimientos.Size = new System.Drawing.Size(1145, 394);
+            this.dtgMovimientos.Size = new System.Drawing.Size(1145, 230);
             this.dtgMovimientos.TabIndex = 38;
             // 
             // dtpFechaInicial
@@ -227,7 +245,108 @@ namespace CarWash.Presentacion.Consultas
             // FrmConsultaMovimientosCaja
             // 
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(90)))), ((int)(((byte)(150)))));
-            this.ClientSize = new System.Drawing.Size(1171, 685);
+            this.ClientSize = new System.Drawing.Size(1171, 900);
+            this.MinimumSize = new System.Drawing.Size(1187, 840);
+            this.accionesAdmin.Name = "accionesAdmin";
+            this.accionesAdmin.Location = new System.Drawing.Point(14, 535);
+            this.accionesAdmin.Size = new System.Drawing.Size(1145, 345);
+            this.accionesAdmin.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            this.accionesAdmin.ColumnCount = 1;
+            this.accionesAdmin.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            this.accionesAdmin.RowCount = 6;
+            this.accionesAdmin.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F));
+            this.accionesAdmin.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            this.accionesAdmin.RowStyles.Add(new RowStyle(SizeType.Absolute, 42F));
+            this.accionesAdmin.RowStyles.Add(new RowStyle(SizeType.Absolute, 42F));
+            this.accionesAdmin.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F));
+            this.accionesAdmin.RowStyles.Add(new RowStyle(SizeType.Absolute, 48F));
+            var consultaAdmin = new FlowLayoutPanel { Dock = DockStyle.Fill, WrapContents = false, Margin = Padding.Empty };
+            this.cajaConsulta.Name = "cajaConsulta";
+            this.cajaConsulta.Minimum = 1;
+            this.cajaConsulta.Maximum = int.MaxValue;
+            this.cajaConsulta.Width = 100;
+            this.paginaConsulta.Name = "paginaConsulta";
+            this.paginaConsulta.Minimum = 1;
+            this.paginaConsulta.Maximum = 1000000;
+            this.paginaConsulta.Width = 70;
+            this.cargarCaja.Name = "cargarCaja";
+            this.cargarCaja.Text = "Consultar jornada";
+            this.cargarCaja.AutoSize = true;
+            this.cargarCaja.Click += new System.EventHandler(this.cargarCaja_Click);
+            this.alcance.Name = "alcance";
+            this.alcance.DropDownStyle = ComboBoxStyle.DropDownList;
+            this.alcance.Width = 190;
+            this.alcance.Items.AddRange(new object[] { "Cobro seleccionado", "Turno del cobro" });
+            this.verImpacto.Name = "verImpacto";
+            this.verImpacto.Text = "Consultar impacto";
+            this.verImpacto.AutoSize = true;
+            this.verImpacto.Click += new System.EventHandler(this.verImpacto_Click);
+            consultaAdmin.Controls.AddRange(new Control[] { new Label { Text = "Jornada", AutoSize = true }, this.cajaConsulta, new Label { Text = "Pagina", AutoSize = true }, this.paginaConsulta, this.cargarCaja, this.alcance, this.verImpacto });
+            this.impactoDetalle.Name = "impactoDetalle";
+            this.impactoDetalle.Multiline = true;
+            this.impactoDetalle.ReadOnly = true;
+            this.impactoDetalle.ScrollBars = ScrollBars.Vertical;
+            this.impactoDetalle.Dock = DockStyle.Fill;
+            var valoresAdmin = new FlowLayoutPanel { Dock = DockStyle.Fill, WrapContents = false, Margin = Padding.Empty };
+            this.importeCorreccion.Name = "importeCorreccion";
+            this.importeCorreccion.DecimalPlaces = 2;
+            this.importeCorreccion.Maximum = 999999999999m;
+            this.importeCorreccion.Width = 180;
+            this.medioCorreccion.Name = "medioCorreccion";
+            this.medioCorreccion.DropDownStyle = ComboBoxStyle.DropDownList;
+            this.medioCorreccion.Width = 230;
+            valoresAdmin.Controls.AddRange(new Control[] { new Label { Text = "Nuevo importe", AutoSize = true }, this.importeCorreccion, new Label { Text = "Nuevo medio", AutoSize = true }, this.medioCorreccion });
+            var razonAdmin = new FlowLayoutPanel { Dock = DockStyle.Fill, WrapContents = false, Margin = Padding.Empty };
+            this.motivoAdmin.Name = "motivoAdmin";
+            this.motivoAdmin.MaxLength = 500;
+            this.motivoAdmin.Width = 950;
+            razonAdmin.Controls.AddRange(new Control[] { new Label { Text = "Motivo", AutoSize = true }, this.motivoAdmin });
+            var botonesAdmin = new FlowLayoutPanel { Dock = DockStyle.Fill, WrapContents = false, Margin = Padding.Empty };
+            this.corregir.Name = "corregir";
+            this.corregir.Text = "Confirmar correccion";
+            this.corregir.AutoSize = true;
+            this.corregir.Click += new System.EventHandler(this.corregir_Click);
+            this.borrar.Name = "borrar";
+            this.borrar.Text = "Borrar definitivamente";
+            this.borrar.AutoSize = true;
+            this.borrar.Click += new System.EventHandler(this.borrar_Click);
+            this.cargarCierres.Name = "cargarCierres";
+            this.cargarCierres.Text = "Cierres por rango";
+            this.cargarCierres.AutoSize = true;
+            this.cargarCierres.Click += new System.EventHandler(this.cargarCierres_Click);
+            this.verCierre.Name = "verCierre";
+            this.verCierre.Text = "Ver version";
+            this.verCierre.AutoSize = true;
+            this.verCierre.Click += new System.EventHandler(this.verCierre_Click);
+            this.reabrir.Name = "reabrir";
+            this.reabrir.Text = "Reabrir en revision";
+            this.reabrir.AutoSize = true;
+            this.reabrir.Click += new System.EventHandler(this.reabrir_Click);
+            this.recerrar.Name = "recerrar";
+            this.recerrar.Text = "Recierre historico";
+            this.recerrar.AutoSize = true;
+            this.recerrar.Click += new System.EventHandler(this.recerrar_Click);
+            botonesAdmin.Controls.AddRange(new Control[] { this.corregir, this.borrar, this.cargarCierres, this.verCierre, this.reabrir, this.recerrar });
+            this.estadoAdmin.Name = "estadoAdmin";
+            this.estadoAdmin.Dock = DockStyle.Fill;
+            this.estadoAdmin.AutoEllipsis = true;
+            this.estadoAdmin.Text = "Sin impacto confirmado.";
+            foreach (var button in new[] { this.cargarCaja, this.verImpacto, this.corregir, this.borrar, this.cargarCierres, this.verCierre, this.reabrir, this.recerrar })
+            {
+                button.BackColor = System.Drawing.Color.FromArgb(40, 167, 69);
+                button.ForeColor = System.Drawing.Color.White;
+                button.FlatStyle = FlatStyle.Flat;
+                button.Height = 32;
+                button.MinimumSize = new System.Drawing.Size(150, 32);
+            }
+            this.borrar.BackColor = System.Drawing.Color.Firebrick;
+            this.accionesAdmin.Controls.Add(consultaAdmin, 0, 0);
+            this.accionesAdmin.Controls.Add(this.impactoDetalle, 0, 1);
+            this.accionesAdmin.Controls.Add(valoresAdmin, 0, 2);
+            this.accionesAdmin.Controls.Add(razonAdmin, 0, 3);
+            this.accionesAdmin.Controls.Add(botonesAdmin, 0, 4);
+            this.accionesAdmin.Controls.Add(this.estadoAdmin, 0, 5);
+            this.Controls.Add(this.accionesAdmin);
             this.Controls.Add(this.cmbOperario);
             this.Controls.Add(this.lblOperario);
             this.Controls.Add(this.lblTotal);
@@ -242,12 +361,12 @@ namespace CarWash.Presentacion.Consultas
             this.Controls.Add(this.lblHistorico);
             this.Controls.Add(this.dtgMovimientos);
             this.ForeColor = System.Drawing.Color.White;
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
-            this.MaximizeBox = false;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Sizable;
+            this.MaximizeBox = true;
             this.MinimizeBox = false;
             this.Name = "FrmConsultaMovimientosCaja";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Registrar Ingreso de Vehículo";
+            this.Text = "Movimientos de caja";
             this.Load += new System.EventHandler(this.FrmConsultaMovimientosCaja_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dtgMovimientos)).EndInit();
             this.ResumeLayout(false);
@@ -268,5 +387,22 @@ namespace CarWash.Presentacion.Consultas
         private Label lblTotal;
         private Label lblOperario;
         private ComboBox cmbOperario;
+        private TableLayoutPanel accionesAdmin;
+        private NumericUpDown cajaConsulta;
+        private NumericUpDown paginaConsulta;
+        private Button cargarCaja;
+        private ComboBox alcance;
+        private Button verImpacto;
+        private TextBox impactoDetalle;
+        private NumericUpDown importeCorreccion;
+        private ComboBox medioCorreccion;
+        private TextBox motivoAdmin;
+        private Button corregir;
+        private Button borrar;
+        private Label estadoAdmin;
+        private Button cargarCierres;
+        private Button verCierre;
+        private Button reabrir;
+        private Button recerrar;
     }
 }

@@ -16,6 +16,7 @@ namespace CarWash.Presentacion.Operacion
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
+            if (disposing) { if (!lifetime.IsCancellationRequested) lifetime.Cancel(); lifetime.Dispose(); }
             if (disposing && (components != null))
             {
                 components.Dispose();
@@ -47,6 +48,8 @@ namespace CarWash.Presentacion.Operacion
         /// </summary>
         private void InitializeComponent()
         {
+            this.estadoCobro = new Label();
+            this.btnConsultarCaja = new Button();
             this.panelHeader = new System.Windows.Forms.Panel();
             this.lblTitulo = new System.Windows.Forms.Label();
             this.btnCerrar = new System.Windows.Forms.Button();
@@ -454,9 +457,22 @@ namespace CarWash.Presentacion.Operacion
             // 
             // FrmGestionDetalleVehiculo
             // 
+            this.estadoCobro.Name = "estadoCobro";
+            this.estadoCobro.Location = new System.Drawing.Point(25, 740);
+            this.estadoCobro.Size = new System.Drawing.Size(580, 65);
+            this.estadoCobro.Text = "Consultando caja y saldo...";
+            this.btnConsultarCaja.Name = "btnConsultarCaja";
+            this.btnConsultarCaja.Location = new System.Drawing.Point(626, 740);
+            this.btnConsultarCaja.Size = new System.Drawing.Size(164, 40);
+            this.btnConsultarCaja.Text = "Consultar caja";
+            this.btnConsultarCaja.Click += new System.EventHandler(this.btnConsultarCaja_Click);
+            this.Controls.Add(this.estadoCobro);
+            this.Controls.Add(this.btnConsultarCaja);
             this.AcceptButton = this.btnFinalizar;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(245)))), ((int)(((byte)(250)))));
-            this.ClientSize = new System.Drawing.Size(823, 757);
+            this.ClientSize = new System.Drawing.Size(823, 825);
+            this.MinimumSize = new System.Drawing.Size(823, 825);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.Controls.Add(this.btnLiberarOperador);
             this.Controls.Add(this.btnAsignarOperador);
             this.Controls.Add(this.panelHeader);
@@ -481,6 +497,8 @@ namespace CarWash.Presentacion.Operacion
         #endregion
 
         private System.Windows.Forms.Label lblFechaIngreso;
+        private Label estadoCobro;
+        private Button btnConsultarCaja;
         private System.Windows.Forms.Label lblTurno;
         private System.Windows.Forms.Label lblCelular;
         private System.Windows.Forms.Label lblTipoVehiculo;

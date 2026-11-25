@@ -47,12 +47,12 @@ namespace CarWash.Controladores
         }
         public async Task<ImpresionComprobanteDTO> ImprimirAsync(FacturaDTO invoice, Guid solicitudId, CancellationToken token)
         {
-            var result = await SendAsync<ImpresionComprobanteDTO>(HttpMethod.Post, invoice.Id + "/impresiones", new { solicitudId, anchoMm = 80 }, token);
-            if (result == null || result.SolicitudId != solicitudId || !ValidPrint(result, invoice.IdTurno))
+            var result = await SendAsync<ImpresionComprobanteDTO>(HttpMethod.Post, invoice.Id + "/impresiones", new { solicitudId, anchoMm = 60 }, token);
+            if (result == null || result.SolicitudId != solicitudId || result.AnchoMm != 60 || !ValidPrint(result, invoice.IdTurno))
                 throw new IOException("Impresion no confirmada. Consulte su estado.");
             return result;
         }
-        private static bool ValidPrint(ImpresionComprobanteDTO job, int idTurno) => job.SolicitudId != Guid.Empty && job.IdTurno == idTurno && job.AnchoMm == 80
+        private static bool ValidPrint(ImpresionComprobanteDTO job, int idTurno) => job.SolicitudId != Guid.Empty && job.IdTurno == idTurno && (job.AnchoMm == 58 || job.AnchoMm == 60 || job.AnchoMm == 80)
             && !string.IsNullOrWhiteSpace(job.Impresora) && Array.IndexOf(new[] { "PENDING", "SUBMITTING", "SUBMITTED", "FAILED", "UNKNOWN" }, job.Estado) >= 0;
         private async Task<T?> SendAsync<T>(HttpMethod method, string path, object? data, CancellationToken token) where T : class
         {

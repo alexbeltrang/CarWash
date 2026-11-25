@@ -1,6 +1,8 @@
 ﻿using CarWash.Controladores;
 using CarWash.Database;
 using CarWash.Entidades;
+using CarWash.DTOs;
+using System.Threading;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -15,94 +17,103 @@ namespace CarWash.Presentacion.Administracion
 {
     public partial class FrmCierreCaja : Form
     {
-        private decimal totalEnCaja = 0;
-        private decimal totalValesOperadores = 0;
         private decimal diferencia = 0;
-        private List<CajaDiaria> cajaDiaria = new List<CajaDiaria>();
-        CajaDiariaController cajaDiariaController = new CajaDiariaController();
-        ValesOperariosController valesOperariosController = new ValesOperariosController();
-        public FrmCierreCaja()
+        private readonly CajaComandosClient comandos = new CajaComandosClient();
+        private readonly CancellationTokenSource lifetime = new CancellationTokenSource();
+        private CajaResumenDTO? resumen;
+        private CajaCierreDTO? pendiente;
+        private bool ocupado;
+        private bool confirmado;
+        private readonly int? idHistorico;
+        public FrmCierreCaja() : this((int?)null) { }
+        public FrmCierreCaja(int idCaja) : this((int?)idCaja) { }
+        private FrmCierreCaja(int? idCaja)
         {
+            if (idCaja <= 0) throw new ArgumentOutOfRangeException(nameof(idCaja));
+            idHistorico = idCaja;
             InitializeComponent();
+            if (idHistorico.HasValue) Text = "Recierre historico - Jornada #" + idHistorico;
             btnCerrarCaja.Click += BtnCerrarCaja_Click;
-            txtValorEfectivo.Text = "0";
-            txtValorTransferencia.Text = "0";
-            txtValorDatafono.Text = "0";
-            txtValorCredito.Text = "0";
-            txtValorGastos.Text = "0";
-            txtValorVales.Text = "0";
+            contado.ValueChanged += (sender, args) => calculaDiferencia();
+            motivo.TextChanged += (sender, args) => ActualizarControles();
         }
 
 
 
-        private void FrmCierreCaja_Load(object sender, EventArgs e)
+        private async void FrmCierreCaja_Load(object sender, EventArgs e)
         {
-            using (var ms = new System.IO.MemoryStream(Properties.Resources.splash_car_icon))
-            {
-                this.Icon = new Icon(ms);
-            }
-            cargaCaja();
-            cargaVales();
-            CargarDatosCaja();
+            if (!UIHelper.EnModoDiseno(this)) await CargarAsync();
         }
 
 
-        private void CargarDatosCaja()
+        private async Task CargarAsync()
         {
+            if (ocupado || IsDisposed || pendiente != null || confirmado) return;
+            ocupado = true;
+            ActualizarControles();
             try
             {
-                var totalIgresosmasCaja = cajaDiaria[0].MontoInicial + cajaDiaria[0].TotalFinal;
-                var valorDescuentos = cajaDiaria[0].TotalEgresos + cajaDiaria[0].TotalIngresosCredito + cajaDiaria[0].TotalIngresosTransferencias + totalValesOperadores;
-
-
-                var totalEnCaja = totalIgresosmasCaja - valorDescuentos;
-
-
-                // Asignar valores a labels
-                lblMontoInicialValor.Text = cajaDiaria[0].MontoInicial.ToString("N2");
-                lblIngresosValor.Text = cajaDiaria[0].TotalFinal.ToString("N2");
-                lblGastosValor.Text = cajaDiaria[0].TotalEgresos.ToString("N2");
-                lblTotalCajaValor.Text = totalEnCaja.ToString("N2");
-                lblIngresosEfectivo.Text = cajaDiaria[0].TotalIngresosEfectivo.ToString("N2");
-                lblIngresosTransferencia.Text = cajaDiaria[0].TotalIngresosTransferencias.ToString("N2");
-                lblIngresosDatafono.Text = cajaDiaria[0].TotalIngresosDatafono.ToString("N2");
-                lblVentasCredito.Text = cajaDiaria[0].TotalIngresosCredito.ToString("N2");
+                resumen = null;
+                estado.Text = "Consultando jornada...";
+                if (idHistorico.HasValue && !CarWash.Utilidades.clsConnection.EsAdministrador)
+                { estado.Text = "Revision historica requiere Administrador."; return; }
+                var id = idHistorico;
+                if (!id.HasValue)
+                {
+                    var active = await comandos.ActivaAsync(lifetime.Token);
+                    if (IsDisposed) return;
+                    if (active == null) { estado.Text = "No hay caja abierta."; return; }
+                    id = active.idCaja;
+                }
+                var loaded = await comandos.ResumenAsync(id.Value, lifetime.Token);
+                if (IsDisposed) return;
+                if (loaded.Estado != (idHistorico.HasValue ? "EN_REVISION" : "ABIERTA"))
+                { estado.Text = "La jornada no esta en el estado requerido. No se cambiara de caja."; return; }
+                resumen = loaded;
+                lblMontoInicialValor.Text = resumen.Apertura.ToString("N2");
+                lblIngresosValor.Text = resumen.CobrosPorMedio.Sum(row => row.Importe).ToString("N2");
+                lblGastosValor.Text = resumen.GastosPorMedio.Sum(row => row.Importe).ToString("N2");
+                lblTotalCajaValor.Text = resumen.EfectivoEsperado.ToString("N2");
+                lblIngresosEfectivo.Text = resumen.CobrosPorMedio.Where(row => row.Categoria == "EFECTIVO").Sum(row => row.Importe).ToString("N2");
+                lblIngresosTransferencia.Text = resumen.CobrosPorMedio.Where(row => row.Categoria == "TRANSFERENCIA").Sum(row => row.Importe).ToString("N2");
+                lblIngresosDatafono.Text = resumen.CobrosPorMedio.Where(row => row.Categoria == "DATAFONO").Sum(row => row.Importe).ToString("N2");
+                lblVentasCredito.Text = resumen.CreditoPendiente.ToString("N2");
+                lblTotalValesOperarios.Text = resumen.ValesPorMedio.Sum(row => row.Importe).ToString("N2");
+                detalle.Rows.Clear();
+                foreach (var row in resumen.CobrosPorMedio) detalle.Rows.Add("Cobro", row.Nombre, row.Importe.ToString("N2"));
+                foreach (var row in resumen.GastosPorMedio) detalle.Rows.Add("Gasto", row.Nombre, row.Importe.ToString("N2"));
+                foreach (var row in resumen.ValesPorMedio) detalle.Rows.Add("Vale", row.Nombre, row.Importe.ToString("N2"));
+                foreach (var issue in resumen.FuentesInvalidas) detalle.Rows.Add(issue.Fuente, issue.Id, issue.Codigo);
+                estado.Text = idHistorico.HasValue ? "Revision historica #" + idHistorico + ". " + (resumen.PuedeCerrar ? "Resumen verificado para recierre." : "Recierre bloqueado por diagnosticos.")
+                    : !resumen.PuedeCerrar ? "Cierre bloqueado: revise los diagnosticos."
+                    : resumen.DiscrepanciasAcumulados.Count > 0 ? "Fuentes verificadas; acumulados anteriores distintos." : "Jornada abierta. Resumen verificado.";
                 calculaDiferencia();
-
-
             }
-            catch (Exception ex)
+            catch (Exception error) when (error is System.IO.IOException || error is System.Net.Http.HttpRequestException || error is OperationCanceledException || error is UnauthorizedAccessException)
             {
-                MessageBox.Show("Error cargando datos de caja: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (!IsDisposed) { resumen = null; estado.Text = "No se pudo consultar la caja. No se confirma ausencia ni cierre."; }
             }
+            finally { ocupado = false; if (!IsDisposed) ActualizarControles(); }
         }
 
-
-        private void cargaCaja()
+        private void ActualizarControles()
         {
-            cajaDiaria.Clear();
-            var cajaDiariaGet = cajaDiariaController.GetCajaActiva();
-            if (cajaDiariaGet != null && cajaDiariaGet.idCaja > 0)
-            {
-                cajaDiaria.Add(cajaDiariaGet);
-            }
+            contado.Enabled = motivo.Enabled = !ocupado && pendiente == null && !confirmado;
+            btnRecalcular.Enabled = !ocupado && pendiente == null && !confirmado;
+            btnCerrarCaja.Text = pendiente == null ? idHistorico.HasValue ? "Confirmar recierre" : "Confirmar cierre" : "Consultar / reintentar";
+            btnCerrarCaja.Enabled = !ocupado && !confirmado && (pendiente != null || (resumen?.PuedeCerrar == true && (diferencia == 0 || !string.IsNullOrWhiteSpace(motivo.Text))));
         }
 
-
-        private void cargaVales()
+        protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            var vales = valesOperariosController.GetAllValesOperarios(cajaDiaria[0].idCaja);
-
-            foreach (var v in vales)
-            {
-                totalValesOperadores += v.Valor;
-            }
-
-            lblTotalValesOperarios.Text = totalValesOperadores.ToString("N2");
+            if ((ocupado || pendiente != null) && e.CloseReason == CloseReason.UserClosing)
+            { e.Cancel = true; estado.Text = "Operacion pendiente. Consulte el UUID antes de salir: " + pendiente?.IdOperacion; }
+            base.OnFormClosing(e);
         }
 
         private void calculaDiferencia()
         {
+            diferencia = contado.Value - (resumen?.EfectivoEsperado ?? 0m);
             if (diferencia < 0)
             {
                 lblDiferenciaValor.ForeColor = Color.Red;
@@ -113,34 +124,40 @@ namespace CarWash.Presentacion.Administracion
                 lblDiferenciaValor.ForeColor = Color.FromArgb(40, 167, 69);
                 lblDiferenciaValor.Text = diferencia.ToString("N2");
             }
+            ActualizarControles();
         }
 
 
-        private decimal ObtenerMontoFisicoEnCaja()
+        private async Task ConfirmarAsync(bool confirmacion)
         {
-            // Aquí podrías abrir un InputBox para que el cajero ingrese el efectivo
-            // Por ahora asumimos que coincide con el totalEnCaja
-            return totalEnCaja;
-        }
-
-        private void CerrarCaja()
-        {
+            if (!confirmacion || ocupado || confirmado || resumen == null || (!resumen.PuedeCerrar && pendiente == null)) return;
+            if (pendiente == null && diferencia != 0 && string.IsNullOrWhiteSpace(motivo.Text)) return;
+            ocupado = true;
+            pendiente = pendiente ?? new CajaCierreDTO { RevisionEsperada = resumen.Revision, ResumenToken = resumen.ResumenToken,
+                EfectivoContado = CajaComandosClient.Dinero(contado.Value), JustificacionDiferencia = motivo.Text.Trim() };
+            ActualizarControles();
             try
             {
-
-                // Actualiza el registro de caja
-                cajaDiaria[0].Estado = false;
-                cajaDiaria[0].FechaCierre = DateTime.Now;
-
-                cajaDiariaController.ActualizarCajaDiaria(cajaDiaria[0]);
-
-                MessageBox.Show("Caja cerrada exitosamente.", "Cierre Caja", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                this.Close();
+                var result = idHistorico.HasValue ? await comandos.RecerrarAsync(idHistorico.Value, pendiente, lifetime.Token)
+                    : await comandos.CerrarAsync(resumen.IdCaja, pendiente, lifetime.Token);
+                if (IsDisposed) return;
+                if ((int?)result.Resultado["idCaja"] != resumen.IdCaja || result.Resultado["snapshot"] == null) throw new System.IO.IOException();
+                confirmado = true;
+                pendiente = null;
+                estado.Text = "Cierre confirmado. Version " + result.Resultado["version"] + ". Diferencia: " + result.Resultado["diferencia"];
             }
-            catch (Exception ex)
+            catch (CajaHttpException error) when (error.EscrituraRechazada)
             {
-                MessageBox.Show("Error cerrando la caja: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (!IsDisposed)
+                {
+                    pendiente = null;
+                    resumen = null;
+                    estado.Text = error.Message;
+                }
             }
+            catch (Exception error) when (error is System.IO.IOException || error is System.Net.Http.HttpRequestException || error is OperationCanceledException || error is UnauthorizedAccessException)
+            { if (!IsDisposed) estado.Text = "Resultado desconocido. Conserve conteo y motivo. UUID: " + pendiente?.IdOperacion; }
+            finally { ocupado = false; if (!IsDisposed) ActualizarControles(); }
         }
 
         private void btnCerrarVentana_Click(object sender, EventArgs e)
@@ -148,154 +165,16 @@ namespace CarWash.Presentacion.Administracion
             this.Close();
         }
 
-        private void BtnCerrarCaja_Click(object sender, EventArgs e)
+        private async void BtnCerrarCaja_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("¿Desea cerrar la caja y registrar los totales?",
-                "Confirmar Cierre", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-            {
-                CerrarCaja();
-            }
+            var answer = MessageBox.Show(this, idHistorico.HasValue ? "Confirmar recierre de jornada historica #" + idHistorico + " con este conteo y resumen?" : "Confirmar el conteo y el resumen revisado?", "Cierre de caja",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+            await ConfirmarAsync(answer == DialogResult.Yes);
         }
 
-        private void txtValorEfectivo_KeyDown(object sender, KeyEventArgs e)
+        private async void btnRecalcular_Click(object sender, EventArgs e)
         {
-            // Detecta Ctrl+V (pegar)
-            if (e.Control && e.KeyCode == Keys.V)
-            {
-                e.SuppressKeyPress = true; // Bloquea el pegado
-            }
-        }
-
-        private void txtValorEfectivo_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            TextBox tb = sender as TextBox;
-
-            // Permitir teclas de control (backspace, delete, tab, etc.)
-            if (char.IsControl(e.KeyChar))
-                return;
-
-            // Permitir solo dígitos
-            if (char.IsDigit(e.KeyChar))
-                return;
-
-            // Permitir un solo punto decimal
-            if (e.KeyChar == '.' && !tb.Text.Contains("."))
-                return;
-
-            // Si llega aquí, se bloquea la tecla
-            e.Handled = true;
-        }
-
-        private void txtValorTransferencia_KeyDown(object sender, KeyEventArgs e)
-        {
-            // Detecta Ctrl+V (pegar)
-            if (e.Control && e.KeyCode == Keys.V)
-            {
-                e.SuppressKeyPress = true; // Bloquea el pegado
-            }
-        }
-
-        private void txtValorTransferencia_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            TextBox tb = sender as TextBox;
-
-            // Permitir teclas de control (backspace, delete, tab, etc.)
-            if (char.IsControl(e.KeyChar))
-                return;
-
-            // Permitir solo dígitos
-            if (char.IsDigit(e.KeyChar))
-                return;
-
-            // Permitir un solo punto decimal
-            if (e.KeyChar == '.' && !tb.Text.Contains("."))
-                return;
-
-            // Si llega aquí, se bloquea la tecla
-            e.Handled = true;
-        }
-
-        private void txtValorDatafono_KeyDown(object sender, KeyEventArgs e)
-        {
-            // Detecta Ctrl+V (pegar)
-            if (e.Control && e.KeyCode == Keys.V)
-            {
-                e.SuppressKeyPress = true; // Bloquea el pegado
-            }
-        }
-
-        private void txtValorDatafono_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            TextBox tb = sender as TextBox;
-
-            // Permitir teclas de control (backspace, delete, tab, etc.)
-            if (char.IsControl(e.KeyChar))
-                return;
-
-            // Permitir solo dígitos
-            if (char.IsDigit(e.KeyChar))
-                return;
-
-            // Permitir un solo punto decimal
-            if (e.KeyChar == '.' && !tb.Text.Contains("."))
-                return;
-
-            // Si llega aquí, se bloquea la tecla
-            e.Handled = true;
-        }
-
-        private void btnRecalcular_Click(object sender, EventArgs e)
-        {
-            decimal valorIngresos = 0;
-
-            valorIngresos = Convert.ToDecimal(txtValorDatafono.Text) +
-                            Convert.ToDecimal(txtValorEfectivo.Text) +
-                            Convert.ToDecimal(txtValorTransferencia.Text) +
-                            Convert.ToDecimal(txtValorCredito.Text) +
-                            Convert.ToDecimal(txtValorGastos.Text) +
-                            Convert.ToDecimal(txtValorVales.Text);
-
-
-
-            diferencia = valorIngresos - (cajaDiaria[0].TotalFinal + cajaDiaria[0].MontoInicial);
-            calculaDiferencia();
-        }
-
-
-
-        private void TextBox_SelectAll(object sender, EventArgs e)
-        {
-            ((TextBox)sender).SelectAll();
-        }
-
-        private void txtValorEfectivo_MouseClick(object sender, MouseEventArgs e)
-        {
-            ((TextBox)sender).SelectAll();
-        }
-
-        private void txtValorTransferencia_MouseClick(object sender, MouseEventArgs e)
-        {
-            ((TextBox)sender).SelectAll();
-        }
-
-        private void txtValorDatafono_MouseClick(object sender, MouseEventArgs e)
-        {
-            ((TextBox)sender).SelectAll();
-        }
-
-        private void txtValorCredito_MouseClick(object sender, MouseEventArgs e)
-        {
-            ((TextBox)sender).SelectAll();
-        }
-
-        private void txtValorGastos_MouseClick(object sender, MouseEventArgs e)
-        {
-            ((TextBox)sender).SelectAll();
-        }
-
-        private void txtValorVales_MouseClick(object sender, MouseEventArgs e)
-        {
-            ((TextBox)sender).SelectAll();
+            await CargarAsync();
         }
     }
 }

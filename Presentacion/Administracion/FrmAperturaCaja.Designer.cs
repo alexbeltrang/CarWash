@@ -19,6 +19,8 @@ namespace CarWash.Presentacion.Administracion
         private TextBox txtMontoInicial;
 
         private Button btnAbrirCaja;
+        private Label estadoApertura;
+        private Button btnConsultar;
 
         /// <summary>
         /// Clean up any resources being used.
@@ -26,6 +28,7 @@ namespace CarWash.Presentacion.Administracion
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
+            if (disposing) { if (!lifetime.IsCancellationRequested) lifetime.Cancel(); lifetime.Dispose(); }
             if (disposing && (components != null))
             {
                 components.Dispose();
@@ -41,6 +44,8 @@ namespace CarWash.Presentacion.Administracion
         /// </summary>
         private void InitializeComponent()
         {
+            this.estadoApertura = new Label();
+            this.btnConsultar = new Button();
             this.panelHeader = new System.Windows.Forms.Panel();
             this.lblTitulo = new System.Windows.Forms.Label();
             this.cardCaja = new System.Windows.Forms.Panel();
@@ -137,6 +142,23 @@ namespace CarWash.Presentacion.Administracion
             // 
             // FrmAperturaCaja
             // 
+            this.estadoApertura.Name = "estadoApertura";
+            this.estadoApertura.Location = new Point(30, 210);
+            this.estadoApertura.Size = new Size(440, 28);
+            this.estadoApertura.AutoEllipsis = true;
+            this.btnConsultar.Name = "btnConsultar";
+            this.btnConsultar.Text = "Consultar";
+            this.btnConsultar.Location = new Point(30, 240);
+            this.btnConsultar.Size = new Size(130, 40);
+            this.btnConsultar.TabIndex = 3;
+            this.btnConsultar.Click += new EventHandler(this.btnConsultar_Click);
+            this.btnAbrirCaja.Size = new Size(180, 40);
+            this.btnAbrirCaja.Location = new Point(170, 240);
+            this.btnCerrar.Location = new Point(370, 240);
+            this.CancelButton = this.btnCerrar;
+            this.MinimumSize = new Size(522, 361);
+            this.Controls.Add(this.estadoApertura);
+            this.Controls.Add(this.btnConsultar);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(245)))), ((int)(((byte)(250)))));
             this.ClientSize = new System.Drawing.Size(506, 322);

@@ -231,7 +231,7 @@ namespace CarWash.Presentacion.Operacion
                 {
                     var snapshot = invoice; var offset = 0;
                     documentPreview.DocumentName = "Factura " + snapshot.Prefijo + snapshot.Numero;
-                    documentPreview.DefaultPageSettings.PaperSize = new PaperSize("Factura 80 mm", 315, 800); documentPreview.DefaultPageSettings.Margins = new Margins(8, 8, 8, 8);
+                    documentPreview.DefaultPageSettings.PaperSize = new PaperSize("Factura 60 mm", 236, 800); documentPreview.DefaultPageSettings.Margins = new Margins(8, 8, 8, 8);
                     documentPreview.BeginPrint += (_, __) => offset = 0;
                     documentPreview.PrintPage += (_, args) => { offset = DrawInvoicePage(args.Graphics, args.MarginBounds, snapshot.Texto, logo.Image, offset); args.HasMorePages = offset < snapshot.Texto.Length; };
                     var control = new PrintPreviewControl { Document = documentPreview, Dock = DockStyle.Fill, AutoZoom = true };

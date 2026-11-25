@@ -29,6 +29,13 @@ namespace CarWash.Presentacion.Administracion
         private Label lblDiferenciaValor;
 
         private Button btnCerrarCaja;
+        private NumericUpDown contado;
+        private TextBox motivo;
+        private DataGridView detalle;
+        private Label estado;
+        private Label lblContado;
+        private Label lblMotivo;
+        private Button btnCerrar;
 
 
         /// <summary>
@@ -37,6 +44,7 @@ namespace CarWash.Presentacion.Administracion
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
+            if (disposing) { if (!lifetime.IsCancellationRequested) lifetime.Cancel(); lifetime.Dispose(); }
             if (disposing && (components != null))
             {
                 components.Dispose();
@@ -52,6 +60,15 @@ namespace CarWash.Presentacion.Administracion
         /// </summary>
         private void InitializeComponent()
         {
+            this.contado = new NumericUpDown();
+            this.motivo = new TextBox();
+            this.detalle = new DataGridView();
+            this.estado = new Label();
+            this.lblContado = new Label();
+            this.lblMotivo = new Label();
+            this.btnCerrar = new Button();
+            ((System.ComponentModel.ISupportInitialize)(this.contado)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.detalle)).BeginInit();
             this.panelHeader = new System.Windows.Forms.Panel();
             this.lblTitulo = new System.Windows.Forms.Label();
             this.cardResumen = new System.Windows.Forms.Panel();
@@ -76,20 +93,8 @@ namespace CarWash.Presentacion.Administracion
             this.lblTotalValesOperarios = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.lblVentasCredito = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.txtValorEfectivo = new System.Windows.Forms.TextBox();
-            this.txtValorTransferencia = new System.Windows.Forms.TextBox();
-            this.txtValorDatafono = new System.Windows.Forms.TextBox();
             this.btnRecalcular = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.txtValorCredito = new System.Windows.Forms.TextBox();
-            this.label9 = new System.Windows.Forms.Label();
-            this.txtValorGastos = new System.Windows.Forms.TextBox();
-            this.label10 = new System.Windows.Forms.Label();
-            this.txtValorVales = new System.Windows.Forms.TextBox();
-            this.label11 = new System.Windows.Forms.Label();
             this.panelHeader.SuspendLayout();
             this.cardResumen.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -359,72 +364,6 @@ namespace CarWash.Presentacion.Administracion
             this.lblVentasCredito.TabIndex = 19;
             this.lblVentasCredito.Text = "0.00";
             // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.label2.Location = new System.Drawing.Point(28, 45);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(188, 23);
-            this.label2.TabIndex = 13;
-            this.label2.Text = "Ingrese Valor Efectivo:";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.label4.Location = new System.Drawing.Point(34, 81);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(230, 23);
-            this.label4.TabIndex = 14;
-            this.label4.Text = "Ingrese Valor Transferencia:";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.label6.Location = new System.Drawing.Point(34, 120);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(199, 23);
-            this.label6.TabIndex = 15;
-            this.label6.Text = "Ingrese Valor Datafono:";
-            // 
-            // txtValorEfectivo
-            // 
-            this.txtValorEfectivo.Location = new System.Drawing.Point(290, 45);
-            this.txtValorEfectivo.MaxLength = 20;
-            this.txtValorEfectivo.Name = "txtValorEfectivo";
-            this.txtValorEfectivo.Size = new System.Drawing.Size(159, 22);
-            this.txtValorEfectivo.TabIndex = 16;
-            this.txtValorEfectivo.MouseClick += new System.Windows.Forms.MouseEventHandler(this.txtValorEfectivo_MouseClick);
-            this.txtValorEfectivo.Enter += new System.EventHandler(this.TextBox_SelectAll);
-            this.txtValorEfectivo.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtValorEfectivo_KeyDown);
-            this.txtValorEfectivo.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtValorEfectivo_KeyPress);
-            // 
-            // txtValorTransferencia
-            // 
-            this.txtValorTransferencia.Location = new System.Drawing.Point(290, 83);
-            this.txtValorTransferencia.MaxLength = 20;
-            this.txtValorTransferencia.Name = "txtValorTransferencia";
-            this.txtValorTransferencia.Size = new System.Drawing.Size(159, 22);
-            this.txtValorTransferencia.TabIndex = 17;
-            this.txtValorTransferencia.MouseClick += new System.Windows.Forms.MouseEventHandler(this.txtValorTransferencia_MouseClick);
-            this.txtValorTransferencia.Enter += new System.EventHandler(this.TextBox_SelectAll);
-            this.txtValorTransferencia.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtValorTransferencia_KeyDown);
-            this.txtValorTransferencia.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtValorTransferencia_KeyPress);
-            // 
-            // txtValorDatafono
-            // 
-            this.txtValorDatafono.Location = new System.Drawing.Point(291, 120);
-            this.txtValorDatafono.MaxLength = 20;
-            this.txtValorDatafono.Name = "txtValorDatafono";
-            this.txtValorDatafono.Size = new System.Drawing.Size(159, 22);
-            this.txtValorDatafono.TabIndex = 18;
-            this.txtValorDatafono.MouseClick += new System.Windows.Forms.MouseEventHandler(this.txtValorDatafono_MouseClick);
-            this.txtValorDatafono.Enter += new System.EventHandler(this.TextBox_SelectAll);
-            this.txtValorDatafono.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtValorDatafono_KeyDown);
-            this.txtValorDatafono.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtValorDatafono_KeyPress);
-            // 
             // btnRecalcular
             // 
             this.btnRecalcular.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(167)))), ((int)(((byte)(69)))));
@@ -436,93 +375,87 @@ namespace CarWash.Presentacion.Administracion
             this.btnRecalcular.Name = "btnRecalcular";
             this.btnRecalcular.Size = new System.Drawing.Size(180, 45);
             this.btnRecalcular.TabIndex = 4;
-            this.btnRecalcular.Text = "Cuadrar Caja";
+            this.btnRecalcular.Text = "Actualizar";
             this.btnRecalcular.UseVisualStyleBackColor = false;
             this.btnRecalcular.Click += new System.EventHandler(this.btnRecalcular_Click);
             // 
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.White;
-            this.panel1.Controls.Add(this.txtValorVales);
-            this.panel1.Controls.Add(this.label11);
-            this.panel1.Controls.Add(this.txtValorGastos);
-            this.panel1.Controls.Add(this.label10);
-            this.panel1.Controls.Add(this.txtValorCredito);
-            this.panel1.Controls.Add(this.label9);
+            this.panel1.Controls.Add(this.contado);
+            this.panel1.Controls.Add(this.motivo);
+            this.panel1.Controls.Add(this.detalle);
+            this.panel1.Controls.Add(this.lblContado);
+            this.panel1.Controls.Add(this.lblMotivo);
             this.panel1.Controls.Add(this.btnRecalcular);
-            this.panel1.Controls.Add(this.txtValorDatafono);
-            this.panel1.Controls.Add(this.txtValorTransferencia);
-            this.panel1.Controls.Add(this.txtValorEfectivo);
-            this.panel1.Controls.Add(this.label6);
-            this.panel1.Controls.Add(this.label4);
-            this.panel1.Controls.Add(this.label2);
             this.panel1.Location = new System.Drawing.Point(556, 90);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(535, 392);
             this.panel1.TabIndex = 3;
             // 
-            // txtValorCredito
-            // 
-            this.txtValorCredito.Location = new System.Drawing.Point(291, 159);
-            this.txtValorCredito.MaxLength = 20;
-            this.txtValorCredito.Name = "txtValorCredito";
-            this.txtValorCredito.Size = new System.Drawing.Size(159, 22);
-            this.txtValorCredito.TabIndex = 20;
-            this.txtValorCredito.MouseClick += new System.Windows.Forms.MouseEventHandler(this.txtValorCredito_MouseClick);
-            this.txtValorCredito.Enter += new System.EventHandler(this.TextBox_SelectAll);
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.label9.Location = new System.Drawing.Point(34, 159);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(184, 23);
-            this.label9.TabIndex = 19;
-            this.label9.Text = "Ingrese Valor Crédito:";
-            // 
-            // txtValorGastos
-            // 
-            this.txtValorGastos.Location = new System.Drawing.Point(290, 191);
-            this.txtValorGastos.MaxLength = 20;
-            this.txtValorGastos.Name = "txtValorGastos";
-            this.txtValorGastos.Size = new System.Drawing.Size(159, 22);
-            this.txtValorGastos.TabIndex = 22;
-            this.txtValorGastos.MouseClick += new System.Windows.Forms.MouseEventHandler(this.txtValorGastos_MouseClick);
-            this.txtValorGastos.Enter += new System.EventHandler(this.TextBox_SelectAll);
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.label10.Location = new System.Drawing.Point(33, 191);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(176, 23);
-            this.label10.TabIndex = 21;
-            this.label10.Text = "Ingrese Valor Gastos:";
-            // 
-            // txtValorVales
-            // 
-            this.txtValorVales.Location = new System.Drawing.Point(291, 225);
-            this.txtValorVales.MaxLength = 20;
-            this.txtValorVales.Name = "txtValorVales";
-            this.txtValorVales.Size = new System.Drawing.Size(159, 22);
-            this.txtValorVales.TabIndex = 24;
-            this.txtValorVales.MouseClick += new System.Windows.Forms.MouseEventHandler(this.txtValorVales_MouseClick);
-            this.txtValorVales.Enter += new System.EventHandler(this.TextBox_SelectAll);
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.label11.Location = new System.Drawing.Point(34, 225);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(164, 23);
-            this.label11.TabIndex = 23;
-            this.label11.Text = "Ingrese Valor Vales:";
-            // 
             // FrmCierreCaja
             // 
+            this.contado.Name = "contado";
+            this.contado.Location = new Point(20, 42);
+            this.contado.Size = new Size(495, 30);
+            this.contado.Font = new Font("Segoe UI", 11F);
+            this.contado.Maximum = decimal.MaxValue;
+            this.contado.DecimalPlaces = 2;
+            this.contado.ThousandsSeparator = true;
+            this.contado.TabIndex = 0;
+            this.contado.AccessibleName = "Efectivo contado";
+            this.lblContado.Text = "Efectivo contado";
+            this.lblContado.Location = new Point(20, 15);
+            this.lblContado.Size = new Size(300, 24);
+            this.motivo.Name = "motivo";
+            this.motivo.Location = new Point(20, 112);
+            this.motivo.Size = new Size(495, 60);
+            this.motivo.Multiline = true;
+            this.motivo.MaxLength = 500;
+            this.motivo.TabIndex = 1;
+            this.motivo.AccessibleName = "Justificacion de diferencia";
+            this.lblMotivo.Text = "Justificacion de diferencia";
+            this.lblMotivo.Location = new Point(20, 84);
+            this.lblMotivo.Size = new Size(400, 24);
+            this.detalle.Name = "detalle";
+            this.detalle.Location = new Point(20, 185);
+            this.detalle.Size = new Size(495, 130);
+            this.detalle.ReadOnly = true;
+            this.detalle.AllowUserToAddRows = false;
+            this.detalle.AllowUserToDeleteRows = false;
+            this.detalle.RowHeadersVisible = false;
+            this.detalle.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            this.detalle.Columns.Add("tipo", "Tipo");
+            this.detalle.Columns.Add("medio", "Medio / ID");
+            this.detalle.Columns.Add("importe", "Importe / diagnostico");
+            this.detalle.TabIndex = 2;
+            this.estado.Name = "estado";
+            this.estado.Location = new Point(14, 490);
+            this.estado.Size = new Size(1080, 40);
+            this.estado.Text = "Consultando jornada...";
+            this.estado.AutoEllipsis = true;
+            this.btnCerrar.Name = "btnCerrar";
+            this.btnCerrar.Text = "Cerrar";
+            this.btnCerrar.Location = new Point(885, 531);
+            this.btnCerrar.Size = new Size(180, 45);
+            this.btnCerrar.FlatStyle = FlatStyle.Flat;
+            this.btnCerrar.BackColor = Color.FromArgb(20, 90, 150);
+            this.btnCerrar.ForeColor = Color.White;
+            this.btnCerrar.TabIndex = 5;
+            this.btnCerrar.Click += new EventHandler(this.btnCerrarVentana_Click);
+            this.btnCerrarCaja.Size = new Size(250, 45);
+            this.btnCerrarCaja.TabIndex = 4;
+            this.btnRecalcular.TabIndex = 3;
+            this.CancelButton = this.btnCerrar;
+            this.MinimumSize = new Size(1125, 627);
+            this.AutoScaleMode = AutoScaleMode.None;
+            this.Text = "Cierre de caja";
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.lblTotalCaja.Text = "Efectivo esperado:";
+            this.label8.Text = "Credito pendiente:";
+            this.Controls.Add(this.estado);
+            this.Controls.Add(this.btnCerrar);
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(245)))), ((int)(((byte)(250)))));
             this.ClientSize = new System.Drawing.Size(1109, 588);
             this.Controls.Add(this.panel1);
@@ -539,6 +472,8 @@ namespace CarWash.Presentacion.Administracion
             this.cardResumen.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.contado)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.detalle)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -555,20 +490,8 @@ namespace CarWash.Presentacion.Administracion
         private Label lblTotalValesOperarios;
         private Label label8;
         private Label lblVentasCredito;
-        private Label label2;
-        private Label label4;
-        private Label label6;
-        private TextBox txtValorEfectivo;
-        private TextBox txtValorTransferencia;
-        private TextBox txtValorDatafono;
         private Button btnRecalcular;
         private Panel panel1;
-        private TextBox txtValorVales;
-        private Label label11;
-        private TextBox txtValorGastos;
-        private Label label10;
-        private TextBox txtValorCredito;
-        private Label label9;
     }
 
 }

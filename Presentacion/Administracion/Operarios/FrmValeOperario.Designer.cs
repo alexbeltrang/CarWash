@@ -21,6 +21,10 @@ namespace CarWash.Presentacion.Operacion
 
         private Button btnGuardar;
         private Button btnCancelar;
+        private ComboBox medio;
+        private Label lblMedio;
+        private Label estado;
+        private Button btnConsultar;
 
         /// <summary>
         /// Clean up any resources being used.
@@ -28,6 +32,7 @@ namespace CarWash.Presentacion.Operacion
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
+            if (disposing) { if (!lifetime.IsCancellationRequested) lifetime.Cancel(); lifetime.Dispose(); }
             if (disposing && (components != null))
             {
                 components.Dispose();
@@ -43,6 +48,10 @@ namespace CarWash.Presentacion.Operacion
         /// </summary>
         private void InitializeComponent()
         {
+            this.medio = new ComboBox();
+            this.lblMedio = new Label();
+            this.estado = new Label();
+            this.btnConsultar = new Button();
             this.panelCard = new System.Windows.Forms.Panel();
             this.lblTitulo = new System.Windows.Forms.Label();
             this.lblOperario = new System.Windows.Forms.Label();
@@ -168,9 +177,42 @@ namespace CarWash.Presentacion.Operacion
             // 
             // FrmValeOperario
             // 
+            this.medio.Name = "medio";
+            this.medio.DropDownStyle = ComboBoxStyle.DropDownList;
+            this.medio.Location = new System.Drawing.Point(40, 328);
+            this.medio.Size = new System.Drawing.Size(300, 24);
+            this.medio.TabIndex = 7;
+            this.lblMedio.Text = "Medio de salida";
+            this.lblMedio.ForeColor = System.Drawing.Color.White;
+            this.lblMedio.Location = new System.Drawing.Point(40, 303);
+            this.lblMedio.Size = new System.Drawing.Size(300, 23);
+            this.estado.Name = "estado";
+            this.estado.ForeColor = System.Drawing.Color.White;
+            this.estado.Location = new System.Drawing.Point(40, 363);
+            this.estado.Size = new System.Drawing.Size(300, 65);
+            this.estado.Text = "Consultando jornada...";
+            this.btnGuardar.Location = new System.Drawing.Point(20, 440);
+            this.btnGuardar.Size = new System.Drawing.Size(200, 40);
+            this.btnGuardar.TabIndex = 8;
+            this.btnCancelar.Location = new System.Drawing.Point(230, 440);
+            this.btnCancelar.Size = new System.Drawing.Size(130, 40);
+            this.btnCancelar.TabIndex = 9;
+            this.btnConsultar.Name = "btnConsultar";
+            this.btnConsultar.Text = "Consultar";
+            this.btnConsultar.Location = new System.Drawing.Point(40, 492);
+            this.btnConsultar.Size = new System.Drawing.Size(300, 35);
+            this.btnConsultar.TabIndex = 10;
+            this.btnConsultar.Click += new System.EventHandler(this.btnConsultar_Click);
+            this.panelCard.Controls.Add(this.medio);
+            this.panelCard.Controls.Add(this.lblMedio);
+            this.panelCard.Controls.Add(this.estado);
+            this.panelCard.Controls.Add(this.btnConsultar);
+            this.panelCard.Size = new System.Drawing.Size(380, 545);
+            this.CancelButton = this.btnCancelar;
             this.AcceptButton = this.btnGuardar;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(8)))), ((int)(((byte)(35)))), ((int)(((byte)(64)))));
-            this.ClientSize = new System.Drawing.Size(460, 460);
+            this.ClientSize = new System.Drawing.Size(460, 625);
+            this.MinimumSize = new System.Drawing.Size(476, 664);
             this.Controls.Add(this.panelCard);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "FrmValeOperario";

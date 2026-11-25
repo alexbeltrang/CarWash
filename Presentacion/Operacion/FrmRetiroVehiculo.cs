@@ -110,7 +110,7 @@ namespace CarWash.Presentacion.Operacion
             if (!printRequestId.HasValue) printRequestId = Guid.NewGuid();
             var id = printRequestId.Value;
             var turnId = receipt.IdTurno;
-            var width = 80;
+            var width = 60;
             printJob = null;
             SetBusy(true);
             try { printJob = await source.ImprimirAsync(turnId, id, width, lifetime.Token); ShowPrintState(); }
@@ -221,7 +221,7 @@ namespace CarWash.Presentacion.Operacion
                 {
                     var text = ReceiptText(receipt);
                     var offset = 0;
-                    var width = 315;
+                    var width = 236;
                     document.DocumentName = "Comprobante de ingreso";
                     document.DefaultPageSettings.PaperSize = new PaperSize("Comprobante", width, 800);
                     document.DefaultPageSettings.Margins = new Margins(8, 8, 8, 8);

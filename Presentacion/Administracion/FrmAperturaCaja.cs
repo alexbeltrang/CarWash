@@ -10,14 +10,19 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CancellationTokenSource = System.Threading.CancellationTokenSource;
 using System.Windows.Forms;
 
 namespace CarWash.Presentacion.Administracion
 {
     public partial class FrmAperturaCaja : Form
     {
-        private List<CajaDiaria> cajaDiaria = new List<CajaDiaria>();
-        CajaDiariaController cajaDiariaController = new CajaDiariaController();
+        private readonly CajaComandosClient comandos = new CajaComandosClient();
+        private readonly CancellationTokenSource lifetime = new CancellationTokenSource();
+        private CajaAperturaDTO? pendiente;
+        private bool ocupado;
+        private bool disponible;
+        private bool confirmado;
 
         public FrmAperturaCaja()
         {
@@ -25,67 +30,78 @@ namespace CarWash.Presentacion.Administracion
         }
 
 
-        private void FrmAperturaCaja_Load(object sender, EventArgs e)
+        private async void FrmAperturaCaja_Load(object sender, EventArgs e)
         {
-            using (var ms = new System.IO.MemoryStream(Properties.Resources.splash_car_icon))
-            {
-                this.Icon = new Icon(ms);
-            }
-            txtMontoInicial.Text = "0";
-            cargaCajaDiaria();
-
+            if (UIHelper.EnModoDiseno(this)) return;
+            if (txtMontoInicial.Text.Length == 0) txtMontoInicial.Text = "0";
+            await CargarAsync();
         }
 
-        private void btnAbrirCaja_Click(object sender, EventArgs e)
+        private async void btnAbrirCaja_Click(object sender, EventArgs e)
         {
-            if (validaProcesoGrabar())
-            {
-                CajaDiaria cajaDiaria = new CajaDiaria
-                {
-                    FechaApertura = DateTime.Now,
-                    MontoInicial = decimal.Parse(txtMontoInicial.Text.Trim()),
-                    TotalIngresosEfectivo = 0,
-                    TotalIngresosTransferencias = 0,
-                    TotalIngresosDatafono = 0,
-                    TotalEgresos = 0,
-                    TotalFinal = 0,
-                    Estado = true
-                };
-
-                cajaDiariaController.CrearCajaDiaria(cajaDiaria);
-
-                MostrarToast("Ingreso registrado correctamente", Color.FromArgb(40, 167, 69));
-                this.Close();
-            }
+            var answer = MessageBox.Show(this, "Confirmar apertura con el monto indicado?", "Apertura de caja", MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+            await ConfirmarAperturaAsync(answer == DialogResult.Yes);
         }
 
-        private void cargaCajaDiaria()
+        private async Task ConfirmarAperturaAsync(bool confirmacion)
         {
+            if (!confirmacion || ocupado || confirmado || (!disponible && pendiente == null)) return;
+            decimal amount;
+            if (pendiente == null && (!decimal.TryParse(txtMontoInicial.Text, out amount) || amount < 0 || decimal.Round(amount, 2) != amount))
+            { estadoApertura.Text = "Ingrese un monto no negativo con hasta dos decimales."; return; }
+            pendiente = pendiente ?? new CajaAperturaDTO { MontoInicial = CajaComandosClient.Dinero(decimal.Parse(txtMontoInicial.Text)) };
+            ocupado = true;
+            ActualizarControles();
             try
             {
-                cajaDiaria.Clear();
-                var cajaDiariaGet = cajaDiariaController.GetCajaActiva();
-                if (cajaDiariaGet != null && cajaDiariaGet.idCaja > 0)
-                {
-                    cajaDiaria.Add(cajaDiariaGet);
-                }
-
+                var result = await comandos.AbrirAsync(pendiente, lifetime.Token);
+                if (IsDisposed) return;
+                if ((int?)result.Resultado["idCaja"] is not int id || id <= 0) throw new System.IO.IOException();
+                confirmado = true;
+                pendiente = null;
+                estadoApertura.Text = "Apertura confirmada. Caja " + id;
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error cargando Cajas Diarias: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            catch (CajaHttpException error) when (error.EscrituraRechazada)
+            { if (!IsDisposed) { pendiente = null; estadoApertura.Text = error.Message; } }
+            catch (Exception error) when (error is System.IO.IOException || error is System.Net.Http.HttpRequestException || error is OperationCanceledException || error is UnauthorizedAccessException)
+            { if (!IsDisposed) estadoApertura.Text = "Resultado desconocido. UUID: " + pendiente?.IdOperacion; }
+            finally { ocupado = false; if (!IsDisposed) ActualizarControles(); }
         }
 
-        private bool validaProcesoGrabar()
+        private async Task CargarAsync()
         {
-            if (cajaDiaria != null && cajaDiaria.Count > 0)
+            if (ocupado || IsDisposed || pendiente != null || confirmado) return;
+            ocupado = true;
+            disponible = false;
+            ActualizarControles();
+            try
             {
-                MostrarToast("Ya existe una caja abierta.", Color.FromArgb(40, 167, 69));
-                return false;
+                var active = await comandos.ActivaAsync(lifetime.Token);
+                if (IsDisposed) return;
+                disponible = active == null;
+                estadoApertura.Text = disponible ? "No hay caja abierta." : "Ya existe una caja abierta.";
             }
-            return true;
+            catch (Exception error) when (error is System.IO.IOException || error is System.Net.Http.HttpRequestException || error is OperationCanceledException || error is UnauthorizedAccessException)
+            { if (!IsDisposed) estadoApertura.Text = "No se pudo consultar la caja. Vuelva a consultar."; }
+            finally { ocupado = false; if (!IsDisposed) ActualizarControles(); }
+        }
 
+        private void ActualizarControles()
+        {
+            txtMontoInicial.Enabled = !ocupado && pendiente == null && !confirmado;
+            btnAbrirCaja.Enabled = !ocupado && !confirmado && (disponible || pendiente != null);
+            btnAbrirCaja.Text = pendiente == null ? "Abrir caja" : "Consultar / reintentar";
+            btnConsultar.Enabled = !ocupado && pendiente == null && !confirmado;
+        }
+
+        private async void btnConsultar_Click(object sender, EventArgs e) => await CargarAsync();
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            if ((ocupado || pendiente != null) && e.CloseReason == CloseReason.UserClosing)
+            { e.Cancel = true; estadoApertura.Text = "Operacion pendiente. Consulte el UUID: " + pendiente?.IdOperacion; }
+            base.OnFormClosing(e);
         }
 
         private void MostrarToast(string mensaje, Color color)
@@ -124,8 +140,6 @@ namespace CarWash.Presentacion.Administracion
 
         private void txtMontoInicial_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (!char.IsDigit(e.KeyChar) && !char.IsControl(e.KeyChar))
-                e.Handled = true;
         }
 
         private void btnCerrar_Click(object sender, EventArgs e)

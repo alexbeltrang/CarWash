@@ -51,7 +51,7 @@ namespace CarWash.Controladores
         public async Task<ImpresionComprobanteDTO> ImprimirIngresoAsync(int idTurno, int[] idServicios, CancellationToken cancellationToken)
         {
             var job = ParsePrint(await SendAsync(HttpMethod.Post, "api/RetiroVehiculos/" + idTurno + "/impresiones/ingreso", new { idServicios }, cancellationToken));
-            if (job == null || job.IdTurno != idTurno || job.AnchoMm != 80) throw new IOException("Respuesta de impresion no valida. Consulte el estado.");
+            if (job == null || job.IdTurno != idTurno) throw new IOException("Respuesta de impresion no valida. Consulte el estado.");
             return job;
         }
 
@@ -66,7 +66,7 @@ namespace CarWash.Controladores
         {
             if (body.Count == 0) return null;
             var job = body.ToObject<ImpresionComprobanteDTO>();
-            if (job == null || job.SolicitudId == Guid.Empty || job.IdTurno <= 0 || (job.AnchoMm != 58 && job.AnchoMm != 80)
+            if (job == null || job.SolicitudId == Guid.Empty || job.IdTurno <= 0 || (job.AnchoMm != 58 && job.AnchoMm != 60 && job.AnchoMm != 80)
                 || string.IsNullOrWhiteSpace(job.Impresora) || Array.IndexOf(new[] { "PENDING", "SUBMITTING", "SUBMITTED", "FAILED", "UNKNOWN" }, job.Estado) < 0)
                 throw new IOException("Estado de impresion no valido. Consulte nuevamente.");
             return job;
